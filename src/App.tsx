@@ -11,6 +11,7 @@ import IntermediateLevelPage from './pages/levels/IntermediateLevelPage';
 import AdvancedLevelPage from './pages/levels/AdvancedLevelPage';
 import AlphabetPage from './pages/lessons/AlphabetPage';
 import VocabularyPage from './pages/lessons/VocabularyPage';
+import GrammarPage from './pages/lessons/GrammarPage';
 import QuizPage from './pages/quiz/QuizPage';
 import ChatPage from './pages/ChatPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -51,6 +52,11 @@ function App() {
               <Route path="intermediate" element={
                 <ProtectedRoute>
                   <IntermediateLevelPage />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/grammar" element={
+                <ProtectedRoute>
+                  <GrammarPage />
                 </ProtectedRoute>
               } />
               <Route path="intermediate/quiz/:topic" element={

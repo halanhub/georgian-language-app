@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   AlignJustify, 
@@ -6,9 +6,11 @@ import {
   Dices, 
   GraduationCap, 
   Lightbulb, 
+  Mail,
   MessageSquare, 
   Palette, 
   PenTool, 
+  Settings,
   Trophy, 
   User
 } from 'lucide-react';
@@ -19,6 +21,7 @@ const Sidebar: React.FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const location = useLocation();
+  const [isProfileExpanded, setIsProfileExpanded] = useState(false);
 
   if (!user) return null;
 
@@ -26,21 +29,69 @@ const Sidebar: React.FC = () => {
 
   return (
     <aside 
-      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 z-10 hidden md:block
+      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 z-10 hidden md:block overflow-y-auto
       ${theme === 'dark' ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-700'} 
       shadow-lg transition-all duration-300`}
     >
       <div className="p-4">
-        <div className={`p-3 mb-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-red-50'}`}>
+        <div 
+          className={`p-4 mb-4 rounded-lg cursor-pointer transition-all ${
+            theme === 'dark' ? 'bg-gray-700 hover:bg-gray-650' : 'bg-red-50 hover:bg-red-100'
+          }`}
+          onClick={() => setIsProfileExpanded(!isProfileExpanded)}
+        >
           <div className="flex items-center space-x-3">
             <div className={`p-2 rounded-full ${theme === 'dark' ? 'bg-gray-600' : 'bg-red-100'}`}>
               <User size={24} className={theme === 'dark' ? 'text-red-400' : 'text-red-600'} />
             </div>
             <div>
               <p className="font-medium">{user.displayName || 'Language Learner'}</p>
-              <p className="text-xs opacity-70">Learning Georgian</p>
+              <p className="text-xs opacity-70">{user.email}</p>
             </div>
           </div>
+
+          {isProfileExpanded && (
+            <div className="mt-4 pt-4 border-t border-gray-600">
+              <div className={`space-y-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Learning Level:</span>
+                  <span className={`px-2 py-1 rounded text-xs ${
+                    theme === 'dark' ? 'bg-gray-600' : 'bg-red-100'
+                  }`}>Beginner</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Lessons Completed:</span>
+                  <span className="text-sm font-medium">0/12</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Quiz Score:</span>
+                  <span className="text-sm font-medium">0%</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Study Streak:</span>
+                  <span className="text-sm font-medium">0 days</span>
+                </div>
+                <Link 
+                  to="/settings" 
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm ${
+                    theme === 'dark' ? 'hover:bg-gray-600' : 'hover:bg-red-50'
+                  }`}
+                >
+                  <Settings size={16} />
+                  <span>Profile Settings</span>
+                </Link>
+                <Link 
+                  to="/contact" 
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm ${
+                    theme === 'dark' ? 'hover:bg-gray-600' : 'hover:bg-red-50'
+                  }`}
+                >
+                  <Mail size={16} />
+                  <span>Contact Support</span>
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
 
         <nav className="space-y-1">
