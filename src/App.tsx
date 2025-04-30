@@ -14,6 +14,8 @@ import VocabularyPage from './pages/lessons/VocabularyPage';
 import GrammarPage from './pages/lessons/GrammarPage';
 import QuizPage from './pages/quiz/QuizPage';
 import ChatPage from './pages/ChatPage';
+import ProfileSettingsPage from './pages/settings/ProfileSettingsPage';
+import SupportPage from './pages/SupportPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
@@ -81,6 +83,14 @@ function App() {
                   <ChatPage />
                 </ProtectedRoute>
               } />
+
+              <Route path="settings" element={
+                <ProtectedRoute>
+                  <ProfileSettingsPage />
+                </ProtectedRoute>
+              } />
+
+              <Route path="support" element={<SupportPage />} />
               
               <Route path="404" element={<NotFoundPage />} />
               <Route path="*" element={<Navigate to="/404" replace />} />
