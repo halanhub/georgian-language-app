@@ -24,14 +24,6 @@ const Footer: React.FC = () => {
               <Mail size={18} className="inline mr-1" />
               Contact
             </a>
-            <a 
-              href="#" 
-              className={`text-sm hover:${theme === 'dark' ? 'text-white' : 'text-red-600'} transition-colors`}
-              aria-label="GitHub repository"
-            >
-              <GitHub size={18} className="inline mr-1" />
-              GitHub
-            </a>
             <div className="flex items-center">
               <span className="text-sm">Made with</span>
               <Heart size={16} className={`mx-1 ${theme === 'dark' ? 'text-red-400' : 'text-red-500'}`} />
