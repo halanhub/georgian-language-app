@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, HelpCircle, Mail, MessageCircle, Send } from 'lucide-react';
+import { ArrowLeft, HelpCircle, Mail, Send } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
 const SupportPage: React.FC = () => {
@@ -153,19 +153,11 @@ const SupportPage: React.FC = () => {
                 <h3 className={`text-lg font-medium mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   Contact Information
                 </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center">
-                    <Mail className={`h-5 w-5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      support@georgianlearning.com
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <MessageCircle className={`h-5 w-5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Live chat available 9AM-5PM GMT
-                    </span>
-                  </div>
+                <div className="flex items-center">
+                  <Mail className={`h-5 w-5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
+                  <span className={`ml-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    support@georgian.com
+                  </span>
                 </div>
               </div>
 

@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { AlignJustify, ArrowRight, Book, Calendar, Coffee, Dices, Palette, Utensils } from 'lucide-react';
+import { AlignJustify, ArrowRight, Book, Calendar, Coffee, Dices, Brain, Utensils } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const BeginnerLevelPage: React.FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
+  const [progress, setProgress] = useState(0);
+
+  // Mock progress calculation - in a real app, this would come from a database
+  useEffect(() => {
+    if (user) {
+      // Simulate loading progress data
+      setProgress(30); // Example: 30% progress
+    }
+  }, [user]);
 
   const topics = [
     { 
@@ -15,31 +24,35 @@ const BeginnerLevelPage: React.FC = () => {
       description: 'Learn the unique 33 letters of the Georgian alphabet',
       icon: <AlignJustify size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
-      path: '/beginner/alphabet' 
+      path: '/beginner/alphabet',
+      progress: 30
     },
     { 
-      id: 'colors', 
-      name: 'Colors', 
-      description: 'Learn essential color names in Georgian',
-      icon: <Palette size={24} />,
+      id: 'vocabulary', 
+      name: 'Vocabulary', 
+      description: 'Learn essential Georgian words and phrases',
+      icon: <Brain size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
-      path: '/beginner/vocabulary/colors' 
+      path: '/beginner/vocabulary',
+      progress: 20
     },
     { 
       id: 'numbers', 
       name: 'Numbers', 
-      description: 'Count from 1 to 100 in Georgian',
+      description: 'Learn to count in Georgian from 1 to 100',
       icon: <Book size={24} />,
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
-      path: '/beginner/vocabulary/numbers' 
+      path: '/beginner/vocabulary/numbers',
+      progress: 15
     },
     { 
       id: 'months', 
       name: 'Months & Seasons', 
-      description: 'Learn months, seasons and time expressions',
+      description: 'Learn the months, seasons, and time expressions',
       icon: <Calendar size={24} />,
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
-      path: '/beginner/vocabulary/months' 
+      path: '/beginner/vocabulary/months',
+      progress: 0
     },
     { 
       id: 'food', 
@@ -47,7 +60,8 @@ const BeginnerLevelPage: React.FC = () => {
       description: 'Essential vocabulary for Georgian cuisine',
       icon: <Utensils size={24} />,
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
-      path: '/beginner/vocabulary/food' 
+      path: '/beginner/vocabulary/food',
+      progress: 10
     },
     { 
       id: 'greetings', 
@@ -55,13 +69,14 @@ const BeginnerLevelPage: React.FC = () => {
       description: 'Common expressions for everyday conversations',
       icon: <Coffee size={24} />,
       color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
-      path: '/beginner/vocabulary/greetings' 
+      path: '/beginner/vocabulary/greetings',
+      progress: 5
     },
   ];
 
   const quizzes = [
     { id: 'alphabet', name: 'Alphabet Quiz', path: '/beginner/quiz/alphabet' },
-    { id: 'colors', name: 'Colors Quiz', path: '/beginner/quiz/colors' },
+    { id: 'vocabulary', name: 'Vocabulary Quiz', path: '/beginner/quiz/vocabulary' },
     { id: 'numbers', name: 'Numbers Quiz', path: '/beginner/quiz/numbers' },
     { id: 'food', name: 'Food & Drinks Quiz', path: '/beginner/quiz/food' },
   ];
@@ -102,17 +117,28 @@ const BeginnerLevelPage: React.FC = () => {
             </div>
             <div className="hidden md:block md:w-1/3">
               <div className={`p-4 rounded-lg shadow-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
-                <div className={`h-2 w-1/4 rounded-full mb-4 ${theme === 'dark' ? 'bg-green-500' : 'bg-green-500'}`}></div>
-                <h2 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Your Progress</h2>
+                <div className={`h-2 w-full rounded-full mb-4 ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'}`}>
+                  <div 
+                    className={`h-2 rounded-full transition-all duration-500 ${
+                      theme === 'dark' ? 'bg-green-500' : 'bg-green-500'
+                    }`}
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+                <h2 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
+                  Your Progress: {progress}%
+                </h2>
                 <p className={`mb-4 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   Complete these beginner lessons to build a strong foundation in Georgian.
                 </p>
                 <div className="space-y-2">
-                  <div className="flex items-center">
-                    <div className={`w-full bg-gray-200 rounded-full h-2.5 ${theme === 'dark' ? 'bg-gray-600' : ''}`}>
-                      <div className="bg-green-500 h-2.5 rounded-full" style={{ width: '0%' }}></div>
-                    </div>
-                    <span className={`ml-2 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>0%</span>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                      Lessons Completed
+                    </span>
+                    <span className={`font-medium ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
+                      {Math.floor(progress / 20)}/5
+                    </span>
                   </div>
                 </div>
               </div>
@@ -145,10 +171,23 @@ const BeginnerLevelPage: React.FC = () => {
                 <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   {topic.description}
                 </p>
+                <div className="mb-3">
+                  <div className={`w-full h-1.5 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                    <div 
+                      className={`h-1.5 rounded-full ${
+                        theme === 'dark' ? 'bg-red-500' : 'bg-red-600'
+                      }`}
+                      style={{ width: `${topic.progress}%` }}
+                    />
+                  </div>
+                  <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {topic.progress}% Complete
+                  </p>
+                </div>
                 <div className={`flex items-center text-sm font-medium ${
                   theme === 'dark' ? 'text-red-400' : 'text-red-600'
                 }`}>
-                  Start Learning
+                  {topic.progress > 0 ? 'Continue Learning' : 'Start Learning'}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </div>
               </Link>

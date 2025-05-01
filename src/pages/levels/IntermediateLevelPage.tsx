@@ -9,11 +9,9 @@ const IntermediateLevelPage: React.FC = () => {
   const { user } = useAuth();
   const [progress, setProgress] = useState(0);
 
-  // Mock progress calculation - in a real app, this would come from a database
   useEffect(() => {
     if (user) {
-      // Simulate loading progress data
-      setProgress(30); // Example: 30% progress
+      setProgress(30);
     }
   }, [user]);
 
@@ -25,7 +23,8 @@ const IntermediateLevelPage: React.FC = () => {
       icon: <BookOpen size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
       path: '/intermediate/grammar',
-      unlocked: true
+      unlocked: true,
+      progress: 40
     },
     { 
       id: 'sentences', 
@@ -34,7 +33,8 @@ const IntermediateLevelPage: React.FC = () => {
       icon: <Edit size={24} />,
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
       path: '/intermediate/sentences',
-      unlocked: progress >= 20
+      unlocked: true,
+      progress: 25
     },
     { 
       id: 'common-words', 
@@ -43,40 +43,43 @@ const IntermediateLevelPage: React.FC = () => {
       icon: <Brain size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
       path: '/intermediate/common-words',
-      unlocked: progress >= 40
+      unlocked: true,
+      progress: 15
     },
     { 
       id: 'conversations', 
       name: 'Daily Conversations', 
-      description: 'Practical dialogues for everyday situations',
+      description: 'Practice real-world dialogues and improve speaking skills',
       icon: <MessageCircle size={24} />,
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
       path: '/intermediate/conversations',
-      unlocked: progress >= 60
+      unlocked: true,
+      progress: 0
     },
     { 
       id: 'reading', 
       name: 'Reading Practice', 
-      description: 'Improve your comprehension with Georgian texts',
+      description: 'Read and comprehend Georgian texts with confidence',
       icon: <GraduationCap size={24} />,
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
       path: '/intermediate/reading',
-      unlocked: progress >= 80
+      unlocked: true,
+      progress: 0
     },
     { 
       id: 'writing', 
       name: 'Writing Exercises', 
-      description: 'Practice writing in Georgian with guided exercises',
+      description: 'Develop your written Georgian skills through guided practice',
       icon: <Pencil size={24} />,
       color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
       path: '/intermediate/writing',
-      unlocked: progress >= 90
+      unlocked: true,
+      progress: 0
     },
   ];
 
   return (
     <div className="pt-16 pb-16">
-      {/* Hero section */}
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
@@ -85,7 +88,7 @@ const IntermediateLevelPage: React.FC = () => {
                 <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>Intermediate Level</span> - საშუალო
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Take your Georgian language skills to the next level with grammar fundamentals, sentence construction, and daily conversations.
+                Take your Georgian language skills to the next level with comprehensive grammar, advanced vocabulary, and practical conversation practice.
               </p>
               <div className="flex flex-wrap gap-2">
                 <Link
@@ -96,6 +99,14 @@ const IntermediateLevelPage: React.FC = () => {
                 >
                   Start with Grammar
                   <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+                <Link
+                  to="/contact"
+                  className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
+                    theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-800 hover:bg-gray-100'
+                  }`}
+                >
+                  Need Help?
                 </Link>
               </div>
             </div>
@@ -131,7 +142,6 @@ const IntermediateLevelPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Topics Grid */}
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className={`text-2xl font-bold mb-8 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -157,15 +167,30 @@ const IntermediateLevelPage: React.FC = () => {
                   {topic.description}
                 </p>
                 {topic.unlocked ? (
-                  <Link
-                    to={topic.path}
-                    className={`flex items-center text-sm font-medium ${
-                      theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
-                    }`}
-                  >
-                    Start Learning
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
+                  <>
+                    <div className="mb-3">
+                      <div className={`w-full h-1.5 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                        <div 
+                          className={`h-1.5 rounded-full ${
+                            theme === 'dark' ? 'bg-blue-500' : 'bg-blue-600'
+                          }`}
+                          style={{ width: `${topic.progress}%` }}
+                        />
+                      </div>
+                      <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {topic.progress}% Complete
+                      </p>
+                    </div>
+                    <Link
+                      to={topic.path}
+                      className={`flex items-center text-sm font-medium ${
+                        theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+                      }`}
+                    >
+                      {topic.progress > 0 ? 'Continue Learning' : 'Start Learning'}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </>
                 ) : (
                   <div className={`flex items-center text-sm font-medium ${
                     theme === 'dark' ? 'text-gray-400' : 'text-gray-400'
@@ -187,6 +212,40 @@ const IntermediateLevelPage: React.FC = () => {
             >
               Return to Beginner Level
             </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className={`text-2xl font-bold mb-8 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Tips for Intermediate Learners
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
+              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Regular Practice
+              </h3>
+              <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                Dedicate at least 30 minutes daily to studying Georgian. Consistency is key to mastering intermediate concepts.
+              </p>
+            </div>
+            <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
+              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Immerse Yourself
+              </h3>
+              <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                Watch Georgian movies, listen to music, and try to read simple texts to improve comprehension.
+              </p>
+            </div>
+            <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
+              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Practice Speaking
+              </h3>
+              <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                Use our AI chat feature to practice conversations and improve your speaking confidence.
+              </p>
+            </div>
           </div>
         </div>
       </section>

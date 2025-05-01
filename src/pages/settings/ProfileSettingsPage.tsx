@@ -4,6 +4,13 @@ import { ArrowLeft, Camera, Mail, Save, User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
+const truncateEmail = (email: string) => {
+  if (email.length > 25) {
+    return `${email.substring(0, 22)}...`;
+  }
+  return email;
+};
+
 const ProfileSettingsPage: React.FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
@@ -98,8 +105,8 @@ const ProfileSettingsPage: React.FC = () => {
                 <h2 className={`mt-4 text-lg font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   {user?.displayName || 'Your Name'}
                 </h2>
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  {user?.email}
+                <p className={`text-sm overflow-hidden text-ellipsis ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {truncateEmail(user?.email || '')}
                 </p>
               </div>
             </div>

@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { 
   AlignJustify, 
   BookOpen, 
+  Brain,
   Dices, 
   GraduationCap, 
   Lightbulb, 
@@ -22,6 +23,14 @@ const Sidebar: React.FC = () => {
   const { theme } = useTheme();
   const location = useLocation();
   const [isProfileExpanded, setIsProfileExpanded] = useState(false);
+
+  // Mock progress data - in a real app, this would come from a database
+  const progressData = {
+    lessonsCompleted: 3,
+    totalLessons: 12,
+    quizScore: 75,
+    studyStreak: 5
+  };
 
   if (!user) return null;
 
@@ -44,9 +53,8 @@ const Sidebar: React.FC = () => {
             <div className={`p-2 rounded-full ${theme === 'dark' ? 'bg-gray-600' : 'bg-red-100'}`}>
               <User size={24} className={theme === 'dark' ? 'text-red-400' : 'text-red-600'} />
             </div>
-            <div>
-              <p className="font-medium">{user.displayName || 'Language Learner'}</p>
-              <p className="text-xs opacity-70">{user.email}</p>
+            <div className="overflow-hidden">
+              <p className="font-medium truncate">{user.displayName || 'Language Learner'}</p>
             </div>
           </div>
 
@@ -61,15 +69,15 @@ const Sidebar: React.FC = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Lessons Completed:</span>
-                  <span className="text-sm font-medium">0/12</span>
+                  <span className="text-sm font-medium">{progressData.lessonsCompleted}/{progressData.totalLessons}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Quiz Score:</span>
-                  <span className="text-sm font-medium">0%</span>
+                  <span className="text-sm font-medium">{progressData.quizScore}%</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Study Streak:</span>
-                  <span className="text-sm font-medium">0 days</span>
+                  <span className="text-sm font-medium">{progressData.studyStreak} days</span>
                 </div>
                 <Link 
                   to="/settings" 
@@ -155,7 +163,7 @@ const Sidebar: React.FC = () => {
                 : (theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-red-50')
             }`}
           >
-            <Palette size={18} />
+            <Brain size={18} />
             <span>Vocabulary</span>
           </Link>
           

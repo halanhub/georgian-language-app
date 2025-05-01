@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, ChevronRight, Clock, Trophy, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronRight, Clock, Trophy, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface Question {
@@ -8,7 +8,9 @@ interface Question {
   question: string;
   options: string[];
   correctAnswer: string;
+  explanation?: string;
   image?: string;
+  type?: 'reading' | 'listening' | 'speaking' | 'writing';
 }
 
 interface QuizParams {
@@ -41,64 +43,102 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
           question: 'What is the Georgian letter "ა" called?',
           options: ['Ani', 'Bani', 'Gani', 'Doni'],
           correctAnswer: 'Ani',
+          type: 'reading'
         },
         {
           id: 2,
           question: 'Which Georgian letter corresponds to the sound "m"?',
           options: ['მ', 'ნ', 'პ', 'ბ'],
           correctAnswer: 'მ',
+          type: 'listening'
         },
         {
           id: 3,
           question: 'How many letters are in the Georgian alphabet?',
           options: ['26', '28', '33', '36'],
           correctAnswer: '33',
+          type: 'reading'
         },
         {
           id: 4,
           question: 'Which of these is NOT a Georgian letter?',
           options: ['ვ', 'ღ', 'ჩ', 'ფ'],
           correctAnswer: 'ვ',
+          type: 'reading'
         },
         {
           id: 5,
           question: 'The Georgian letter "თ" corresponds to which sound?',
           options: ['t', 'th', 'f', 'v'],
           correctAnswer: 'th',
+          type: 'listening'
         },
+        {
+          id: 6,
+          question: 'Write the Georgian letter that makes the "k" sound',
+          options: ['კ', 'ქ', 'გ', 'ხ'],
+          correctAnswer: 'კ',
+          type: 'writing'
+        },
+        {
+          id: 7,
+          question: 'Pronounce the Georgian letter "ძ"',
+          options: ['dz', 'ts', 'zh', 'sh'],
+          correctAnswer: 'dz',
+          type: 'speaking'
+        }
       ];
     } else if (level === 'beginner' && topic === 'colors') {
       quizQuestions = [
         {
           id: 1,
           question: 'How do you say "red" in Georgian?',
-          options: ['ლურჯი - lurji', 'წითელი - ts’iteli', 'მწვანე - mts’vane', 'ყვითელი - q’viteli'],
-          correctAnswer: 'წითელი - ts’iteli',
+          options: ['ლურჯი - lurji', 'წითელი - tsiteli', 'მწვანე - mtsvane', 'ყვითელი - qviteli'],
+          correctAnswer: 'წითელი - tsiteli',
+          type: 'reading'
         },
         {
           id: 2,
           question: 'What color is "შავი - shavi" in English?',
           options: ['White', 'Black', 'Blue', 'Green'],
           correctAnswer: 'Black',
+          type: 'listening'
         },
         {
           id: 3,
           question: 'Which is the Georgian word for "blue - lurji"?',
           options: ['ლურჯი', 'მწვანე', 'ყვითელი', 'თეთრი'],
           correctAnswer: 'ლურჯი',
+          type: 'writing'
         },
         {
           id: 4,
-          question: 'How do you say "yellow - q’viteli" in Georgian?',
+          question: 'How do you say "yellow - qviteli" in Georgian?',
           options: ['წითელი', 'მწვანე', 'ყვითელი', 'ნარინჯისფერი'],
           correctAnswer: 'ყვითელი',
+          type: 'speaking'
         },
         {
           id: 5,
           question: 'What color is "ვარდისფერი - vardisperi" in English?',
           options: ['Purple', 'Orange', 'Red', 'Pink'],
           correctAnswer: 'Pink',
+          type: 'reading'
         },
+        {
+          id: 6,
+          question: 'Listen and choose the correct color word',
+          options: ['მწვანე', 'წითელი', 'ლურჯი', 'ყვითელი'],
+          correctAnswer: 'მწვანე',
+          type: 'listening'
+        },
+        {
+          id: 7,
+          question: 'Write the Georgian word for "brown"',
+          options: ['ყავისფერი', 'ნაცრისფერი', 'ოქროსფერი', 'შავი'],
+          correctAnswer: 'ყავისფერი',
+          type: 'writing'
+        }
       ];
     } else if (level === 'beginner' && topic === 'numbers') {
       quizQuestions = [
@@ -107,31 +147,55 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
           question: 'What is "erti" in English?',
           options: ['Two', 'Three', 'One', 'Four'],
           correctAnswer: 'One',
+          type: 'reading'
         },
         {
           id: 2,
           question: 'How do you say "five" in Georgian?',
           options: ['ოთხი - otkhi', 'ხუთი - khuti', 'ექვსი - ekvsi', 'შვიდი - shvidi'],
           correctAnswer: 'ხუთი - khuti',
+          type: 'speaking'
         },
         {
           id: 3,
           question: 'What is the Georgian word for "ten"?',
-          options: ['ცხრა - tskhra', 'რვა - rva', 'ათი - ati', 'თერთმეტი - tertmet’i'],
+          options: ['ცხრა - tskhra', 'რვა - rva', 'ათი - ati', 'თერთმეტი - tertmeti'],
           correctAnswer: 'ათი - ati',
+          type: 'writing'
         },
         {
           id: 4,
           question: 'How do you say "three" in Georgian?',
           options: ['ორი - ori', 'სამი - sami', 'ოთხი - otkhi', 'ხუთი - khuti'],
           correctAnswer: 'სამი - sami',
+          type: 'listening'
         },
         {
           id: 5,
           question: 'What is "ოთხი - otkhi" in English?',
           options: ['Three', 'Four', 'Five', 'Six'],
           correctAnswer: 'Four',
+          type: 'reading'
         },
+        {
+          id: 6,
+          question: 'Listen and write the number you hear',
+          options: ['შვიდი', 'რვა', 'ცხრა', 'ათი'],
+          correctAnswer: 'შვიდი',
+          type: 'listening'
+        },
+        {
+          id: 7,
+          question: 'Count from one to five in Georgian',
+          options: [
+            'ერთი, ორი, სამი, ოთხი, ხუთი',
+            'ერთი, სამი, ორი, ხუთი, ოთხი',
+            'ორი, სამი, ოთხი, ხუთი, ერთი',
+            'ხუთი, ოთხი, სამი, ორი, ერთი'
+          ],
+          correctAnswer: 'ერთი, ორი, სამი, ოთხი, ხუთი',
+          type: 'speaking'
+        }
       ];
     } else if (level === 'beginner' && topic === 'food') {
       quizQuestions = [
@@ -140,31 +204,55 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
           question: 'What is "პური" in English?',
           options: ['Water', 'Cheese', 'Bread', 'Wine'],
           correctAnswer: 'Bread',
+          type: 'reading'
         },
         {
           id: 2,
           question: 'How do you say "cheese" in Georgian?',
           options: ['ყველი', 'პური', 'ხაჭაპური', 'ხინკალი'],
           correctAnswer: 'ყველი',
+          type: 'speaking'
         },
         {
           id: 3,
           question: 'What is "ღვინო" in English?',
           options: ['Beer', 'Juice', 'Water', 'Wine'],
           correctAnswer: 'Wine',
+          type: 'reading'
         },
         {
           id: 4,
           question: 'Which is the Georgian word for "water"?',
           options: ['წყალი', 'ჩაი', 'ყავა', 'ლუდი'],
           correctAnswer: 'წყალი',
+          type: 'writing'
         },
         {
           id: 5,
           question: 'What Georgian food is "ხაჭაპური"?',
           options: ['Dumplings', 'Cheese bread', 'Grilled meat', 'Soup'],
           correctAnswer: 'Cheese bread',
+          type: 'reading'
         },
+        {
+          id: 6,
+          question: 'Listen and identify the food item',
+          options: ['ხინკალი', 'მწვადი', 'ლობიანი', 'ხაჭაპური'],
+          correctAnswer: 'ხინკალი',
+          type: 'listening'
+        },
+        {
+          id: 7,
+          question: 'Order these foods in Georgian',
+          options: [
+            'ხაჭაპური და წყალი',
+            'ღვინო და პური',
+            'ყველი და ჩაი',
+            'ხინკალი და ლუდი'
+          ],
+          correctAnswer: 'ხაჭაპური და წყალი',
+          type: 'speaking'
+        }
       ];
     } else {
       // Default questions if topic doesn't match
@@ -174,12 +262,14 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
           question: 'Sample question 1',
           options: ['Option A', 'Option B', 'Option C', 'Option D'],
           correctAnswer: 'Option A',
+          type: 'reading'
         },
         {
           id: 2,
           question: 'Sample question 2',
           options: ['Option A', 'Option B', 'Option C', 'Option D'],
           correctAnswer: 'Option B',
+          type: 'reading'
         },
       ];
     }
@@ -270,20 +360,44 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
     setRemainingTime(30);
   };
 
+  const handleFinishQuiz = () => {
+    if (level === 'intermediate') {
+      navigate('/intermediate');
+    } else {
+      navigate('/beginner');
+    }
+  };
+
   const getTopicName = () => {
     const topicMap: Record<string, string> = {
       alphabet: 'Georgian Alphabet',
       colors: 'Colors',
       numbers: 'Numbers',
       food: 'Food & Drinks',
+      grammar: 'Grammar',
+      sentences: 'Sentence Construction'
     };
     
     return topicMap[topic as string] || 'Quiz';
   };
 
+  const getQuestionTypeIcon = (type: string = 'reading') => {
+    switch (type) {
+      case 'reading':
+        return '📖';
+      case 'listening':
+        return '🎧';
+      case 'speaking':
+        return '🗣️';
+      case 'writing':
+        return '✍️';
+      default:
+        return '📝';
+    }
+  };
+
   return (
     <div className="pt-16 pb-16">
-      {/* Hero section */}
       <section className={`py-8 ${theme === 'dark' ? 'bg-gray-800' : 'bg-yellow-50'}`}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
@@ -292,7 +406,7 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
                 <span className={theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}>{getTopicName()} Quiz</span>
               </h1>
               <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Test your knowledge of the {getTopicName().toLowerCase()} in Georgian
+                Test your knowledge of {getTopicName().toLowerCase()} in Georgian
               </p>
             </div>
             <Link
@@ -314,7 +428,6 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           {!showScore ? (
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
-              {/* Quiz progress */}
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-2">
                   <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -340,10 +453,17 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
                 </div>
               </div>
               
-              {/* Question */}
               {questions.length > 0 && (
                 <>
                   <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`text-sm px-2 py-1 rounded ${
+                        theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {getQuestionTypeIcon(questions[currentQuestion].type)}
+                        {questions[currentQuestion].type?.charAt(0).toUpperCase() + questions[currentQuestion].type?.slice(1)}
+                      </span>
+                    </div>
                     <h2 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       {questions[currentQuestion].question}
                     </h2>
@@ -357,7 +477,6 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
                     )}
                   </div>
                   
-                  {/* Options */}
                   <div className="space-y-3 mb-6">
                     {questions[currentQuestion].options.map((option, index) => (
                       <button
@@ -391,8 +510,17 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
                       </button>
                     ))}
                   </div>
+
+                  {answerStatus !== null && questions[currentQuestion].explanation && (
+                    <div className={`p-4 rounded-md mb-6 ${
+                      answerStatus === 'correct'
+                        ? (theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800')
+                        : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
+                    }`}>
+                      <p>{questions[currentQuestion].explanation}</p>
+                    </div>
+                  )}
                   
-                  {/* Next button */}
                   <div className="flex justify-center">
                     <button
                       onClick={handleCheckAnswer}
@@ -411,7 +539,6 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
               )}
             </div>
           ) : (
-            // Show final score
             <div className={`p-8 rounded-lg text-center ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
               <Trophy size={64} className={`mx-auto mb-4 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-500'}`} />
               
@@ -461,16 +588,16 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
                   Retake Quiz
                 </button>
                 
-                <Link
-                  to={topic === 'alphabet' ? '/beginner/alphabet' : `/beginner/vocabulary/${topic}`}
+                <button
+                  onClick={handleFinishQuiz}
                   className={`px-6 py-3 rounded-lg font-medium ${
                     theme === 'dark' 
-                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
-                      : 'bg-white border border-gray-300 text-gray-800 hover:bg-gray-50'
+                      ? 'bg-blue-700 text-white hover:bg-blue-800' 
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
                   }`}
                 >
-                  Back to Lesson
-                </Link>
+                  Return to {level === 'intermediate' ? 'Intermediate' : 'Beginner'} Level
+                </button>
               </div>
             </div>
           )}

@@ -12,6 +12,7 @@ import AdvancedLevelPage from './pages/levels/AdvancedLevelPage';
 import AlphabetPage from './pages/lessons/AlphabetPage';
 import VocabularyPage from './pages/lessons/VocabularyPage';
 import GrammarPage from './pages/lessons/GrammarPage';
+import DailyConversationsPage from './pages/lessons/DailyConversationsPage';
 import QuizPage from './pages/quiz/QuizPage';
 import ChatPage from './pages/ChatPage';
 import ProfileSettingsPage from './pages/settings/ProfileSettingsPage';
@@ -59,6 +60,11 @@ function App() {
               <Route path="intermediate/grammar" element={
                 <ProtectedRoute>
                   <GrammarPage />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/conversations" element={
+                <ProtectedRoute>
+                  <DailyConversationsPage />
                 </ProtectedRoute>
               } />
               <Route path="intermediate/quiz/:topic" element={
