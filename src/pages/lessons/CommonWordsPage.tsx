@@ -1,12 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Book, Play, Volume2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Book, Brain, Check, ChevronDown, ChevronUp, Play, Volume2, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 
-const CommonWordsPage = () => {
+const CommonWordsPage: React.FC = () => {
   const { theme } = useTheme();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [expandedType, setExpandedType] = useState<string | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<string>('');
+  const [showExplanation, setShowExplanation] = useState(false);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const contentRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  const studyTips = {
+    reading: [
+      'Practice reading Georgian texts daily, even if you don\'t understand everything',
+      'Use context clues to guess word meanings',
+      'Create flashcards with Georgian words and their translations',
+      'Read Georgian news websites or children\'s books',
+      'Highlight new words and create a personal dictionary',
+      'Use spaced repetition techniques for vocabulary review',
+      'Practice word recognition with different fonts and handwriting',
+      'Join online Georgian reading groups'
+    ],
+    listening: [
+      'Listen to Georgian podcasts and radio shows',
+      'Watch Georgian movies with subtitles',
+      'Practice with native speaker recordings',
+      'Focus on intonation and pronunciation patterns',
+      'Record yourself repeating words and phrases',
+      'Use language learning apps with audio features',
+      'Listen to Georgian music and try to sing along',
+      'Participate in online language exchange sessions'
+    ],
+    speaking: [
+      'Practice speaking with native Georgian speakers',
+      'Record yourself speaking and analyze your pronunciation',
+      'Use language exchange apps to find conversation partners',
+      'Speak Georgian daily, even if just to yourself',
+      'Focus on proper stress and intonation',
+      'Join Georgian language meetups or online groups',
+      'Practice common phrases and expressions',
+      'Use role-play scenarios to improve fluency'
+    ],
+    writing: [
+      'Keep a daily journal in Georgian',
+      'Practice writing common phrases and sentences',
+      'Use Georgian keyboard layouts for authentic writing',
+      'Write emails or messages to language exchange partners',
+      'Study proper Georgian punctuation rules',
+      'Practice writing both printed and cursive forms',
+      'Create story summaries in Georgian',
+      'Participate in online Georgian writing workshops'
+    ]
+  };
 
   const commonWords = {
     pronouns: [
@@ -93,112 +140,57 @@ const CommonWordsPage = () => {
       { georgian: "კიტრი", english: "cucumber", pronunciation: "kitri" },
       { georgian: "სტაფილო", english: "carrot", pronunciation: "stapilo" },
       { georgian: "ხახვი", english: "onion", pronunciation: "khakhvi" }
-    ],
-    adjectives: [
-      { georgian: "დიდი", english: "big", pronunciation: "didi" },
-      { georgian: "პატარა", english: "small", pronunciation: "patara" },
-      { georgian: "კარგი", english: "good", pronunciation: "kargi" },
-      { georgian: "ცუდი", english: "bad", pronunciation: "tsudi" },
-      { georgian: "ლამაზი", english: "beautiful", pronunciation: "lamazi" },
-      { georgian: "ახალი", english: "new", pronunciation: "akhali" },
-      { georgian: "ძველი", english: "old", pronunciation: "dzveli" },
-      { georgian: "ცხელი", english: "hot", pronunciation: "tskheli" },
-      { georgian: "ცივი", english: "cold", pronunciation: "tsivi" },
-      { georgian: "მაღალი", english: "tall/high", pronunciation: "maghali" },
-      { georgian: "დაბალი", english: "short/low", pronunciation: "dabali" },
-      { georgian: "მძიმე", english: "heavy", pronunciation: "mdzime" },
-      { georgian: "მსუბუქი", english: "light", pronunciation: "msubuki" },
-      { georgian: "სუფთა", english: "clean", pronunciation: "supta" },
-      { georgian: "ბინძური", english: "dirty", pronunciation: "bindzuri" }
-    ],
-    greetings: [
-      { georgian: "გამარჯობა", english: "hello", pronunciation: "gamarjoba" },
-      { georgian: "ნახვამდის", english: "goodbye", pronunciation: "nakhvamdis" },
-      { georgian: "მადლობა", english: "thank you", pronunciation: "madloba" },
-      { georgian: "გთხოვთ", english: "please", pronunciation: "gtxovt" },
-      { georgian: "კარგად", english: "well", pronunciation: "kargad" },
-      { georgian: "როგორ ხარ", english: "how are you", pronunciation: "rogor khar" },
-      { georgian: "დილა მშვიდობისა", english: "good morning", pronunciation: "dila mshvidobisa" },
-      { georgian: "საღამო მშვიდობისა", english: "good evening", pronunciation: "saghamo mshvidobisa" },
-      { georgian: "ღამე მშვიდობისა", english: "good night", pronunciation: "ghame mshvidobisa" },
-      { georgian: "კეთილი იყოს", english: "welcome", pronunciation: "ketili iqos" },
-      { georgian: "გაიცანით", english: "nice to meet you", pronunciation: "gaitsanit" },
-      { georgian: "კარგად ბრძანდებოდეთ", english: "farewell", pronunciation: "kargad brdzandebodet" },
-      { georgian: "გისურვებთ", english: "I wish you", pronunciation: "gisurvebt" },
-      { georgian: "გილოცავთ", english: "congratulations", pronunciation: "gilotsavt" },
-      { georgian: "წარმატებები", english: "good luck", pronunciation: "tsarmatebebi" }
-    ],
-    numbers: [
-      { georgian: "ერთი", english: "one", pronunciation: "erti" },
-      { georgian: "ორი", english: "two", pronunciation: "ori" },
-      { georgian: "სამი", english: "three", pronunciation: "sami" },
-      { georgian: "ოთხი", english: "four", pronunciation: "otkhi" },
-      { georgian: "ხუთი", english: "five", pronunciation: "khuti" },
-      { georgian: "ექვსი", english: "six", pronunciation: "ekvsi" },
-      { georgian: "შვიდი", english: "seven", pronunciation: "shvidi" },
-      { georgian: "რვა", english: "eight", pronunciation: "rva" },
-      { georgian: "ცხრა", english: "nine", pronunciation: "tskhra" },
-      { georgian: "ათი", english: "ten", pronunciation: "ati" },
-      { georgian: "ოცი", english: "twenty", pronunciation: "otsi" },
-      { georgian: "ოცდაათი", english: "thirty", pronunciation: "otsdaati" },
-      { georgian: "ორმოცი", english: "forty", pronunciation: "ormotsi" },
-      { georgian: "ასი", english: "hundred", pronunciation: "asi" },
-      { georgian: "ათასი", english: "thousand", pronunciation: "atasi" }
-    ],
-    time: [
-      { georgian: "დღეს", english: "today", pronunciation: "dghes" },
-      { georgian: "ხვალ", english: "tomorrow", pronunciation: "khval" },
-      { georgian: "გუშინ", english: "yesterday", pronunciation: "gushin" },
-      { georgian: "დილა", english: "morning", pronunciation: "dila" },
-      { georgian: "საღამო", english: "evening", pronunciation: "saghamo" },
-      { georgian: "ღამე", english: "night", pronunciation: "ghame" },
-      { georgian: "კვირა", english: "week", pronunciation: "kvira" },
-      { georgian: "თვე", english: "month", pronunciation: "tve" },
-      { georgian: "წელი", english: "year", pronunciation: "tseli" },
-      { georgian: "დრო", english: "time", pronunciation: "dro" },
-      { georgian: "საათი", english: "hour", pronunciation: "saati" },
-      { georgian: "წუთი", english: "minute", pronunciation: "tsuti" },
-      { georgian: "წამი", english: "second", pronunciation: "tsami" },
-      { georgian: "სეზონი", english: "season", pronunciation: "sezoni" },
-      { georgian: "შუადღე", english: "noon", pronunciation: "shuadghe" }
-    ],
-    places: [
-      { georgian: "ქალაქი", english: "city", pronunciation: "kalaki" },
-      { georgian: "სოფელი", english: "village", pronunciation: "sopeli" },
-      { georgian: "ქვეყანა", english: "country", pronunciation: "kveqana" },
-      { georgian: "ქუჩა", english: "street", pronunciation: "kucha" },
-      { georgian: "სკოლა", english: "school", pronunciation: "skola" },
-      { georgian: "მაღაზია", english: "shop", pronunciation: "maghazia" },
-      { georgian: "რესტორანი", english: "restaurant", pronunciation: "restorani" },
-      { georgian: "ბანკი", english: "bank", pronunciation: "banki" },
-      { georgian: "პარკი", english: "park", pronunciation: "parki" },
-      { georgian: "ბაზარი", english: "market", pronunciation: "bazari" },
-      { georgian: "უნივერსიტეტი", english: "university", pronunciation: "universiteti" },
-      { georgian: "ბიბლიოთეკა", english: "library", pronunciation: "biblioteka" },
-      { georgian: "მუზეუმი", english: "museum", pronunciation: "muzeumi" },
-      { georgian: "თეატრი", english: "theater", pronunciation: "teatri" },
-      { georgian: "კინოთეატრი", english: "cinema", pronunciation: "kinoteatri" }
     ]
   };
 
   const playAudio = (word: string) => {
     if (isPlaying === word) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
       setIsPlaying(null);
     } else {
-      setIsPlaying(word);
-      // Here you would normally play the audio file
-      setTimeout(() => setIsPlaying(null), 1000);
+      if (audioRef.current) {
+        audioRef.current.src = `https://api.example.com/audio/${word}.mp3`;
+        audioRef.current.play().catch(error => {
+          console.error('Error playing audio:', error);
+        });
+        setIsPlaying(word);
+      }
+    }
+  };
+
+  const playAllAudio = (words: string[]) => {
+    let currentIndex = 0;
+
+    const playNext = () => {
+      if (currentIndex < words.length) {
+        playAudio(words[currentIndex]);
+        currentIndex++;
+      }
+    };
+
+    if (audioRef.current) {
+      audioRef.current.addEventListener('ended', playNext);
+      playNext();
     }
   };
 
   return (
     <div className="pt-16 pb-16">
-      <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50'}`}>
+      <audio 
+        ref={audioRef}
+        onEnded={() => setIsPlaying(null)}
+        onError={() => setIsPlaying(null)}
+      />
+
+      <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-green-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>100 Common Words</span>
+                <span className={theme === 'dark' ? 'text-green-400' : 'text-green-600'}>Common Words</span>
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Master these essential Georgian words to build your vocabulary
@@ -218,7 +210,7 @@ const CommonWordsPage = () => {
                 <Link
                   to="/intermediate/quiz/common-words"
                   className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
-                    theme === 'dark' ? 'bg-blue-700 text-white hover:bg-blue-800' : 'bg-blue-600 text-white hover:bg-blue-700'
+                    theme === 'dark' ? 'bg-green-700 text-white hover:bg-green-800' : 'bg-green-600 text-white hover:bg-green-700'
                   }`}
                 >
                   Take Quiz
@@ -228,7 +220,7 @@ const CommonWordsPage = () => {
             </div>
             <div className="hidden md:block md:w-1/3">
               <div className={`p-6 rounded-lg shadow-xl ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
-                <Book className={`w-12 h-12 mb-4 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
+                <Book className={`w-12 h-12 mb-4 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   Study Tips
                 </h3>
@@ -249,7 +241,7 @@ const CommonWordsPage = () => {
           {Object.entries(commonWords).map(([category, words]) => (
             <div key={category} className="mb-8">
               <button
-                onClick={() => setSelectedCategory(selectedCategory === category ? null : category)}
+                onClick={() => setExpandedType(expandedType === category ? null : category)}
                 className={`w-full text-left p-6 rounded-lg transition-colors ${
                   theme === 'dark' 
                     ? 'bg-gray-800 hover:bg-gray-750' 
@@ -276,7 +268,7 @@ const CommonWordsPage = () => {
                 </div>
               </button>
 
-              {selectedCategory === category && (
+              {expandedType === category && (
                 <div className={`mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
                 }`}>
@@ -295,7 +287,7 @@ const CommonWordsPage = () => {
                           onClick={() => playAudio(word.georgian)}
                           className={`p-2 rounded-full transition-colors ${
                             isPlaying === word.georgian
-                              ? (theme === 'dark' ? 'bg-blue-600' : 'bg-blue-500')
+                              ? (theme === 'dark' ? 'bg-green-600' : 'bg-green-500')
                               : (theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300')
                           }`}
                         >

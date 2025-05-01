@@ -13,6 +13,9 @@ import AlphabetPage from './pages/lessons/AlphabetPage';
 import VocabularyPage from './pages/lessons/VocabularyPage';
 import GrammarPage from './pages/lessons/GrammarPage';
 import DailyConversationsPage from './pages/lessons/DailyConversationsPage';
+import CommonWordsPage from './pages/lessons/CommonWordsPage';
+import ReadingPracticePage from './pages/lessons/ReadingPracticePage';
+import WritingExercisesPage from './pages/lessons/WritingExercisesPage';
 import QuizPage from './pages/quiz/QuizPage';
 import ChatPage from './pages/ChatPage';
 import ProfileSettingsPage from './pages/settings/ProfileSettingsPage';
@@ -65,6 +68,21 @@ function App() {
               <Route path="intermediate/conversations" element={
                 <ProtectedRoute>
                   <DailyConversationsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/common-words" element={
+                <ProtectedRoute>
+                  <CommonWordsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/reading" element={
+                <ProtectedRoute>
+                  <ReadingPracticePage />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/writing" element={
+                <ProtectedRoute>
+                  <WritingExercisesPage />
                 </ProtectedRoute>
               } />
               <Route path="intermediate/quiz/:topic" element={

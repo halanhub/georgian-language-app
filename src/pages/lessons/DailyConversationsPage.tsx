@@ -1,28 +1,61 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Book, MessageSquare, Play, Volume2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Book, Brain, Check, ChevronDown, ChevronUp, Headphones, MessageSquare, Pencil, Play, Volume2, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
-
-interface Conversation {
-  id: string;
-  title: string;
-  description: string;
-  dialogue: {
-    speaker: string;
-    georgian: string;
-    pronunciation: string;
-    english: string;
-    audio?: string;
-  }[];
-}
 
 const DailyConversationsPage: React.FC = () => {
   const { theme } = useTheme();
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [expandedType, setExpandedType] = useState<string | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<string>('');
+  const [showExplanation, setShowExplanation] = useState(false);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const contentRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  const conversations: Conversation[] = [
+  const studyTips = {
+    reading: [
+      'Practice reading Georgian texts daily, even if you don\'t understand everything',
+      'Use context clues to guess word meanings',
+      'Create flashcards with Georgian words and their translations',
+      'Read Georgian news websites or children\'s books',
+      'Highlight new words and create a personal dictionary',
+      'Use spaced repetition techniques for vocabulary review',
+      'Practice word recognition with different fonts and handwriting',
+      'Join online Georgian reading groups'
+    ],
+    listening: [
+      'Listen to Georgian podcasts and radio shows',
+      'Watch Georgian movies with subtitles',
+      'Practice with native speaker recordings',
+      'Focus on intonation and pronunciation patterns',
+      'Record yourself repeating words and phrases',
+      'Use language learning apps with audio features',
+      'Listen to Georgian music and try to sing along',
+      'Participate in online language exchange sessions'
+    ],
+    speaking: [
+      'Practice speaking with native Georgian speakers',
+      'Record yourself speaking and analyze your pronunciation',
+      'Use language exchange apps to find conversation partners',
+      'Speak Georgian daily, even if just to yourself',
+      'Focus on proper stress and intonation',
+      'Join Georgian language meetups or online groups',
+      'Practice common phrases and expressions',
+      'Use role-play scenarios to improve fluency'
+    ],
+    writing: [
+      'Keep a daily journal in Georgian',
+      'Practice writing common phrases and sentences',
+      'Use Georgian keyboard layouts for authentic writing',
+      'Write emails or messages to language exchange partners',
+      'Study proper Georgian punctuation rules',
+      'Practice writing both printed and cursive forms',
+      'Create story summaries in Georgian',
+      'Participate in online Georgian writing workshops'
+    ]
+  };
+
+  const conversations = [
     {
       id: 'greetings',
       title: 'Basic Greetings',
@@ -63,6 +96,36 @@ const DailyConversationsPage: React.FC = () => {
           georgian: 'მე მქვია ნინო. სასიამოვნოა.',
           pronunciation: 'me mkvia nino. sasiamovnoa.',
           english: 'My name is Nino. Nice to meet you.'
+        },
+        {
+          speaker: 'A',
+          georgian: 'საიდან ხარ?',
+          pronunciation: 'saidan khar?',
+          english: 'Where are you from?'
+        },
+        {
+          speaker: 'B',
+          georgian: 'მე ვარ თბილისიდან. შენ?',
+          pronunciation: 'me var tbilisidan. shen?',
+          english: 'I\'m from Tbilisi. You?'
+        },
+        {
+          speaker: 'A',
+          georgian: 'მე ბათუმიდან ვარ.',
+          pronunciation: 'me batumidan var.',
+          english: 'I\'m from Batumi.'
+        },
+        {
+          speaker: 'B',
+          georgian: 'რამდენი წლის ხარ?',
+          pronunciation: 'ramdeni tslis khar?',
+          english: 'How old are you?'
+        },
+        {
+          speaker: 'A',
+          georgian: 'ოცდახუთი წლის ვარ.',
+          pronunciation: 'otsdakhuti tslis var.',
+          english: 'I\'m twenty-five years old.'
         }
       ]
     },
@@ -97,71 +160,39 @@ const DailyConversationsPage: React.FC = () => {
         },
         {
           speaker: 'Customer',
-          georgian: 'არა, მადლობა.',
-          pronunciation: 'ara, madloba.',
-          english: 'No, thank you.'
-        }
-      ]
-    },
-    {
-      id: 'directions',
-      title: 'Asking for Directions',
-      description: 'Learn how to ask for and give directions',
-      dialogue: [
-        {
-          speaker: 'Tourist',
-          georgian: 'უკაცრავად, მუზეუმი სად არის?',
-          pronunciation: 'ukatsravad, muzeumi sad aris?',
-          english: 'Excuse me, where is the museum?'
+          georgian: 'დიახ, ერთი კროასანი.',
+          pronunciation: 'diakh, erti kroasani.',
+          english: 'Yes, one croissant.'
         },
         {
-          speaker: 'Local',
-          georgian: 'პირდაპირ იარეთ და მარცხნივ შეუხვიეთ.',
-          pronunciation: 'pirdapir iaret da martsxniv sheukhviet.',
-          english: 'Go straight and turn left.'
-        },
-        {
-          speaker: 'Tourist',
-          georgian: 'შორს არის?',
-          pronunciation: 'shors aris?',
-          english: 'Is it far?'
-        },
-        {
-          speaker: 'Local',
-          georgian: 'არა, ხუთი წუთის სავალზეა.',
-          pronunciation: 'ara, khuti tsutis savalzea.',
-          english: 'No, it\'s a five-minute walk.'
-        }
-      ]
-    },
-    {
-      id: 'shopping',
-      title: 'Shopping',
-      description: 'Common phrases for shopping',
-      dialogue: [
-        {
-          speaker: 'Customer',
-          georgian: 'ეს რა ღირს?',
-          pronunciation: 'es ra ghirs?',
-          english: 'How much is this?'
-        },
-        {
-          speaker: 'Seller',
-          georgian: 'ოცი ლარი.',
-          pronunciation: 'otsi lari.',
-          english: 'Twenty lari.'
+          speaker: 'Barista',
+          georgian: 'რა სახის კროასანი გნებავთ? გვაქვს შოკოლადის და ნუშის.',
+          pronunciation: 'ra sakhis kroasani gnebavt? gvaqvs shokoladis da nushis.',
+          english: 'What type of croissant would you like? We have chocolate and almond.'
         },
         {
           speaker: 'Customer',
-          georgian: 'ძალიან ძვირია.',
-          pronunciation: 'dzalian dzviria.',
-          english: 'It\'s very expensive.'
+          georgian: 'შოკოლადის, თუ შეიძლება.',
+          pronunciation: 'shokoladis, tu sheidzleba.',
+          english: 'Chocolate, please.'
         },
         {
-          speaker: 'Seller',
-          georgian: 'თხუთმეტ ლარად მოგცემთ.',
-          pronunciation: 'tkhutmet larad mogtsemt.',
-          english: 'I\'ll give it to you for fifteen lari.'
+          speaker: 'Barista',
+          georgian: 'აქ მიირთმევთ თუ წაიღებთ?',
+          pronunciation: 'aq miirtmevt tu tsaighebt?',
+          english: 'For here or to go?'
+        },
+        {
+          speaker: 'Customer',
+          georgian: 'აქ მივირთმევ.',
+          pronunciation: 'aq mivirtmev.',
+          english: 'I\'ll have it here.'
+        },
+        {
+          speaker: 'Barista',
+          georgian: 'თორმეტი ლარი გამოვიდა.',
+          pronunciation: 'tormeti lari gamovida.',
+          english: 'That\'ll be twelve lari.'
         }
       ]
     },
@@ -184,15 +215,118 @@ const DailyConversationsPage: React.FC = () => {
         },
         {
           speaker: 'Waiter',
-          georgian: 'დიახ, ინებეთ.',
-          pronunciation: 'diakh, inebet.',
-          english: 'Yes, here you are.'
+          georgian: 'დიახ, ინებეთ. დღის სპეციალური კერძებიც გვაქვს.',
+          pronunciation: 'diakh, inebet. dghis spetsialuri kerdzebits gvaqvs.',
+          english: 'Yes, here you are. We also have daily specials.'
         },
         {
           speaker: 'Customer',
-          georgian: 'ხაჭაპური და ხინკალი მინდა.',
-          pronunciation: 'khachapuri da khinkali minda.',
-          english: 'I would like khachapuri and khinkali.'
+          georgian: 'რა არის დღის სპეციალური?',
+          pronunciation: 'ra aris dghis spetsialuri?',
+          english: 'What are the daily specials?'
+        },
+        {
+          speaker: 'Waiter',
+          georgian: 'დღეს გვაქვს ჩაქაფული და აჯაფსანდალი.',
+          pronunciation: 'dghes gvaqvs chakapuli da ajapsandali.',
+          english: 'Today we have Chakapuli and Ajapsandali.'
+        },
+        {
+          speaker: 'Customer',
+          georgian: 'ჩაქაფული რა არის?',
+          pronunciation: 'chakapuli ra aris?',
+          english: 'What is Chakapuli?'
+        },
+        {
+          speaker: 'Waiter',
+          georgian: 'ეს არის ხორცის კერძი მწვანილით და ტარხუნით.',
+          pronunciation: 'es aris khortsis kerdzi mtsvanilit da tarkhunit.',
+          english: 'It\'s a meat dish with herbs and tarragon.'
+        },
+        {
+          speaker: 'Customer',
+          georgian: 'კარგი, ჩაქაფულს ვცდი და ერთი ხაჭაპურიც.',
+          pronunciation: 'kargi, chakapuls vtsdi da erti khachapurits.',
+          english: 'Okay, I\'ll try the Chakapuli and one Khachapuri.'
+        },
+        {
+          speaker: 'Waiter',
+          georgian: 'სასმელი რა მოგართვათ?',
+          pronunciation: 'sasmeli ra mogartva?',
+          english: 'What would you like to drink?'
+        },
+        {
+          speaker: 'Customer',
+          georgian: 'ერთი ბოთლი წითელი ღვინო.',
+          pronunciation: 'erti botli tsiteli ghvino.',
+          english: 'A bottle of red wine.'
+        }
+      ]
+    },
+    {
+      id: 'shopping',
+      title: 'Shopping',
+      description: 'Common phrases for shopping',
+      dialogue: [
+        {
+          speaker: 'Customer',
+          georgian: 'გამარჯობა, ეს პერანგი რა ზომებში გაქვთ?',
+          pronunciation: 'gamarjoba, es perangi ra zomebshi gaqvt?',
+          english: 'Hello, what sizes do you have this shirt in?'
+        },
+        {
+          speaker: 'Seller',
+          georgian: 'გვაქვს S, M და L ზომები.',
+          pronunciation: 'gvaqvs S, M da L zomebi.',
+          english: 'We have sizes S, M, and L.'
+        },
+        {
+          speaker: 'Customer',
+          georgian: 'M ზომა მინდა მოვზომო.',
+          pronunciation: 'M zoma minda movzomo.',
+          english: 'I\'d like to try on the M size.'
+        },
+        {
+          speaker: 'Seller',
+          georgian: 'გასაზომი ოთახი იქით არის.',
+          pronunciation: 'gasazomi otakhi iqit aris.',
+          english: 'The fitting room is over there.'
+        },
+        {
+          speaker: 'Customer',
+          georgian: 'მადლობა. ეს რა ღირს?',
+          pronunciation: 'madloba. es ra ghirs?',
+          english: 'Thank you. How much is this?'
+        },
+        {
+          speaker: 'Seller',
+          georgian: 'სამოცი ლარი.',
+          pronunciation: 'samotsi lari.',
+          english: 'Sixty lari.'
+        },
+        {
+          speaker: 'Customer',
+          georgian: 'ფასდაკლება ხომ არ არის?',
+          pronunciation: 'pasdakleba khom ar aris?',
+          english: 'Is there a discount?'
+        },
+        {
+          speaker: 'Seller',
+          georgian: 'დიახ, ოცი პროცენტი.',
+          pronunciation: 'diakh, otsi protsenti.',
+          english: 'Yes, twenty percent.'
+        },
+        {
+          speaker: 'Customer',
+          georgian: 'კარგი, ავიღებ. ბარათით შეიძლება?',
+          pronunciation: 'kargi, avigheb. baratit sheidzleba?',
+          english: 'Okay, I\'ll take it. Can I pay by card?'
+        },
+        {
+          speaker: 'Seller',
+          georgian: 'რა თქმა უნდა. აქ მოაწერეთ, გთხოვთ.',
+          pronunciation: 'ra tqma unda. aq moatseret, gtxovt.',
+          english: 'Of course. Please sign here.'
         }
       ]
     },
@@ -203,27 +337,51 @@ const DailyConversationsPage: React.FC = () => {
       dialogue: [
         {
           speaker: 'Passenger',
-          georgian: 'უკაცრავად, ავტობუსი ნომერი 1 აქედან გადის?',
-          pronunciation: 'ukatsravad, avtobusi nomeri erti akedan gadis?',
-          english: 'Excuse me, does bus number 1 leave from here?'
+          georgian: 'გამარჯობა, მეტრომდე როგორ მივიდე?',
+          pronunciation: 'gamarjoba, metromde rogor mivide?',
+          english: 'Hello, how do I get to the metro?'
         },
         {
           speaker: 'Local',
-          georgian: 'დიახ, ყოველ 15 წუთში ერთხელ.',
-          pronunciation: 'diakh, qovel txutmet tsutshi ertkhel.',
-          english: 'Yes, every 15 minutes.'
+          georgian: 'პირდაპირ იარეთ და მარცხნივ შეუხვიეთ.',
+          pronunciation: 'pirdapir iaret da martsxniv sheukhviet.',
+          english: 'Go straight and turn left.'
         },
         {
           speaker: 'Passenger',
-          georgian: 'რამდენი გაჩერებაა ცენტრამდე?',
-          pronunciation: 'ramdeni gacherebaa tsentramde?',
-          english: 'How many stops until the center?'
+          georgian: 'რამდენი გაჩერებაა სადგურამდე?',
+          pronunciation: 'ramdeni gacherebaa sadguramde?',
+          english: 'How many stops until the station?'
         },
         {
           speaker: 'Local',
-          georgian: 'ხუთი გაჩერება. ბილეთი 1 ლარი ღირს.',
-          pronunciation: 'khuti gachereba. bileti erti lari ghirs.',
-          english: 'Five stops. The ticket costs 1 lari.'
+          georgian: 'სამი გაჩერება. ბილეთი ერთი ლარი ღირს.',
+          pronunciation: 'sami gachereba. bileti erti lari ghirs.',
+          english: 'Three stops. The ticket costs one lari.'
+        },
+        {
+          speaker: 'Passenger',
+          georgian: 'სად შეიძლება ბილეთის ყიდვა?',
+          pronunciation: 'sad sheidzleba biletis qidva?',
+          english: 'Where can I buy a ticket?'
+        },
+        {
+          speaker: 'Local',
+          georgian: 'სალაროში ან ავტომატში.',
+          pronunciation: 'salaroshi an avtomatshi.',
+          english: 'At the ticket office or in the machine.'
+        },
+        {
+          speaker: 'Passenger',
+          georgian: 'ბოლო მატარებელი როდის არის?',
+          pronunciation: 'bolo matarebeli rodis aris?',
+          english: 'When is the last train?'
+        },
+        {
+          speaker: 'Local',
+          georgian: 'ღამის თორმეტ საათზე.',
+          pronunciation: 'ghamis tormet saatze.',
+          english: 'At midnight.'
         }
       ]
     },
@@ -252,170 +410,39 @@ const DailyConversationsPage: React.FC = () => {
         },
         {
           speaker: 'Patient',
-          georgian: 'გუშინიდან.',
-          pronunciation: 'gushinidan.',
-          english: 'Since yesterday.'
+          georgian: 'გუშინიდან. ყელიც მტკივა.',
+          pronunciation: 'gushinidan. qelits mtkiva.',
+          english: 'Since yesterday. My throat hurts too.'
         },
         {
           speaker: 'Doctor',
-          georgian: 'რეცეპტს გამოგიწერთ.',
-          pronunciation: 'retsepts gamogitsert.',
-          english: 'I\'ll write you a prescription.'
-        }
-      ]
-    },
-    {
-      id: 'weather',
-      title: 'Discussing Weather',
-      description: 'Talk about weather conditions',
-      dialogue: [
-        {
-          speaker: 'A',
-          georgian: 'დღეს რა ამინდია?',
-          pronunciation: 'dghes ra amindia?',
-          english: 'What\'s the weather like today?'
+          georgian: 'ტემპერატურა გაიზომეთ?',
+          pronunciation: 'temperatura gaizome?',
+          english: 'Did you take your temperature?'
         },
         {
-          speaker: 'B',
-          georgian: 'მზიანია, მაგრამ ცივა.',
-          pronunciation: 'mziania, magram tsiva.',
-          english: 'It\'s sunny but cold.'
+          speaker: 'Patient',
+          georgian: 'დიახ, 38.5 მქონდა.',
+          pronunciation: 'diakh, otsdatvrametnakhevari mqonda.',
+          english: 'Yes, it was 38.5.'
         },
         {
-          speaker: 'A',
-          georgian: 'ხვალ წვიმა იქნება?',
-          pronunciation: 'khval tsvima ikneba?',
-          english: 'Will it rain tomorrow?'
+          speaker: 'Doctor',
+          georgian: 'პირი გააღეთ და ენა გამოყავით.',
+          pronunciation: 'piri gaaghet da ena gamoqavit.',
+          english: 'Open your mouth and stick out your tongue.'
         },
         {
-          speaker: 'B',
-          georgian: 'არა, მზიანი დღე იქნება.',
-          pronunciation: 'ara, mziani dghe ikneba.',
-          english: 'No, it will be a sunny day.'
-        }
-      ]
-    },
-    {
-      id: 'phone',
-      title: 'Phone Conversations',
-      description: 'Common phrases for phone calls',
-      dialogue: [
-        {
-          speaker: 'Caller',
-          georgian: 'გამარჯობა, გიორგი სახლშია?',
-          pronunciation: 'gamarjoba, giorgi sakhlshia?',
-          english: 'Hello, is Giorgi home?'
+          speaker: 'Patient',
+          georgian: 'ალერგია ხომ არ არის?',
+          pronunciation: 'alergia khom ar aris?',
+          english: 'Could it be an allergy?'
         },
         {
-          speaker: 'Receiver',
-          georgian: 'არა, სამსახურშია. ვინ კითხულობს?',
-          pronunciation: 'ara, samsakhurishia. vin kitkhuobs?',
-          english: 'No, he\'s at work. Who\'s asking?'
-        },
-        {
-          speaker: 'Caller',
-          georgian: 'მე ვარ დათო. როდის დაბრუნდება?',
-          pronunciation: 'me var dato. rodis dabrundeba?',
-          english: 'This is Dato. When will he return?'
-        },
-        {
-          speaker: 'Receiver',
-          georgian: 'საღამოს შვიდ საათზე.',
-          pronunciation: 'saghamos shvid saatze.',
-          english: 'At seven in the evening.'
-        }
-      ]
-    },
-    {
-      id: 'plans',
-      title: 'Making Plans',
-      description: 'Arrange meetings and activities',
-      dialogue: [
-        {
-          speaker: 'A',
-          georgian: 'შაბათს რას აკეთებ?',
-          pronunciation: 'shabats ras aketeb?',
-          english: 'What are you doing on Saturday?'
-        },
-        {
-          speaker: 'B',
-          georgian: 'არაფერს განსაკუთრებულს. რატომ?',
-          pronunciation: 'arapers gansakutrebuls. ratom?',
-          english: 'Nothing special. Why?'
-        },
-        {
-          speaker: 'A',
-          georgian: 'კაფეში წავიდეთ?',
-          pronunciation: 'kapeshi tsavidet?',
-          english: 'Shall we go to a café?'
-        },
-        {
-          speaker: 'B',
-          georgian: 'კარგი აზრია! რომელ საათზე?',
-          pronunciation: 'kargi azria! romel saatze?',
-          english: 'Good idea! What time?'
-        }
-      ]
-    },
-    {
-      id: 'work',
-      title: 'At Work',
-      description: 'Professional conversations',
-      dialogue: [
-        {
-          speaker: 'Employee',
-          georgian: 'შეხვედრა როდის იწყება?',
-          pronunciation: 'shekhvedra rodis itsqeba?',
-          english: 'When does the meeting start?'
-        },
-        {
-          speaker: 'Colleague',
-          georgian: 'ათ საათზე, საკონფერენციო ოთახში.',
-          pronunciation: 'at saatze, sakonperentsio otakhshi.',
-          english: 'At 10 o\'clock, in the conference room.'
-        },
-        {
-          speaker: 'Employee',
-          georgian: 'პრეზენტაცია მზად არის?',
-          pronunciation: 'prezentatsia mzad aris?',
-          english: 'Is the presentation ready?'
-        },
-        {
-          speaker: 'Colleague',
-          georgian: 'დიახ, ყველაფერი მზადაა.',
-          pronunciation: 'diakh, qvelaperi mzadaa.',
-          english: 'Yes, everything is ready.'
-        }
-      ]
-    },
-    {
-      id: 'family',
-      title: 'Family Gatherings',
-      description: 'Conversations with family members',
-      dialogue: [
-        {
-          speaker: 'Parent',
-          georgian: 'სად არიან ბავშვები?',
-          pronunciation: 'sad arian bavshvebi?',
-          english: 'Where are the children?'
-        },
-        {
-          speaker: 'Relative',
-          georgian: 'ეზოში თამაშობენ.',
-          pronunciation: 'ezoshi tamashoben.',
-          english: 'They\'re playing in the yard.'
-        },
-        {
-          speaker: 'Parent',
-          georgian: 'სადილი მზად არის?',
-          pronunciation: 'sadili mzad aris?',
-          english: 'Is lunch ready?'
-        },
-        {
-          speaker: 'Relative',
-          georgian: 'კი, შეგვიძლია დავსხდეთ.',
-          pronunciation: 'ki, shegvidzlia davskhdet.',
-          english: 'Yes, we can sit down.'
+          speaker: 'Doctor',
+          georgian: 'არა, ვირუსული ინფექციაა.',
+          pronunciation: 'ara, virusuli infektsiaa.',
+          english: 'No, it\'s a viral infection.'
         }
       ]
     },
@@ -426,60 +453,280 @@ const DailyConversationsPage: React.FC = () => {
       dialogue: [
         {
           speaker: 'Caller',
-          georgian: 'გთხოვთ, სასწრაფოდ! უბედური შემთხვევაა!',
-          pronunciation: 'gtxovt, sastsrapod! ubeduri shemtkhvevaa!',
-          english: 'Please, urgent! There\'s been an accident!'
+          georgian: 'გამარჯობა! სასწრაფო დახმარება მჭირდება!',
+          pronunciation: 'gamarjoba! sastsrapo dakhmreba mchirdeba!',
+          english: 'Hello! I need emergency help!'
         },
         {
           speaker: 'Operator',
-          georgian: 'სად ხართ? მისამართი მითხარით.',
-          pronunciation: 'sad khart? misamarti mitkharit.',
-          english: 'Where are you? Tell me the address.'
+          georgian: 'რა მოხდა? სად ხართ?',
+          pronunciation: 'ra mokhda? sad khart?',
+          english: 'What happened? Where are you?'
         },
         {
           speaker: 'Caller',
-          georgian: 'რუსთაველის გამზირი 10.',
-          pronunciation: 'rustaveli gamziri ati.',
-          english: '10 Rustaveli Avenue.'
+          georgian: 'ავარია მოხდა რუსთაველის გამზირზე.',
+          pronunciation: 'avaria mokhda rustaveli gamzirze.',
+          english: 'There\'s been an accident on Rustaveli Avenue.'
         },
         {
           speaker: 'Operator',
-          georgian: 'სასწრაფო მოდის. ხაზზე დარჩით.',
-          pronunciation: 'sastsrapo modis. khazze darchit.',
-          english: 'An ambulance is coming. Stay on the line.'
+          georgian: 'დაშავებულები არიან?',
+          pronunciation: 'dashavebulebi arian?',
+          english: 'Are there any injured people?'
+        },
+        {
+          speaker: 'Caller',
+          georgian: 'დიახ, ერთი ადამიანი.',
+          pronunciation: 'diakh, erti adamiani.',
+          english: 'Yes, one person.'
+        },
+        {
+          speaker: 'Operator',
+          georgian: 'გონზე არის?',
+          pronunciation: 'gonze aris?',
+          english: 'Are they conscious?'
+        },
+        {
+          speaker: 'Caller',
+          georgian: 'დიახ, მაგრამ ფეხი აქვს დაზიანებული.',
+          pronunciation: 'diakh, magram fekhi akvs dazianebuli.',
+          english: 'Yes, but their leg is injured.'
+        },
+        {
+          speaker: 'Operator',
+          georgian: 'სისხლდენა არის?',
+          pronunciation: 'siskhldena aris?',
+          english: 'Is there bleeding?'
+        },
+        {
+          speaker: 'Caller',
+          georgian: 'არა, მაგრამ ძლიერი ტკივილი აქვს.',
+          pronunciation: 'ara, magram dzlieri tkivili akvs.',
+          english: 'No, but they\'re in severe pain.'
+        }
+      ]
+    },
+    {
+      id: 'hotel',
+      title: 'At the Hotel',
+      description: 'Checking in and requesting services',
+      dialogue: [
+        {
+          speaker: 'Guest',
+          georgian: 'გამარჯობა, ჯავშანი მაქვს.',
+          pronunciation: 'gamarjoba, javshani makvs.',
+          english: 'Hello, I have a reservation.'
+        },
+        {
+          speaker: 'Receptionist',
+          georgian: 'თქვენი გვარი, გთხოვთ?',
+          pronunciation: 'tkveni gvari, gtxovt?',
+          english: 'Your last name, please?'
+        },
+        {
+          speaker: 'Guest',
+          georgian: 'სმითი. ორი ღამით.',
+          pronunciation: 'smiti. ori ghamit.',
+          english: 'Smith. For two nights.'
+        },
+        {
+          speaker: 'Receptionist',
+          georgian: 'დიახ, ორადგილიანი ოთახი საუზმით.',
+          pronunciation: 'diakh, oradgiliani otakhi sauzmit.',
+          english: 'Yes, a double room with breakfast.'
+        },
+        {
+          speaker: 'Guest',
+          georgian: 'საუზმე რომელ საათზეა?',
+          pronunciation: 'sauzme romel saatzea?',
+          english: 'What time is breakfast?'
+        },
+        {
+          speaker: 'Receptionist',
+          georgian: 'შვიდიდან ათ საათამდე.',
+          pronunciation: 'shvididan at saatamde.',
+          english: 'From seven to ten o\'clock.'
+        },
+        {
+          speaker: 'Guest',
+          georgian: 'Wi-Fi-ის პაროლი?',
+          pronunciation: 'vaifais paroli?',
+          english: 'What\'s the Wi-Fi password?'
+        },
+        {
+          speaker: 'Receptionist',
+          georgian: 'აი, ბარათზე წერია.',
+          pronunciation: 'ai, baratze tseria.',
+          english: 'Here, it\'s written on the card.'
+        }
+      ]
+    },
+    {
+      id: 'business',
+      title: 'Business Meeting',
+      description: 'Professional conversations and meetings',
+      dialogue: [
+        {
+          speaker: 'Host',
+          georgian: 'მობრძანდით, შეხვედრა ახლა დაიწყება.',
+          pronunciation: 'mobrdzandit, shekhvedra akhla daitsqeba.',
+          english: 'Please come in, the meeting will start now.'
+        },
+        {
+          speaker: 'Participant',
+          georgian: 'დღის წესრიგი უკვე მზად არის?',
+          pronunciation: 'dghis tsesrigi ukve mzad aris?',
+          english: 'Is the agenda ready?'
+        },
+        {
+          speaker: 'Host',
+          georgian: 'დიახ, ყველას გამოვუგზავნე ელ-ფოსტით.',
+          pronunciation: 'diakh, qvelas gamovugzavne el-postit.',
+          english: 'Yes, I sent it to everyone by email.'
+        },
+        {
+          speaker: 'Participant',
+          georgian: 'პრეზენტაცია რამდენ ხანს გაგრძელდება?',
+          pronunciation: 'prezentatsia ramden khans gagrdzeldeba?',
+          english: 'How long will the presentation last?'
+        },
+        {
+          speaker: 'Host',
+          georgian: 'დაახლოებით ოცი წუთი.',
+          pronunciation: 'daakhloebith otsi tsuti.',
+          english: 'Approximately twenty minutes.'
+        },
+        {
+          speaker: 'Participant',
+          georgian: 'შეკითხვების დრო იქნება?',
+          pronunciation: 'shekitkhvebis dro ikneba?',
+          english: 'Will there be time for questions?'
+        },
+        {
+          speaker: 'Host',
+          georgian: 'რა თქმა უნდა, პრეზენტაციის შემდეგ.',
+          pronunciation: 'ra tkma unda, prezentatsiis shemdeg.',
+          english: 'Of course, after the presentation.'
+        }
+      ]
+    },
+    {
+      id: 'social',
+      title: 'Social Events',
+      description: 'Conversations at parties and gatherings',
+      dialogue: [
+        {
+          speaker: 'Host',
+          georgian: 'კეთილი იყოს თქვენი მობრძანება!',
+          pronunciation: 'ketili iqos tkveni mobrdzaneba!',
+          english: 'Welcome!'
+        },
+        {
+          speaker: 'Guest',
+          georgian: 'გმადლობთ მოწვევისთვის.',
+          pronunciation: 'gmadlobt motsvevistvis.',
+          english: 'Thank you for the invitation.'
+        },
+        {
+          speaker: 'Host',
+          georgian: 'რამე დალიეთ? ღვინო გნებავთ?',
+          pronunciation: 'rame daliet? ghvino gnebavt?',
+          english: 'Would you like something to drink? Some wine?'
+        },
+        {
+          speaker: 'Guest',
+          georgian: 'სიამოვნებით. წითელი თუ შეიძლება.',
+          pronunciation: 'siamovnebit. tsiteli tu sheidzleba.',
+          english: 'With pleasure. Red, if possible.'
+        },
+        {
+          speaker: 'Host',
+          georgian: 'აქ დაბრძანდით, გთხოვთ.',
+          pronunciation: 'ak dabrdzandit, gtxovt.',
+          english: 'Please, sit here.'
+        },
+        {
+          speaker: 'Guest',
+          georgian: 'რა ლამაზი სახლი გაქვთ!',
+          pronunciation: 'ra lamazi sakhli gaqvt!',
+          english: 'What a beautiful house you have!'
+        },
+        {
+          speaker: 'Host',
+          georgian: 'დიდი მადლობა. სუფრასთან მობრძანდით.',
+          pronunciation: 'didi madloba. suprastan mobrdzandit.',
+          english: 'Thank you very much. Please come to the table.'
         }
       ]
     }
   ];
 
-  const playAudio = (dialogueId: string) => {
-    if (isPlaying === dialogueId) {
-      if (audioRef.current) {
+  const toggleType = (typeId: string) => {
+    if (expandedType === typeId) {
+      setExpandedType(null);
+    } else {
+      setExpandedType(typeId);
+      setTimeout(() => {
+        if (contentRefs.current[typeId]) {
+          const headerOffset = 100;
+          const elementPosition = contentRefs.current[typeId]?.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    }
+  };
+
+  const playAudio = (word: string) => {
+    if (audioRef.current) {
+      if (isPlaying === word) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
-      }
-      setIsPlaying(null);
-    } else {
-      if (audioRef.current) {
-        audioRef.current.src = `https://api.example.com/audio/${dialogueId}.mp3`;
+        setIsPlaying(null);
+      } else {
+        audioRef.current.src = `https://api.example.com/audio/${word}.mp3`;
         audioRef.current.play().catch(error => {
           console.error('Error playing audio:', error);
         });
-        setIsPlaying(dialogueId);
+        setIsPlaying(word);
       }
+    }
+  };
+
+  const playAllAudio = (words: string[]) => {
+    let currentIndex = 0;
+
+    const playNext = () => {
+      if (currentIndex < words.length) {
+        playAudio(words[currentIndex]);
+        currentIndex++;
+      }
+    };
+
+    if (audioRef.current) {
+      audioRef.current.addEventListener('ended', playNext);
+      playNext();
     }
   };
 
   return (
     <div className="pt-16 pb-16">
       <audio 
-        ref={audioRef}
+        ref={audioRef} 
         onEnded={() => setIsPlaying(null)}
-        onError={() => setIsPlaying(null)}
+        onError={() => {
+          console.log('Audio file not found or error playing audio');
+          setIsPlaying(null);
+        }}
       />
-
+      
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-purple-50'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm: px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -536,11 +783,10 @@ const DailyConversationsPage: React.FC = () => {
               <div
                 key={conversation.id}
                 className={`rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg overflow-hidden`}
+                ref={el => contentRefs.current[conversation.id] = el}
               >
                 <button
-                  onClick={() => setSelectedConversation(
-                    selectedConversation === conversation.id ? null : conversation.id
-                  )}
+                  onClick={() => toggleType(conversation.id)}
                   className={`w-full p-6 text-left transition-colors ${
                     theme === 'dark' ? 'hover:bg-gray-750' : 'hover:bg-gray-50'
                   }`}
@@ -581,7 +827,7 @@ const DailyConversationsPage: React.FC = () => {
                   </div>
                 </button>
 
-                {selectedConversation === conversation.id && (
+                {expandedType === conversation.id && (
                   <div className="p-6 border-t border-gray-200 dark:border-gray-700">
                     <div className="space-y-4">
                       {conversation.dialogue.map((line, index) => (
