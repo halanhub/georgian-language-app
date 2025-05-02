@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { Eye, EyeOff, LogIn, AlertCircle, Mail } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { supabase } from '../../lib/supabase';
 
 type LocationState = {
   from?: {
@@ -16,8 +17,12 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isResendingEmail, setIsResendingEmail] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false);
   
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,23 +30,143 @@ const LoginPage: React.FC = () => {
   const locationState = location.state as LocationState;
   const from = locationState?.from?.pathname || '/';
 
+  useEffect(() => {
+    if (user) {
+      navigate(from, { replace: true });
+    }
+  }, [user, navigate, from]);
+
+  const handleResendConfirmation = async () => {
+    setIsResendingEmail(true);
+    setResendSuccess(false);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+      });
+      
+      if (error) throw error;
+      
+      setResendSuccess(true);
+      setError('');
+    } catch (err: any) {
+      setError('Failed to resend confirmation email. Please try again later.');
+    } finally {
+      setIsResendingEmail(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!email) {
+      setError('Please enter your email address to reset your password.');
+      return;
+    }
+
+    setIsResettingPassword(true);
+    setResetPasswordSuccess(false);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) throw error;
+
+      setResetPasswordSuccess(true);
+      setError('');
+    } catch (err: any) {
+      setError('Failed to send password reset email. Please try again later.');
+    } finally {
+      setIsResettingPassword(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
+    setResendSuccess(false);
+    setResetPasswordSuccess(false);
     
     try {
-      await login(email, password);
-      // Navigate to the page they tried to visit or home
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          throw new Error('The email or password you entered is incorrect. Please try again.');
+        } else if (error.message.includes('Email not confirmed')) {
+          throw new Error('Please confirm your email address before logging in.');
+        } else {
+          throw error;
+        }
+      }
+
+      // If successful, navigate to the intended page
       navigate(from, { replace: true });
-    } catch (err) {
-      setError('Failed to log in. Please check your credentials.');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(err.message);
       setIsLoading(false);
     }
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const renderErrorMessage = () => {
+    if (!error && !resendSuccess && !resetPasswordSuccess) return null;
+
+    const isEmailNotConfirmed = error.includes('confirm your email');
+    const messageType = error ? 'error' : 'success';
+    const message = resetPasswordSuccess 
+      ? 'Password reset email sent! Please check your inbox.'
+      : resendSuccess 
+        ? 'Confirmation email sent! Please check your inbox.'
+        : error;
+
+    return (
+      <div className={`p-4 rounded-md ${
+        messageType === 'error'
+          ? theme === 'dark' ? 'bg-red-900/50' : 'bg-red-50'
+          : theme === 'dark' ? 'bg-green-900/50' : 'bg-green-50'
+      }`}>
+        <div className="flex">
+          <AlertCircle className={`h-5 w-5 mr-2 flex-shrink-0 ${
+            messageType === 'error'
+              ? theme === 'dark' ? 'text-red-200' : 'text-red-400'
+              : theme === 'dark' ? 'text-green-200' : 'text-green-400'
+          }`} />
+          <div className="flex-1">
+            <p className={`text-sm ${
+              messageType === 'error'
+                ? theme === 'dark' ? 'text-red-200' : 'text-red-700'
+                : theme === 'dark' ? 'text-green-200' : 'text-green-700'
+            }`}>
+              {message}
+            </p>
+            {isEmailNotConfirmed && (
+              <div className="mt-3">
+                <button
+                  onClick={handleResendConfirmation}
+                  disabled={isResendingEmail}
+                  className={`inline-flex items-center text-sm font-medium ${
+                    theme === 'dark'
+                      ? 'text-red-200 hover:text-red-100'
+                      : 'text-red-700 hover:text-red-800'
+                  }`}
+                >
+                  <Mail className="h-4 w-4 mr-1" />
+                  {isResendingEmail ? 'Sending...' : 'Resend confirmation email'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -62,13 +187,7 @@ const LoginPage: React.FC = () => {
           </p>
         </div>
         
-        {error && (
-          <div className={`p-3 rounded-md ${
-            theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-700'
-          }`}>
-            {error}
-          </div>
-        )}
+        {renderErrorMessage()}
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
@@ -149,11 +268,16 @@ const LoginPage: React.FC = () => {
               </label>
             </div>
 
-            <a href="#" className={`text-sm font-medium hover:underline ${
-              theme === 'dark' ? 'text-red-400' : 'text-red-600'
-            }`}>
-              Forgot password?
-            </a>
+            <button
+              type="button"
+              onClick={handleResetPassword}
+              disabled={isResettingPassword}
+              className={`text-sm font-medium hover:underline ${
+                theme === 'dark' ? 'text-red-400' : 'text-red-600'
+              }`}
+            >
+              {isResettingPassword ? 'Sending reset email...' : 'Forgot password?'}
+            </button>
           </div>
 
           <div>

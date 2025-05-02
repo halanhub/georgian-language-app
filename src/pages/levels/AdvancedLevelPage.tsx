@@ -2,9 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Book, FileText, GraduationCap, Headphones, MessageSquare, Pencil } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useSubscription } from '../../hooks/useSubscription';
+import SubscriptionBanner from '../../components/SubscriptionBanner';
 
 const AdvancedLevelPage: React.FC = () => {
   const { theme } = useTheme();
+  const { hasActiveSubscription } = useSubscription();
 
   const topics = [
     { 
@@ -13,7 +16,8 @@ const AdvancedLevelPage: React.FC = () => {
       description: 'Master advanced Georgian grammar patterns',
       icon: <Book size={24} />,
       color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
-      path: '/advanced/grammar' 
+      path: '/advanced/grammar',
+      unlocked: hasActiveSubscription
     },
     { 
       id: 'cultural-nuances', 
@@ -21,7 +25,8 @@ const AdvancedLevelPage: React.FC = () => {
       description: 'Understand Georgian cultural context in language',
       icon: <GraduationCap size={24} />,
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
-      path: '/advanced/culture' 
+      path: '/advanced/culture',
+      unlocked: hasActiveSubscription
     },
     { 
       id: 'literature', 
@@ -29,7 +34,8 @@ const AdvancedLevelPage: React.FC = () => {
       description: 'Explore classic and modern Georgian literature',
       icon: <FileText size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
-      path: '/advanced/literature' 
+      path: '/advanced/literature',
+      unlocked: hasActiveSubscription
     },
     { 
       id: 'idioms', 
@@ -37,7 +43,8 @@ const AdvancedLevelPage: React.FC = () => {
       description: 'Learn Georgian idioms and colloquial phrases',
       icon: <MessageSquare size={24} />,
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
-      path: '/advanced/idioms' 
+      path: '/advanced/idioms',
+      unlocked: hasActiveSubscription
     },
     { 
       id: 'writing', 
@@ -45,7 +52,8 @@ const AdvancedLevelPage: React.FC = () => {
       description: 'Develop sophisticated writing skills in Georgian',
       icon: <Pencil size={24} />,
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
-      path: '/advanced/writing' 
+      path: '/advanced/writing',
+      unlocked: hasActiveSubscription
     },
     { 
       id: 'listening', 
@@ -53,12 +61,15 @@ const AdvancedLevelPage: React.FC = () => {
       description: 'Comprehend native speakers at natural speeds',
       icon: <Headphones size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
-      path: '/advanced/listening' 
+      path: '/advanced/listening',
+      unlocked: hasActiveSubscription
     },
   ];
 
   return (
     <div className="pt-16 pb-16">
+      {!hasActiveSubscription && <SubscriptionBanner type="full" />}
+      
       {/* Hero section */}
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-purple-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,13 +82,25 @@ const AdvancedLevelPage: React.FC = () => {
                 Achieve fluency in Georgian with advanced grammar, cultural nuances, literature, and sophisticated conversation skills.
               </p>
               <div className="flex flex-wrap gap-2">
-                <span
-                  className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
-                    theme === 'dark' ? 'bg-gray-700 text-white cursor-not-allowed' : 'bg-white text-gray-400 cursor-not-allowed'
-                  }`}
-                >
-                  Complete Intermediate Level to Unlock
-                </span>
+                {hasActiveSubscription ? (
+                  <span
+                    className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
+                      theme === 'dark' ? 'bg-gray-700 text-white cursor-not-allowed' : 'bg-white text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    Complete Intermediate Level to Unlock
+                  </span>
+                ) : (
+                  <Link
+                    to="/pricing"
+                    className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
+                      theme === 'dark' ? 'bg-purple-700 text-white hover:bg-purple-800' : 'bg-purple-600 text-white hover:bg-purple-700'
+                    }`}
+                  >
+                    Upgrade to Access
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                )}
               </div>
             </div>
             <div className="hidden md:block md:w-1/3">
@@ -112,7 +135,9 @@ const AdvancedLevelPage: React.FC = () => {
               <div
                 key={topic.id}
                 className={`p-6 rounded-lg shadow-md ${
-                  theme === 'dark' ? 'bg-gray-800 opacity-50' : 'bg-white opacity-50'
+                  topic.unlocked
+                    ? (theme === 'dark' ? 'bg-gray-800 opacity-50' : 'bg-white opacity-50')
+                    : (theme === 'dark' ? 'bg-gray-800 opacity-50' : 'bg-white opacity-50')
                 }`}
               >
                 <div className={`p-3 rounded-full inline-block mb-4 ${topic.color}`}>
@@ -124,12 +149,24 @@ const AdvancedLevelPage: React.FC = () => {
                 <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   {topic.description}
                 </p>
-                <div className={`flex items-center text-sm font-medium ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-400'
-                }`}>
-                  Complete Intermediate Level to Unlock
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </div>
+                {topic.unlocked ? (
+                  <div className={`flex items-center text-sm font-medium ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-400'
+                  }`}>
+                    Complete Intermediate Level to Unlock
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </div>
+                ) : (
+                  <Link
+                    to="/pricing"
+                    className={`flex items-center text-sm font-medium ${
+                      theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'
+                    }`}
+                  >
+                    Upgrade to Access
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                )}
               </div>
             ))}
           </div>

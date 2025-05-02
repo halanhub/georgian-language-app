@@ -334,6 +334,11 @@ const NumbersPage: React.FC = () => {
     return false;
   };
 
+  // Function to determine if a number group needs smaller text and different layout
+  const needsSpecialLayout = (groupId: string) => {
+    return ['31-40', '41-50', '51-60', '61-70', '71-80', '81-90', '91-100'].includes(groupId);
+  };
+
   return (
     <div className="pt-16 pb-16">
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gradient-to-br from-yellow-50 to-orange-50'}`}>
@@ -420,49 +425,101 @@ const NumbersPage: React.FC = () => {
 
                 {expandedGroup === group.id && (
                   <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {group.numbers.map((number) => (
-                      <div
-                        key={number.number}
-                        className={`p-6 rounded-lg ${
-                          theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-                        } shadow-lg`}
-                      >
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center">
-                            <span className={`text-2xl font-bold mr-3 ${
-                              theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'
-                            }`}>
-                              {number.number}
-                            </span>
-                            <span className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                              {number.georgian}
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => playAudio(number.georgian)}
-                            className={`p-2 rounded-full transition-colors ${
-                              isPlaying === number.georgian
-                                ? (theme === 'dark' ? 'bg-yellow-600' : 'bg-yellow-500')
-                                : (theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200')
-                            }`}
+                    {needsSpecialLayout(group.id) ? (
+                      // 2x2 grid for numbers 31-100 with larger boxes
+                      <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {group.numbers.map((number) => (
+                          <div
+                            key={number.number}
+                            className={`p-6 rounded-lg ${
+                              theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+                            } shadow-lg`}
                           >
-                            {isPlaying === number.georgian ? (
-                              <X size={16} className="text-white" />
-                            ) : (
-                              <Volume2 size={16} className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} />
-                            )}
-                          </button>
-                        </div>
-                        <div className={`space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                            /{number.latin}/
-                          </p>
-                          {number.example && (
-                            <p className="text-sm italic">{number.example}</p>
-                          )}
-                        </div>
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center">
+                                <span className={`text-2xl font-bold mr-3 flex-shrink-0 ${
+                                  theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'
+                                }`}>
+                                  {number.number}
+                                </span>
+                                <span className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} text-base`}>
+                                  {number.georgian}
+                                </span>
+                              </div>
+                              <button
+                                onClick={() => playAudio(number.georgian)}
+                                className={`p-2 rounded-full flex-shrink-0 transition-colors ${
+                                  isPlaying === number.georgian
+                                    ? (theme === 'dark' ? 'bg-yellow-600' : 'bg-yellow-500')
+                                    : (theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200')
+                                }`}
+                              >
+                                {isPlaying === number.georgian ? (
+                                  <X size={16} className="text-white" />
+                                ) : (
+                                  <Volume2 size={16} className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} />
+                                )}
+                              </button>
+                            </div>
+                            <div className={`space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                                /{number.latin}/
+                              </p>
+                              {number.example && (
+                                <p className="text-sm italic line-clamp-2">{number.example}</p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    ) : (
+                      // Regular 3-column grid for numbers 1-30
+                      group.numbers.map((number) => (
+                        <div
+                          key={number.number}
+                          className={`p-6 rounded-lg ${
+                            theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+                          } shadow-lg`}
+                        >
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center">
+                              <span className={`text-2xl font-bold mr-3 flex-shrink-0 ${
+                                theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'
+                              }`}>
+                                {number.number}
+                              </span>
+                              <span className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} text-xl`}>
+                                {number.georgian}
+                              </span>
+                            </div>
+                            {group.id !== '1-10' && (
+                              <button
+                                onClick={() => playAudio(number.georgian)}
+                                className={`p-2 rounded-full flex-shrink-0 transition-colors ${
+                                  isPlaying === number.georgian
+                                    ? (theme === 'dark' ? 'bg-yellow-600' : 'bg-yellow-500')
+                                    : (theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200')
+                                }`}
+                              >
+                                {isPlaying === number.georgian ? (
+                                  <X size={16} className="text-white" />
+                                ) : (
+                                  <Volume2 size={16} className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} />
+                                )}
+                              </button>
+                            )}
+                          </div>
+                          <div className={`space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                              /{number.latin}/
+                            </p>
+                            {number.example && (
+                              <p className="text-sm italic line-clamp-2">{number.example}</p>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 )}
               </div>

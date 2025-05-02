@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, ChevronRight, Dices, Globe, MessageSquare } from 'lucide-react';
+import { BookOpen, ChevronRight, CreditCard, Dices, Globe } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useSubscription } from '../hooks/useSubscription';
 
 const HomePage: React.FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
+  const { hasActiveSubscription } = useSubscription();
 
   return (
     <div className="pt-16">
@@ -21,7 +23,7 @@ const HomePage: React.FC = () => {
                 </span> ქართული ენა
               </h1>
               <p className={`text-lg md:text-xl mb-8 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Start your journey to learn the beautiful Georgian language with our interactive lessons, quizzes, and AI-powered assistance.
+                Start your journey to learn the beautiful Georgian language with our interactive lessons, quizzes, and practice exercises.
               </p>
               <div className="space-x-4">
                 {!user ? (
@@ -118,11 +120,11 @@ const HomePage: React.FC = () => {
               <div className={`p-3 rounded-full inline-block mb-4 ${
                 theme === 'dark' ? 'bg-gray-600' : 'bg-red-100'
               }`}>
-                <MessageSquare size={24} className={theme === 'dark' ? 'text-red-400' : 'text-red-600'} />
+                <BookOpen size={24} className={theme === 'dark' ? 'text-red-400' : 'text-red-600'} />
               </div>
-              <h3 className="text-xl font-bold mb-2">AI-Powered Assistance</h3>
+              <h3 className="text-xl font-bold mb-2">Comprehensive Resources</h3>
               <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                Get instant answers and explanations from our AI chat assistant, available 24/7.
+                Access a wide range of learning materials, vocabulary lists, and grammar guides.
               </p>
             </div>
           </div>
@@ -217,16 +219,30 @@ const HomePage: React.FC = () => {
                     <span className="ml-2">Reading Practice</span>
                   </li>
                 </ul>
-                <Link 
-                  to={user ? "/intermediate" : "/signup"} 
-                  className={`block w-full text-center py-2 rounded-md font-medium ${
-                    theme === 'dark' ? 
-                    'bg-blue-700 text-white hover:bg-blue-800' : 
-                    'bg-blue-500 text-white hover:bg-blue-600'
-                  } transition-colors`}
-                >
-                  Continue Learning
-                </Link>
+                {hasActiveSubscription ? (
+                  <Link 
+                    to="/intermediate" 
+                    className={`block w-full text-center py-2 rounded-md font-medium ${
+                      theme === 'dark' ? 
+                      'bg-blue-700 text-white hover:bg-blue-800' : 
+                      'bg-blue-500 text-white hover:bg-blue-600'
+                    } transition-colors`}
+                  >
+                    Continue Learning
+                  </Link>
+                ) : (
+                  <Link 
+                    to="/pricing" 
+                    className={`flex items-center justify-center w-full py-2 rounded-md font-medium ${
+                      theme === 'dark' ? 
+                      'bg-blue-700 text-white hover:bg-blue-800' : 
+                      'bg-blue-500 text-white hover:bg-blue-600'
+                    } transition-colors`}
+                  >
+                    <CreditCard size={16} className="mr-2" />
+                    Upgrade to Access
+                  </Link>
+                )}
               </div>
             </div>
 
@@ -261,15 +277,200 @@ const HomePage: React.FC = () => {
                     <span className="ml-2">Fluent Conversations</span>
                   </li>
                 </ul>
+                {hasActiveSubscription ? (
+                  <Link 
+                    to="/advanced" 
+                    className={`block w-full text-center py-2 rounded-md font-medium ${
+                      theme === 'dark' ? 
+                      'bg-purple-700 text-white hover:bg-purple-800' : 
+                      'bg-purple-500 text-white hover:bg-purple-600'
+                    } transition-colors`}
+                  >
+                    Master Georgian
+                  </Link>
+                ) : (
+                  <Link 
+                    to="/pricing" 
+                    className={`flex items-center justify-center w-full py-2 rounded-md font-medium ${
+                      theme === 'dark' ? 
+                      'bg-purple-700 text-white hover:bg-purple-800' : 
+                      'bg-purple-500 text-white hover:bg-purple-600'
+                    } transition-colors`}
+                  >
+                    <CreditCard size={16} className="mr-2" />
+                    Upgrade to Access
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className={`py-16 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className={`text-3xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Choose Your <span className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>Learning Plan</span>
+            </h2>
+            <p className={`max-w-2xl mx-auto text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+              Select the plan that best fits your learning needs and goals
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Free Plan */}
+            <div className={`rounded-lg overflow-hidden shadow-lg ${
+              theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+            }`}>
+              <div className={`p-6 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Free
+                </h3>
+                <div className="mt-4 flex items-baseline">
+                  <span className={`text-4xl font-extrabold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    $0
+                  </span>
+                  <span className={`ml-1 text-xl font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>
+                    /forever
+                  </span>
+                </div>
+              </div>
+              <div className="p-6">
+                <ul className={`space-y-4 mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <li className="flex items-start">
+                    <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                    <span className="ml-2">Access to beginner lessons</span>
+                  </li>
+                  <li className="flex items-start">
+                    <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                    <span className="ml-2">Basic vocabulary practice</span>
+                  </li>
+                  <li className="flex items-start">
+                    <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                    <span className="ml-2">Limited quizzes</span>
+                  </li>
+                  <li className="flex items-start">
+                    <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                    <span className="ml-2">Basic progress tracking</span>
+                  </li>
+                </ul>
                 <Link 
-                  to={user ? "/advanced" : "/signup"} 
+                  to={user ? "/beginner" : "/signup"} 
                   className={`block w-full text-center py-2 rounded-md font-medium ${
                     theme === 'dark' ? 
-                    'bg-purple-700 text-white hover:bg-purple-800' : 
-                    'bg-purple-500 text-white hover:bg-purple-600'
+                    'bg-gray-700 text-white hover:bg-gray-600' : 
+                    'bg-gray-200 text-gray-800 hover:bg-gray-300'
                   } transition-colors`}
                 >
-                  Master Georgian
+                  Get Started
+                </Link>
+              </div>
+            </div>
+
+            {/* Premium Plan */}
+            <div className={`rounded-lg overflow-hidden shadow-lg transform scale-105 ${
+              theme === 'dark' ? 'bg-gray-800 ring-2 ring-blue-500' : 'bg-white ring-2 ring-blue-500'
+            }`}>
+              <div className={`p-1 text-center text-sm font-semibold ${
+                theme === 'dark' ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'
+              }`}>
+                Most Popular
+              </div>
+              <div className={`p-6 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Premium
+                </h3>
+                <div className="mt-4 flex items-baseline">
+                  <span className={`text-4xl font-extrabold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    $4.99
+                  </span>
+                  <span className={`ml-1 text-xl font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>
+                    /month
+                  </span>
+                </div>
+              </div>
+              <div className="p-6">
+                <ul className={`space-y-4 mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <li className="flex items-start">
+                    <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                    <span className="ml-2">Access to all lessons (Beginner to Advanced)</span>
+                  </li>
+                  <li className="flex items-start">
+                    <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                    <span className="ml-2">Unlimited vocabulary practice</span>
+                  </li>
+                  <li className="flex items-start">
+                    <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                    <span className="ml-2">All quizzes and exercises</span>
+                  </li>
+                  <li className="flex items-start">
+                    <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                    <span className="ml-2">Advanced progress tracking</span>
+                  </li>
+                </ul>
+                <Link 
+                  to="/pricing" 
+                  className={`block w-full text-center py-2 rounded-md font-medium ${
+                    theme === 'dark' ? 
+                    'bg-blue-700 text-white hover:bg-blue-800' : 
+                    'bg-blue-600 text-white hover:bg-blue-700'
+                  } transition-colors`}
+                >
+                  Subscribe Now
+                </Link>
+              </div>
+            </div>
+
+            {/* Annual Plan */}
+            <div className={`rounded-lg overflow-hidden shadow-lg ${
+              theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+            }`}>
+              <div className={`p-6 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Annual
+                </h3>
+                <div className="mt-4 flex items-baseline">
+                  <span className={`text-4xl font-extrabold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    $49.99
+                  </span>
+                  <span className={`ml-1 text-xl font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>
+                    /year
+                  </span>
+                </div>
+                <p className={`mt-1 text-sm ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
+                  Save 16% compared to monthly
+                </p>
+              </div>
+              <div className="p-6">
+                <ul className={`space-y-4 mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <li className="flex items-start">
+                    <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                    <span className="ml-2">All Premium features</span>
+                  </li>
+                  <li className="flex items-start">
+                    <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                    <span className="ml-2">Priority support</span>
+                  </li>
+                  <li className="flex items-start">
+                    <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                    <span className="ml-2">Early access to new features</span>
+                  </li>
+                  <li className="flex items-start">
+                    <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                    <span className="ml-2">16% savings compared to monthly plan</span>
+                  </li>
+                </ul>
+                <Link 
+                  to="/pricing" 
+                  className={`block w-full text-center py-2 rounded-md font-medium ${
+                    theme === 'dark' ? 
+                    'bg-green-700 text-white hover:bg-green-800' : 
+                    'bg-green-600 text-white hover:bg-green-700'
+                  } transition-colors`}
+                >
+                  Subscribe Annually
                 </Link>
               </div>
             </div>

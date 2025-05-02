@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   AlignJustify, 
   BookOpen, 
   Brain,
+  CreditCard,
   Dices, 
   GraduationCap, 
   Lightbulb, 
   Mail,
-  MessageSquare, 
-  Palette, 
   PenTool, 
+  Palette, 
   Settings,
   Trophy, 
   User
@@ -18,23 +18,23 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
 const Sidebar: React.FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const location = useLocation();
   const [isProfileExpanded, setIsProfileExpanded] = useState(false);
+  const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   // Mock progress data - in a real app, this would come from a database
   const progressData = {
-    lessonsCompleted: 3,
-    totalLessons: 12,
+    lessonsCompleted: 15,
+    totalLessons: 45,
     quizScore: 75,
     studyStreak: 5
   };
+
+  // Calculate overall progress percentage
+  const overallProgress = Math.round((progressData.lessonsCompleted / progressData.totalLessons) * 100);
 
   if (!user) return null;
 
@@ -72,8 +72,8 @@ const Sidebar: React.FC = () => {
                   }`}>Beginner</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm">Lessons Completed:</span>
-                  <span className="text-sm font-medium">{progressData.lessonsCompleted}/{progressData.totalLessons}</span>
+                  <span className="text-sm">Overall Progress:</span>
+                  <span className="text-sm font-medium">{overallProgress}%</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Quiz Score:</span>
@@ -91,6 +91,15 @@ const Sidebar: React.FC = () => {
                 >
                   <Settings size={16} />
                   <span>Profile Settings</span>
+                </Link>
+                <Link 
+                  to="/pricing" 
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm ${
+                    theme === 'dark' ? 'hover:bg-gray-600' : 'hover:bg-red-50'
+                  }`}
+                >
+                  <CreditCard size={16} />
+                  <span>Subscription</span>
                 </Link>
                 <Link 
                   to="/contact" 
@@ -172,9 +181,9 @@ const Sidebar: React.FC = () => {
           </Link>
           
           <Link 
-            to="/beginner/quiz/alphabet" 
+            to="/quizzes" 
             className={`flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
-              isActive('/quiz') 
+              isActive('/quizzes') 
                 ? (theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-red-100 text-red-700') 
                 : (theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-red-50')
             }`}
@@ -183,22 +192,10 @@ const Sidebar: React.FC = () => {
             <span>Quizzes</span>
           </Link>
           
-          <Link 
-            to="/chat" 
-            className={`flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
-              isActive('/chat') 
-                ? (theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-red-100 text-red-700') 
-                : (theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-red-50')
-            }`}
-          >
-            <MessageSquare size={18} />
-            <span>AI Chat Assistant</span>
-          </Link>
-          
           <div className="my-2 text-xs uppercase font-semibold opacity-70 px-3 pt-3">Progress</div>
           
           <Link 
-            to="#achievements" 
+            to="/achievements" 
             className={`flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
               isActive('/achievements') 
                 ? (theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-red-100 text-red-700') 
@@ -210,9 +207,9 @@ const Sidebar: React.FC = () => {
           </Link>
           
           <Link 
-            to="#tips" 
+            to="/learning-tips" 
             className={`flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
-              isActive('/tips') 
+              isActive('/learning-tips') 
                 ? (theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-red-100 text-red-700') 
                 : (theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-red-50')
             }`}

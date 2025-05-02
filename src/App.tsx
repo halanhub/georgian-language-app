@@ -26,12 +26,15 @@ import ReadingPracticePage from './pages/lessons/ReadingPracticePage';
 import WritingExercisesPage from './pages/lessons/WritingExercisesPage';
 import SentenceConstructionPage from './pages/lessons/SentenceConstructionPage';
 import QuizPage from './pages/quiz/QuizPage';
-import ChatPage from './pages/ChatPage';
+import QuizHubPage from './pages/quiz/QuizHubPage';
 import ProfileSettingsPage from './pages/settings/ProfileSettingsPage';
 import SupportPage from './pages/SupportPage';
 import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import AchievementsPage from './pages/AchievementsPage';
+import LearningTipsPage from './pages/LearningTipsPage';
+import PricingPage from './pages/PricingPage';
 
 function App() {
   return (
@@ -43,6 +46,7 @@ function App() {
               <Route index element={<HomePage />} />
               <Route path="login" element={<LoginPage />} />
               <Route path="signup" element={<SignupPage />} />
+              <Route path="pricing" element={<PricingPage />} />
               
               <Route path="beginner" element={
                 <ProtectedRoute>
@@ -101,60 +105,54 @@ function App() {
               } />
               
               <Route path="intermediate" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiresSubscription={true}>
                   <IntermediateLevelPage />
                 </ProtectedRoute>
               } />
               <Route path="intermediate/grammar" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiresSubscription={true}>
                   <GrammarPage />
                 </ProtectedRoute>
               } />
               <Route path="intermediate/conversations" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiresSubscription={true}>
                   <DailyConversationsPage />
                 </ProtectedRoute>
               } />
               <Route path="intermediate/common-words" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiresSubscription={true}>
                   <CommonWordsPage />
                 </ProtectedRoute>
               } />
               <Route path="intermediate/reading" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiresSubscription={true}>
                   <ReadingPracticePage />
                 </ProtectedRoute>
               } />
               <Route path="intermediate/writing" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiresSubscription={true}>
                   <WritingExercisesPage />
                 </ProtectedRoute>
               } />
               <Route path="intermediate/sentences" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiresSubscription={true}>
                   <SentenceConstructionPage />
                 </ProtectedRoute>
               } />
               <Route path="intermediate/quiz/:topic" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiresSubscription={true}>
                   <QuizPage />
                 </ProtectedRoute>
               } />
               
               <Route path="advanced" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiresSubscription={true}>
                   <AdvancedLevelPage />
                 </ProtectedRoute>
               } />
               <Route path="advanced/quiz/:topic" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiresSubscription={true}>
                   <QuizPage />
-                </ProtectedRoute>
-              } />
-              
-              <Route path="chat" element={
-                <ProtectedRoute>
-                  <ChatPage />
                 </ProtectedRoute>
               } />
 
@@ -170,6 +168,24 @@ function App() {
               <Route path="vocabulary" element={
                 <ProtectedRoute>
                   <VocabularyPage />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="quizzes" element={
+                <ProtectedRoute>
+                  <QuizHubPage />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="achievements" element={
+                <ProtectedRoute>
+                  <AchievementsPage />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="learning-tips" element={
+                <ProtectedRoute>
+                  <LearningTipsPage />
                 </ProtectedRoute>
               } />
               

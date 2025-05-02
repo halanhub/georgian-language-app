@@ -33,6 +33,45 @@ const QuizPage: React.FC = () => {
   // Get quiz questions based on topic
   const getQuizQuestions = (topic: string): Question[] => {
     switch (topic) {
+      case 'vocabulary':
+        return [
+          {
+            id: 1,
+            question: "What does 'გამარჯობა' mean?",
+            options: ['Hello', 'Goodbye', 'Thank you', 'Please'],
+            correctAnswer: 'Hello',
+            explanation: 'გამარჯობა (gamarjoba) is the most common way to say "hello" in Georgian'
+          },
+          {
+            id: 2,
+            question: "Which word means 'thank you'?",
+            options: ['მადლობა', 'კარგი', 'დიახ', 'არა'],
+            correctAnswer: 'მადლობა',
+            explanation: 'მადლობა (madloba) means "thank you"'
+          },
+          {
+            id: 3,
+            question: "What is 'good morning' in Georgian?",
+            options: ['დილა მშვიდობისა', 'საღამო მშვიდობისა', 'ღამე მშვიდობისა', 'შუადღე მშვიდობისა'],
+            correctAnswer: 'დილა მშვიდობისა',
+            explanation: 'დილა მშვიდობისა (dila mshvidobisa) means "good morning"'
+          },
+          {
+            id: 4,
+            question: "Which phrase means 'goodbye'?",
+            options: ['ნახვამდის', 'გაგიმარჯოს', 'გმადლობთ', 'გთხოვთ'],
+            correctAnswer: 'ნახვამდის',
+            explanation: 'ნახვამდის (nakhvamdis) means "goodbye"'
+          },
+          {
+            id: 5,
+            question: "What does 'კი' mean?",
+            options: ['Yes', 'No', 'Maybe', 'Please'],
+            correctAnswer: 'Yes',
+            explanation: 'კი (ki) means "yes"'
+          }
+        ];
+
       case 'alphabet':
         return [
           {
@@ -413,7 +452,8 @@ const QuizPage: React.FC = () => {
       food: 'Food & Drinks',
       body: 'Human Body',
       animals: 'Animals',
-      activities: 'Daily Activities'
+      activities: 'Daily Activities',
+      vocabulary: 'Basic Vocabulary'
     };
     
     return topicMap[topic || ''] || 'Quiz';
@@ -428,11 +468,43 @@ const QuizPage: React.FC = () => {
       food: '/beginner/food-and-drinks',
       body: '/beginner/human-body',
       animals: '/beginner/animals',
-      activities: '/beginner/daily-activities'
+      activities: '/beginner/daily-activities',
+      vocabulary: '/beginner/vocabulary'
     };
     
     return linkMap[topic || ''] || '/beginner';
   };
+
+  // If no questions are available, show a message and a back button
+  if (questions.length === 0) {
+    return (
+      <div className="pt-16 pb-16">
+        <section className={`py-8 ${theme === 'dark' ? 'bg-gray-800' : 'bg-yellow-50'}`}>
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h1 className={`text-2xl md:text-3xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Quiz Not Available
+              </h1>
+              <p className={`mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Sorry, this quiz is not available at the moment.
+              </p>
+              <Link
+                to="/beginner"
+                className={`inline-flex items-center px-4 py-2 rounded-lg font-medium ${
+                  theme === 'dark' 
+                    ? 'bg-yellow-700 text-white hover:bg-yellow-800' 
+                    : 'bg-yellow-500 text-white hover:bg-yellow-600'
+                }`}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Lessons
+              </Link>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-16 pb-16">
@@ -574,6 +646,7 @@ const QuizPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-600' : 'bg-red-500')
                     }`}
                     style={{ width: `${(score / questions.length) * 100}%` }}
+                
                   ></div>
                 </div>
                 

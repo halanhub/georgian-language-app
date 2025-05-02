@@ -3,10 +3,13 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, Brain, Edit, GraduationCap, MessageCircle, Pencil } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSubscription } from '../../hooks/useSubscription';
+import SubscriptionBanner from '../../components/SubscriptionBanner';
 
 const IntermediateLevelPage: React.FC = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
+  const { hasActiveSubscription } = useSubscription();
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -23,7 +26,7 @@ const IntermediateLevelPage: React.FC = () => {
       icon: <BookOpen size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
       path: '/intermediate/grammar',
-      unlocked: true,
+      unlocked: hasActiveSubscription,
       progress: 40
     },
     { 
@@ -33,7 +36,7 @@ const IntermediateLevelPage: React.FC = () => {
       icon: <Edit size={24} />,
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
       path: '/intermediate/sentences',
-      unlocked: true,
+      unlocked: hasActiveSubscription,
       progress: 25
     },
     { 
@@ -43,7 +46,7 @@ const IntermediateLevelPage: React.FC = () => {
       icon: <Brain size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
       path: '/intermediate/common-words',
-      unlocked: true,
+      unlocked: hasActiveSubscription,
       progress: 15
     },
     { 
@@ -53,7 +56,7 @@ const IntermediateLevelPage: React.FC = () => {
       icon: <MessageCircle size={24} />,
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
       path: '/intermediate/conversations',
-      unlocked: true,
+      unlocked: hasActiveSubscription,
       progress: 0
     },
     { 
@@ -63,7 +66,7 @@ const IntermediateLevelPage: React.FC = () => {
       icon: <GraduationCap size={24} />,
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
       path: '/intermediate/reading',
-      unlocked: true,
+      unlocked: hasActiveSubscription,
       progress: 0
     },
     { 
@@ -73,13 +76,15 @@ const IntermediateLevelPage: React.FC = () => {
       icon: <Pencil size={24} />,
       color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
       path: '/intermediate/writing',
-      unlocked: true,
+      unlocked: hasActiveSubscription,
       progress: 0
     },
   ];
 
   return (
     <div className="pt-16 pb-16">
+      {!hasActiveSubscription && <SubscriptionBanner type="full" />}
+      
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
@@ -91,15 +96,27 @@ const IntermediateLevelPage: React.FC = () => {
                 Take your Georgian language skills to the next level with comprehensive grammar, advanced vocabulary, and practical conversation practice.
               </p>
               <div className="flex flex-wrap gap-2">
-                <Link
-                  to="/intermediate/grammar"
-                  className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
-                    theme === 'dark' ? 'bg-blue-700 text-white hover:bg-blue-800' : 'bg-blue-600 text-white hover:bg-blue-700'
-                  }`}
-                >
-                  Start with Grammar
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+                {hasActiveSubscription ? (
+                  <Link
+                    to="/intermediate/grammar"
+                    className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
+                      theme === 'dark' ? 'bg-blue-700 text-white hover:bg-blue-800' : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    Start with Grammar
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                ) : (
+                  <Link
+                    to="/pricing"
+                    className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
+                      theme === 'dark' ? 'bg-blue-700 text-white hover:bg-blue-800' : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    Upgrade to Access
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                )}
                 <Link
                   to="/contact"
                   className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
@@ -124,7 +141,9 @@ const IntermediateLevelPage: React.FC = () => {
                   Intermediate Progress: {progress}%
                 </h2>
                 <p className={`mb-4 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  Complete lessons to unlock more advanced content.
+                  {hasActiveSubscription 
+                    ? 'Complete lessons to advance your Georgian skills.' 
+                    : 'Subscribe to access intermediate content.'}
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
@@ -154,7 +173,7 @@ const IntermediateLevelPage: React.FC = () => {
                 className={`p-6 rounded-lg shadow-md transition-all ${
                   topic.unlocked
                     ? (theme === 'dark' ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50')
-                    : (theme === 'dark' ? 'bg-gray-800 opacity-50' : 'bg-white opacity-50')
+                    : (theme === 'dark' ? 'bg-gray-800 opacity-70' : 'bg-white opacity-70')
                 }`}
               >
                 <div className={`p-3 rounded-full inline-block mb-4 ${topic.color}`}>
@@ -192,11 +211,16 @@ const IntermediateLevelPage: React.FC = () => {
                     </Link>
                   </>
                 ) : (
-                  <div className={`flex items-center text-sm font-medium ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-400'
-                  }`}>
-                    Complete previous lessons to unlock
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                  <div className="flex items-center">
+                    <Link
+                      to="/pricing"
+                      className={`flex items-center text-sm font-medium ${
+                        theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+                      }`}
+                    >
+                      Upgrade to Access
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
                   </div>
                 )}
               </div>
@@ -243,7 +267,7 @@ const IntermediateLevelPage: React.FC = () => {
                 Practice Speaking
               </h3>
               <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                Use our AI chat feature to practice conversations and improve your speaking confidence.
+                Find language exchange partners to practice conversations and improve your speaking confidence.
               </p>
             </div>
           </div>

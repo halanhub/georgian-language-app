@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowDown, ArrowUp, AtSign, Bot, ChevronRight, Copy, Send, User } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { supabase } from '../lib/supabase';
 
 interface Message {
   id: string;
@@ -18,11 +19,16 @@ const INITIAL_MESSAGES: Message[] = [
   },
 ];
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
+
 const ChatPage: React.FC = () => {
   const { theme } = useTheme();
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [quotaExceeded, setQuotaExceeded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const scrollToBottom = () => {
@@ -37,10 +43,79 @@ const ChatPage: React.FC = () => {
     setInputValue(e.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const callChatAssistant = async (userMessage: string, retryCount = 0): Promise<string> => {
+    try {
+      // Reset error state
+      setError(null);
+      
+      // Prepare messages for the API in the format OpenAI expects
+      const apiMessages = messages
+        .concat({
+          id: Date.now().toString(),
+          sender: 'user',
+          text: userMessage,
+          timestamp: new Date(),
+        })
+        .map(msg => ({
+          role: msg.sender === 'user' ? 'user' : 'assistant',
+          content: msg.text
+        }));
+
+      // Call the Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('chat-assistant', {
+        body: { messages: apiMessages },
+      });
+
+      if (error) {
+        console.error('Error calling chat assistant:', error);
+        
+        // Check if the error is related to OpenAI quota
+        if (error.message && (error.message.includes('429') || 
+            (data && data.error && data.error.includes('quota')))) {
+          setQuotaExceeded(true);
+          throw new Error('OpenAI API quota exceeded. Please try again later.');
+        }
+        
+        throw new Error('Error calling chat assistant: ' + error.message);
+      }
+
+      if (!data || !data.message) {
+        throw new Error('Invalid response from chat assistant');
+      }
+
+      return data.message;
+    } catch (error) {
+      console.error('Error in chat:', error);
+      
+      // Check if the error message contains quota information
+      if (error.message && (
+          error.message.includes('quota') || 
+          error.message.includes('429') || 
+          error.message.includes('exceeded')
+      )) {
+        setQuotaExceeded(true);
+        throw new Error('OpenAI API quota exceeded. Please try again later.');
+      }
+      
+      // Retry logic
+      if (retryCount < MAX_RETRIES) {
+        console.log(`Retrying... Attempt ${retryCount + 1} of ${MAX_RETRIES}`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        return callChatAssistant(userMessage, retryCount + 1);
+      }
+      
+      throw new Error('Failed to connect to the chat assistant after 3 attempts. Please try again later.');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!inputValue.trim()) return;
+    
+    // Reset quota exceeded state on new message
+    setQuotaExceeded(false);
+    setError(null);
     
     // Add user message
     const userMessage: Message = {
@@ -54,46 +129,47 @@ const ChatPage: React.FC = () => {
     setInputValue('');
     setIsTyping(true);
     
-    // Simulate AI response after a delay
-    setTimeout(() => {
-      const aiResponse = getAIResponse(inputValue.trim());
-      setMessages((prevMessages) => [...prevMessages, aiResponse]);
+    try {
+      // Call the chat assistant function
+      const aiResponse = await callChatAssistant(userMessage.text);
+      
+      if (!aiResponse) {
+        throw new Error('Invalid response from chat assistant: Empty response');
+      }
+      
+      // Add AI response
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        sender: 'ai',
+        text: aiResponse,
+        timestamp: new Date(),
+      };
+      
+      setMessages((prevMessages) => [...prevMessages, aiMessage]);
+    } catch (error) {
+      console.error('Error in chat:', error);
+      
+      // Create a user-friendly error message
+      let errorMessage = 'Sorry, I encountered an error. Please try again later.';
+      
+      if (quotaExceeded || (error.message && error.message.includes('quota'))) {
+        errorMessage = 'Sorry, the AI service is currently unavailable due to high demand. Our quota has been exceeded. Please try again later.';
+      }
+      
+      setError(errorMessage);
+      
+      // Add error message
+      const errorResponseMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        sender: 'ai',
+        text: errorMessage,
+        timestamp: new Date(),
+      };
+      
+      setMessages((prevMessages) => [...prevMessages, errorResponseMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1000 + Math.random() * 2000); // Random delay between 1-3 seconds
-  };
-
-  const getAIResponse = (userQuery: string): Message => {
-    // Simple response logic based on user query
-    let responseText = '';
-    
-    const lowerQuery = userQuery.toLowerCase();
-    
-    if (lowerQuery.includes('hello') || lowerQuery.includes('hi') || lowerQuery.includes('hey')) {
-      responseText = 'გამარჯობა! (Gamarjoba) That means "hello" in Georgian! How can I help you learn Georgian today?';
-    } else if (lowerQuery.includes('thank you') || lowerQuery.includes('thanks')) {
-      responseText = 'გმადლობ (Gmadlob) is how you say "thank you" in Georgian! You\'re very welcome!';
-    } else if (lowerQuery.includes('alphabet') || lowerQuery.includes('letters')) {
-      responseText = 'The Georgian alphabet (ქართული ანბანი) has 33 unique letters. Each letter has a distinct pronunciation. Would you like to learn more about specific letters or the alphabet as a whole?';
-    } else if (lowerQuery.includes('number')) {
-      responseText = 'Here are the basic numbers in Georgian:\n1 - ერთი (erti)\n2 - ორი (ori)\n3 - სამი (sami)\n4 - ოთხი (otkhi)\n5 - ხუთი (khuti)\n6 - ექვსი (ekvsi)\n7 - შვიდი (shvidi)\n8 - რვა (rva)\n9 - ცხრა (tskhra)\n10 - ათი (ati)';
-    } else if (lowerQuery.includes('color')) {
-      responseText = 'Here are some common colors in Georgian:\nRed - წითელი (tsiteli)\nBlue - ლურჯი (lurji)\nGreen - მწვანე (mtsvane)\nYellow - ყვითელი (qviteli)\nBlack - შავი (shavi)\nWhite - თეთრი (tetri)';
-    } else if (lowerQuery.includes('food') || lowerQuery.includes('eat')) {
-      responseText = 'Georgian cuisine is famous for dishes like:\n• ხაჭაპური (khachapuri) - cheese-filled bread\n• ხინკალი (khinkali) - soup dumplings\n• საცივი (satsivi) - walnut sauce with chicken\n• ლობიანი (lobiani) - bean-filled bread\n\nSome simple food vocabulary:\nBread - პური (puri)\nCheese - ყველი (qveli)\nWater - წყალი (tsqali)\nWine - ღვინო (ghvino)';
-    } else if (lowerQuery.includes('how are you')) {
-      responseText = 'In Georgian, you can ask "How are you?" by saying "როგორ ხარ?" (Rogor khar?). To respond that you are good, you can say "კარგად" (Kargad).';
-    } else if (lowerQuery.includes('georgian culture') || lowerQuery.includes('traditions')) {
-      responseText = 'Georgian culture is rich with traditions dating back thousands of years. Georgia is known for its hospitality (სტუმართმოყვარეობა), polyphonic singing, wine-making tradition (8000+ years old!), and elaborate feasts called სუფრა (supra) led by a toastmaster (თამადა).';
-    } else {
-      responseText = 'That\'s an interesting question about Georgian! Could you provide more context or specify what aspect of the language you\'d like to learn about? I can help with vocabulary, grammar, pronunciation, or cultural aspects.';
     }
-    
-    return {
-      id: Date.now().toString(),
-      sender: 'ai',
-      text: responseText,
-      timestamp: new Date(),
-    };
   };
 
   const handleCopyMessage = (text: string) => {
@@ -208,6 +284,31 @@ const ChatPage: React.FC = () => {
               </div>
             )}
             
+            {quotaExceeded && (
+              <div className="flex justify-center">
+                <div className={`rounded-lg p-4 max-w-md ${
+                  theme === 'dark' ? 'bg-amber-900 text-amber-100' : 'bg-amber-100 text-amber-800'
+                }`}>
+                  <p className="text-sm font-medium">
+                    The AI service is currently unavailable due to high demand. Our quota has been exceeded. 
+                    Please try again later or explore the lessons and quizzes in the meantime.
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            {error && !quotaExceeded && (
+              <div className="flex justify-center">
+                <div className={`rounded-lg p-4 max-w-md ${
+                  theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800'
+                }`}>
+                  <p className="text-sm font-medium">
+                    {error}
+                  </p>
+                </div>
+              </div>
+            )}
+            
             <div ref={messagesEndRef} />
           </div>
         </div>
@@ -231,12 +332,13 @@ const ChatPage: React.FC = () => {
                       : 'bg-gray-50 text-gray-900 border-gray-300 focus:border-indigo-500 placeholder-gray-500'
                   } border focus:ring-2 focus:ring-indigo-500`}
                   style={{ maxHeight: '200px' }}
+                  disabled={quotaExceeded || isTyping}
                 />
                 <button
                   type="submit"
-                  disabled={!inputValue.trim()}
+                  disabled={!inputValue.trim() || isTyping || quotaExceeded}
                   className={`absolute right-2 bottom-2 p-2 rounded-full transition-colors ${
-                    inputValue.trim()
+                    inputValue.trim() && !isTyping && !quotaExceeded
                       ? (theme === 'dark' ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-indigo-600 text-white hover:bg-indigo-700')
                       : (theme === 'dark' ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed')
                   }`}
