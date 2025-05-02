@@ -5,7 +5,6 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../hooks/useSubscription';
 import { createCheckoutSession } from '../services/stripeService';
-import { STRIPE_PRODUCTS } from '../stripe-config';
 
 const PricingPage: React.FC = () => {
   const { theme } = useTheme();
@@ -16,7 +15,6 @@ const PricingPage: React.FC = () => {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<'premium' | 'annual'>('premium');
 
   // Check for query parameters that might indicate checkout status
   const params = new URLSearchParams(location.search);
@@ -39,7 +37,7 @@ const PricingPage: React.FC = () => {
       const successUrl = `${window.location.origin}/settings?checkout=success`;
       const cancelUrl = `${window.location.origin}/pricing?checkout=canceled`;
       
-      const session = await createCheckoutSession(selectedPlan, successUrl, cancelUrl);
+      const session = await createCheckoutSession('premium', successUrl, cancelUrl);
       
       // Redirect to Stripe checkout
       if (session?.url) {
@@ -123,7 +121,7 @@ const PricingPage: React.FC = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Plan */}
             <div className={`rounded-lg shadow-lg overflow-hidden ${
               theme === 'dark' ? 'bg-gray-800' : 'bg-white'
@@ -182,16 +180,14 @@ const PricingPage: React.FC = () => {
               </div>
             </div>
             
-            {/* Monthly Premium Plan */}
+            {/* Premium Plan */}
             <div className={`rounded-lg shadow-lg overflow-hidden transform ${
-              selectedPlan === 'premium' && !hasActiveSubscription
-                ? (theme === 'dark' ? 'bg-gray-800 ring-2 ring-blue-500 scale-105' : 'bg-white ring-2 ring-blue-500 scale-105')
-                : (theme === 'dark' ? 'bg-gray-800' : 'bg-white')
+              theme === 'dark' ? 'bg-gray-800 ring-2 ring-blue-500' : 'bg-white ring-2 ring-blue-500'
             }`}>
               <div className={`p-1 text-center text-sm font-semibold ${
                 theme === 'dark' ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'
               }`}>
-                Monthly
+                Premium
               </div>
               <div className={`p-6 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
                 <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -258,96 +254,12 @@ const PricingPage: React.FC = () => {
                   </button>
                 ) : (
                   <button
-                    onClick={() => {
-                      setSelectedPlan('premium');
-                      handleSubscribe();
-                    }}
+                    onClick={handleSubscribe}
                     disabled={loading}
                     className={`w-full px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center ${
                       loading
                         ? (theme === 'dark' ? 'bg-blue-700 text-gray-300 cursor-not-allowed' : 'bg-blue-300 text-gray-500 cursor-not-allowed')
                         : (theme === 'dark' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-600 text-white hover:bg-blue-700')
-                    }`}
-                  >
-                    {loading && selectedPlan === 'premium' ? (
-                      <>
-                        <Loader size={16} className="animate-spin mr-2" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard size={16} className="mr-2" />
-                        Subscribe Now
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
-            </div>
-            
-            {/* Annual Plan */}
-            <div className={`rounded-lg shadow-lg overflow-hidden transform ${
-              selectedPlan === 'annual' && !hasActiveSubscription
-                ? (theme === 'dark' ? 'bg-gray-800 ring-2 ring-green-500 scale-105' : 'bg-white ring-2 ring-green-500 scale-105')
-                : (theme === 'dark' ? 'bg-gray-800' : 'bg-white')
-            }`}>
-              <div className={`p-1 text-center text-sm font-semibold ${
-                theme === 'dark' ? 'bg-green-600 text-white' : 'bg-green-600 text-white'
-              }`}>
-                Best Value
-              </div>
-              <div className={`p-6 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
-                <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Annual
-                </h3>
-                <div className="mt-4 flex items-baseline">
-                  <span className={`text-4xl font-extrabold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    $49.99
-                  </span>
-                  <span className={`ml-1 text-xl font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>
-                    /year
-                  </span>
-                </div>
-                <p className={`mt-1 text-sm ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
-                  Save 16% compared to monthly
-                </p>
-              </div>
-              <div className="p-6 space-y-6">
-                <ul className="space-y-4">
-                  <li className="flex">
-                    <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      All Premium features
-                    </span>
-                  </li>
-                  <li className="flex">
-                    <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Priority support
-                    </span>
-                  </li>
-                  <li className="flex">
-                    <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Early access to new features
-                    </span>
-                  </li>
-                  <li className="flex">
-                    <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      16% savings compared to monthly plan
-                    </span>
-                  </li>
-                </ul>
-                
-                {hasActiveSubscription ? (
-                  <button
-                    onClick={handleManageSubscription}
-                    disabled={loading}
-                    className={`w-full px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center ${
-                      loading
-                        ? (theme === 'dark' ? 'bg-gray-600 text-gray-300 cursor-not-allowed' : 'bg-gray-300 text-gray-500 cursor-not-allowed')
-                        : (theme === 'dark' ? 'bg-gray-600 text-white hover:bg-gray-500' : 'bg-gray-200 text-gray-800 hover:bg-gray-300')
                     }`}
                   >
                     {loading ? (
@@ -358,32 +270,7 @@ const PricingPage: React.FC = () => {
                     ) : (
                       <>
                         <CreditCard size={16} className="mr-2" />
-                        Manage Subscription
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setSelectedPlan('annual');
-                      handleSubscribe();
-                    }}
-                    disabled={loading}
-                    className={`w-full px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center ${
-                      loading
-                        ? (theme === 'dark' ? 'bg-green-700 text-gray-300 cursor-not-allowed' : 'bg-green-300 text-gray-500 cursor-not-allowed')
-                        : (theme === 'dark' ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-green-600 text-white hover:bg-green-700')
-                    }`}
-                  >
-                    {loading && selectedPlan === 'annual' ? (
-                      <>
-                        <Loader size={16} className="animate-spin mr-2" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard size={16} className="mr-2" />
-                        Subscribe Annually
+                        Subscribe Now
                       </>
                     )}
                   </button>

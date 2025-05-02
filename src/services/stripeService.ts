@@ -5,7 +5,7 @@ import { STRIPE_PRODUCTS } from '../stripe-config';
  * Creates a checkout session for a subscription
  */
 export const createCheckoutSession = async (
-  productName: 'premium' | 'annual',
+  productName: 'premium',
   successUrl: string,
   cancelUrl: string
 ) => {
