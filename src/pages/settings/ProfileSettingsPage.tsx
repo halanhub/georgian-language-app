@@ -25,19 +25,21 @@ const ProfileSettingsPage: React.FC = () => {
     news: true
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'success' | 'error' | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setSaveStatus(null);
     
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       // Update user profile logic would go here
       
-      // Show success message
+      setSaveStatus('success');
     } catch (error) {
-      // Handle error
+      setSaveStatus('error');
     } finally {
       setIsLoading(false);
     }
@@ -84,6 +86,22 @@ const ProfileSettingsPage: React.FC = () => {
 
         {/* Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {saveStatus === 'success' && (
+            <div className={`mb-6 p-4 rounded-md ${
+              theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800'
+            }`}>
+              <p>Your profile has been updated successfully!</p>
+            </div>
+          )}
+          
+          {saveStatus === 'error' && (
+            <div className={`mb-6 p-4 rounded-md ${
+              theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800'
+            }`}>
+              <p>There was an error updating your profile. Please try again.</p>
+            </div>
+          )}
+          
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {/* Profile Picture Section */}
             <div className={`md:col-span-1 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg p-6 shadow`}>
@@ -108,6 +126,23 @@ const ProfileSettingsPage: React.FC = () => {
                 <p className={`text-sm overflow-hidden text-ellipsis ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
                   {truncateEmail(user?.email || '')}
                 </p>
+                
+                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <h3 className={`text-sm font-medium mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Support
+                  </h3>
+                  <Link
+                    to="/contact"
+                    className={`flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium ${
+                      theme === 'dark' 
+                        ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                  >
+                    <Mail size={16} className="mr-2" />
+                    Contact Support
+                  </Link>
+                </div>
               </div>
             </div>
 

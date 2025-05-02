@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Mail, Phone, Send } from 'lucide-react';
+import { ArrowLeft, Mail, Send } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
 const ContactPage: React.FC = () => {
@@ -12,6 +12,7 @@ const ContactPage: React.FC = () => {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -24,6 +25,7 @@ const ContactPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus(null);
     
     try {
       // Simulate API call
@@ -34,9 +36,9 @@ const ContactPage: React.FC = () => {
         subject: '',
         message: ''
       });
-      // Show success message
+      setSubmitStatus('success');
     } catch (error) {
-      // Handle error
+      setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
     }
@@ -91,22 +93,6 @@ const ContactPage: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center">
-                    <div className={`p-2 rounded-full mr-4 ${
-                      theme === 'dark' ? 'bg-gray-700' : 'bg-purple-100'
-                    }`}>
-                      <Phone className={theme === 'dark' ? 'text-purple-400' : 'text-purple-600'} size={20} />
-                    </div>
-                    <div>
-                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        Phone
-                      </p>
-                      <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                        +995 XXX XXX XXX
-                      </p>
-                    </div>
-                  </div>
                 </div>
               </div>
 
@@ -154,6 +140,23 @@ const ContactPage: React.FC = () => {
               <h2 className={`text-xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Send us a Message
               </h2>
+              
+              {submitStatus === 'success' && (
+                <div className={`mb-6 p-4 rounded-md ${
+                  theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800'
+                }`}>
+                  <p>Thank you for your message! We'll get back to you within 24 hours.</p>
+                </div>
+              )}
+              
+              {submitStatus === 'error' && (
+                <div className={`mb-6 p-4 rounded-md ${
+                  theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800'
+                }`}>
+                  <p>There was an error sending your message. Please try again later.</p>
+                </div>
+              )}
+              
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label 

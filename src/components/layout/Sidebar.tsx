@@ -18,6 +18,10 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
 const Sidebar: React.FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
@@ -156,7 +160,7 @@ const Sidebar: React.FC = () => {
           </Link>
           
           <Link 
-            to="/beginner/vocabulary/colors" 
+            to="/vocabulary" 
             className={`flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
               isActive('/vocabulary') 
                 ? (theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-red-100 text-red-700') 

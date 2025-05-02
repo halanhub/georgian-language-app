@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { AlignJustify, ArrowRight, Book, Calendar, Palette, Brain, Utensils, Heart, Cat, Clock, Dices } from 'lucide-react';
+import { AlignJustify, ArrowRight, Book, Calendar, Palette, Brain, Utensils, Dices } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -9,101 +9,98 @@ const BeginnerLevelPage: React.FC = () => {
   const { theme } = useTheme();
   const [progress, setProgress] = useState(0);
 
+  // Mock progress calculation - in a real app, this would come from a database
   useEffect(() => {
     if (user) {
-      setProgress(30);
+      // Simulate loading progress data
+      setProgress(30); // Example: 30% progress
     }
   }, [user]);
 
   const topics = [
     { 
+      id: 'colors-shapes', 
+      name: 'Colors & Shapes', 
+      description: 'Learn Georgian colors and geometric shapes',
+      icon: <Palette size={24} />,
+      color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
+      path: '/beginner/vocabulary/colors',
+      progress: 30,
+      content: {
+        colors: [
+          { georgian: 'წითელი', latin: 'tsiteli', english: 'red' },
+          { georgian: 'ლურჯი', latin: 'lurji', english: 'blue' },
+          { georgian: 'ყვითელი', latin: 'qviteli', english: 'yellow' },
+          { georgian: 'მწვანე', latin: 'mtsvane', english: 'green' },
+          { georgian: 'შავი', latin: 'shavi', english: 'black' },
+          { georgian: 'თეთრი', latin: 'tetri', english: 'white' },
+          { georgian: 'ნარინჯისფერი', latin: 'narinjisperi', english: 'orange' },
+          { georgian: 'იისფერი', latin: 'iisperi', english: 'purple' },
+          { georgian: 'ვარდისფერი', latin: 'vardisperi', english: 'pink' },
+          { georgian: 'ყავისფერი', latin: 'qavisperi', english: 'brown' },
+          { georgian: 'ნაცრისფერი', latin: 'nacrisperi', english: 'gray' },
+          { georgian: 'ოქროსფერი', latin: 'okrosperi', english: 'gold' },
+          { georgian: 'ვერცხლისფერი', latin: 'vertskhlisperi', english: 'silver' }
+        ],
+        shapes: [
+          { georgian: 'წრე', latin: 'tsre', english: 'circle' },
+          { georgian: 'კვადრატი', latin: 'kvadrati', english: 'square' },
+          { georgian: 'სამკუთხედი', latin: 'samkutkhedi', english: 'triangle' },
+          { georgian: 'მართკუთხედი', latin: 'martkutkhedi', english: 'rectangle' },
+          { georgian: 'ოვალი', latin: 'ovali', english: 'oval' },
+          { georgian: 'რომბი', latin: 'rombi', english: 'rhombus' },
+          { georgian: 'ხაზი', latin: 'khazi', english: 'line' },
+          { georgian: 'წერტილი', latin: 'tsertili', english: 'point' },
+          { georgian: 'ვარსკვლავი', latin: 'varskvlavi', english: 'star' },
+          { georgian: 'სპირალი', latin: 'spirali', english: 'spiral' },
+          { georgian: 'კუბი', latin: 'kubi', english: 'cube' },
+          { georgian: 'სფერო', latin: 'spero', english: 'sphere' }
+        ]
+      }
+    },
+    { 
       id: 'alphabet', 
       name: 'Georgian Alphabet', 
-      description: 'Learn the 33 unique letters',
+      description: 'Learn the unique 33 letters of the Georgian alphabet',
       icon: <AlignJustify size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
       path: '/beginner/alphabet',
       progress: 30
     },
     { 
-      id: 'basic-vocabulary', 
-      name: 'Basic Vocabulary', 
-      description: 'Essential words and phrases',
-      icon: <Brain size={24} />,
-      color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
-      path: '/beginner/basic-vocabulary',
-      progress: 20
-    },
-    { 
-      id: 'colors-shapes', 
-      name: 'Colors & Shapes', 
-      description: 'Learn colors and shapes',
-      icon: <Palette size={24} />,
-      color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
-      path: '/beginner/colors-and-shapes',
-      progress: 15
-    },
-    { 
       id: 'numbers', 
       name: 'Numbers', 
-      description: 'Count from 1 to 100',
+      description: 'Learn to count in Georgian from 1 to 100',
       icon: <Book size={24} />,
-      color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
-      path: '/beginner/numbers',
-      progress: 0
+      color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
+      path: '/beginner/vocabulary/numbers',
+      progress: 15
     },
     { 
       id: 'months', 
       name: 'Months & Seasons', 
-      description: 'Time expressions',
+      description: 'Learn the months, seasons, and time expressions',
       icon: <Calendar size={24} />,
-      color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
-      path: '/beginner/months-and-seasons',
+      color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
+      path: '/beginner/vocabulary/months',
       progress: 0
     },
     { 
       id: 'food', 
       name: 'Food & Drinks', 
-      description: 'Georgian cuisine basics',
+      description: 'Essential vocabulary for Georgian cuisine',
       icon: <Utensils size={24} />,
-      color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
-      path: '/beginner/food-and-drinks',
+      color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
+      path: '/beginner/vocabulary/food',
       progress: 10
-    },
-    { 
-      id: 'human-body', 
-      name: 'Human Body', 
-      description: 'Body parts and health',
-      icon: <Heart size={24} />,
-      color: theme === 'dark' ? 'bg-pink-900 text-pink-200' : 'bg-pink-100 text-pink-800',
-      path: '/beginner/human-body',
-      progress: 0
-    },
-    { 
-      id: 'animals', 
-      name: 'Animals', 
-      description: 'Common animal names',
-      icon: <Cat size={24} />,
-      color: theme === 'dark' ? 'bg-amber-900 text-amber-200' : 'bg-amber-100 text-amber-800',
-      path: '/beginner/animals',
-      progress: 0
-    },
-    { 
-      id: 'daily-activities', 
-      name: 'Daily Activities', 
-      description: 'Everyday routines',
-      icon: <Clock size={24} />,
-      color: theme === 'dark' ? 'bg-cyan-900 text-cyan-200' : 'bg-cyan-100 text-cyan-800',
-      path: '/beginner/daily-activities',
-      progress: 0
     }
   ];
 
   const quizzes = [
     { id: 'alphabet', name: 'Alphabet Quiz', path: '/beginner/quiz/alphabet' },
-    { id: 'vocabulary', name: 'Basic Vocabulary Quiz', path: '/beginner/quiz/vocabulary' },
     { id: 'colors', name: 'Colors & Shapes Quiz', path: '/beginner/quiz/colors' },
-    { id: 'numbers', name: 'Numbers Quiz', path: '/beginner/quiz/numbers' }
+    { id: 'numbers', name: 'Numbers Quiz', path: '/beginner/quiz/numbers' },
+    { id: 'food', name: 'Food & Drinks Quiz', path: '/beginner/quiz/food' },
   ];
 
   return (
@@ -117,7 +114,7 @@ const BeginnerLevelPage: React.FC = () => {
                 <span className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>Beginner Level</span> - დამწყები
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Start your Georgian language journey with essential vocabulary and basic phrases.
+                Start your Georgian language journey by learning the alphabet, basic vocabulary, and essential phrases for everyday situations.
               </p>
               <div className="flex flex-wrap gap-2">
                 <Link

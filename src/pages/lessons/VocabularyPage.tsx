@@ -1,348 +1,190 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Book, Brain, Check, ChevronDown, ChevronUp, Headphones, MessageSquare, Pencil, Play, Volume2, X } from 'lucide-react';
+import { ArrowLeft, Book, Brain, ChevronDown, ChevronUp, Play, Volume2, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { Card } from '@/components/ui/card';
+
+interface VocabularyItem {
+  georgian: string;
+  latin: string;
+  english: string;
+  example?: string;
+}
+
+interface VocabularyCategory {
+  id: string;
+  title: string;
+  description: string;
+  words: VocabularyItem[];
+}
 
 const VocabularyPage: React.FC = () => {
   const { theme } = useTheme();
-  const [expandedType, setExpandedType] = useState<string | null>(null);
-  const [selectedAnswer, setSelectedAnswer] = useState<string>('');
-  const [showExplanation, setShowExplanation] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const contentRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  const studyTips = {
-    reading: [
-      'Practice reading Georgian texts daily, even if you don\'t understand everything',
-      'Use context clues to guess word meanings',
-      'Create flashcards with Georgian words and their translations',
-      'Read Georgian news websites or children\'s books',
-      'Highlight new words and create a personal dictionary',
-      'Use spaced repetition techniques for vocabulary review',
-      'Practice word recognition with different fonts and handwriting',
-      'Join online Georgian reading groups'
-    ],
-    listening: [
-      'Listen to Georgian podcasts and radio shows',
-      'Watch Georgian movies with subtitles',
-      'Practice with native speaker recordings',
-      'Focus on intonation and pronunciation patterns',
-      'Record yourself repeating words and phrases',
-      'Use language learning apps with audio features',
-      'Listen to Georgian music and try to sing along',
-      'Participate in online language exchange sessions'
-    ],
-    speaking: [
-      'Practice speaking with native Georgian speakers',
-      'Record yourself speaking and analyze your pronunciation',
-      'Use language exchange apps to find conversation partners',
-      'Speak Georgian daily, even if just to yourself',
-      'Focus on proper stress and intonation',
-      'Join Georgian language meetups or online groups',
-      'Practice common phrases and expressions',
-      'Use role-play scenarios to improve fluency'
-    ],
-    writing: [
-      'Keep a daily journal in Georgian',
-      'Practice writing common phrases and sentences',
-      'Use Georgian keyboard layouts for authentic writing',
-      'Write emails or messages to language exchange partners',
-      'Study proper Georgian punctuation rules',
-      'Practice writing both printed and cursive forms',
-      'Create story summaries in Georgian',
-      'Participate in online Georgian writing workshops'
-    ]
-  };
-
-  const vocabularyTypes = [
+  const vocabularyCategories: VocabularyCategory[] = [
     {
-      id: 'reading',
-      title: 'Reading Vocabulary',
-      description: 'Words you recognize when reading',
-      icon: <Book size={24} />,
-      color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
-      examples: [
-        'სახლი (sakhli) - house',
-        'წიგნი (tsigni) - book',
-        'კარი (kari) - door',
-        'ფანჯარა (panjara) - window',
-        'მაგიდა (magida) - table',
-        'სკამი (skami) - chair',
-        'საწოლი (satsoli) - bed',
-        'ტელევიზორი (televizori) - television',
-        'კომპიუტერი (kompyuteri) - computer',
-        'ტელეფონი (teleponi) - phone',
-        'ჟურნალი (zhurnali) - magazine',
-        'გაზეთი (gazeti) - newspaper',
-        'წერილი (tserili) - letter'
-      ],
-      exercises: [
-        {
-          question: 'Match the word with its meaning: სახლი',
-          options: ['Book', 'House', 'Door', 'Window'],
-          correct: 'House',
-          explanation: 'სახლი (sakhli) means "house" in Georgian'
-        },
-        {
-          question: 'What does "წიგნი" mean?',
-          options: ['Magazine', 'Newspaper', 'Book', 'Letter'],
-          correct: 'Book',
-          explanation: 'წიგნი (tsigni) is the Georgian word for "book"'
-        },
-        {
-          question: 'Identify the correct translation: ფანჯარა',
-          options: ['Door', 'Window', 'Chair', 'Table'],
-          correct: 'Window',
-          explanation: 'ფანჯარა (panjara) means "window" in Georgian'
-        },
-        {
-          question: 'Choose the correct word for "television"',
-          options: ['ტელეფონი', 'კომპიუტერი', 'ტელევიზორი', 'რადიო'],
-          correct: 'ტელევიზორი',
-          explanation: 'ტელევიზორი (televizori) is the Georgian word for "television"'
-        },
-        {
-          question: 'What is the meaning of "გაზეთი"?',
-          options: ['Magazine', 'Newspaper', 'Letter', 'Book'],
-          correct: 'Newspaper',
-          explanation: 'გაზეთი (gazeti) means "newspaper" in Georgian'
-        }
+      id: 'weather',
+      title: 'Weather & Climate',
+      description: 'Weather conditions and climate vocabulary',
+      words: [
+        { georgian: 'ამინდი', latin: 'amindi', english: 'weather', example: 'დღეს კარგი ამინდია - Today is good weather' },
+        { georgian: 'წვიმა', latin: 'tsvima', english: 'rain', example: 'წვიმს - It\'s raining' },
+        { georgian: 'თოვლი', latin: 'tovli', english: 'snow', example: 'თოვს - It\'s snowing' },
+        { georgian: 'მზე', latin: 'mze', english: 'sun', example: 'მზე ანათებს - The sun is shining' },
+        { georgian: 'ღრუბელი', latin: 'ghrubeli', english: 'cloud', example: 'ცაზე ღრუბელია - There are clouds in the sky' },
+        { georgian: 'ქარი', latin: 'qari', english: 'wind', example: 'ძლიერი ქარი ქრის - Strong wind is blowing' },
+        { georgian: 'ელვა', latin: 'elva', english: 'lightning', example: 'ელვა გაკრთა - Lightning flashed' },
+        { georgian: 'ჭექა-ქუხილი', latin: 'cheqa-qukhili', english: 'thunder', example: 'ჭექა-ქუხილი ისმის - Thunder can be heard' }
       ]
     },
     {
-      id: 'listening',
-      title: 'Listening Vocabulary',
-      description: 'Words you understand when hearing',
-      icon: <Headphones size={24} />,
-      color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
-      examples: [
-        'გამარჯობა (gamarjoba) - hello',
-        'მადლობა (madloba) - thank you',
-        'კარგი (kargi) - good',
-        'ნახვამდის (nakhvamdis) - goodbye',
-        'გთხოვთ (gtxovt) - please',
-        'კი (ki) - yes',
-        'არა (ara) - no',
-        'როგორ ხარ? (rogor khar?) - how are you?',
-        'კარგად (kargad) - well',
-        'გაიგე? (gaige?) - did you understand?',
-        'გაიმეორე (gaimeoret) - repeat',
-        'ნელა (nela) - slowly',
-        'კიდევ (kidev) - again'
-      ],
-      exercises: [
-        {
-          question: 'Listen and choose the correct greeting',
-          options: ['გამარჯობა', 'ნახვამდის', 'მადლობა', 'გთხოვთ'],
-          correct: 'გამარჯობა',
-          explanation: 'გამარჯობა (gamarjoba) is the standard Georgian greeting'
-        },
-        {
-          question: 'What does "კარგად" mean when you hear it?',
-          options: ['Hello', 'Goodbye', 'Well', 'Please'],
-          correct: 'Well',
-          explanation: 'კარგად (kargad) means "well" and is often used in response to "როგორ ხარ?"'
-        },
-        {
-          question: 'Choose the correct response to "გაიგე?"',
-          options: ['კი', 'ნახვამდის', 'გთხოვთ', 'გაიმეორე'],
-          correct: 'კი',
-          explanation: 'კი (ki) meaning "yes" is an appropriate response to "did you understand?"'
-        },
-        {
-          question: 'What would you say to ask someone to speak more slowly?',
-          options: ['კიდევ', 'ნელა', 'კარგი', 'არა'],
-          correct: 'ნელა',
-          explanation: 'ნელა (nela) means "slowly" and is used to ask someone to speak more slowly'
-        },
-        {
-          question: 'Identify the correct farewell expression',
-          options: ['გამარჯობა', 'მადლობა', 'ნახვამდის', 'გთხოვთ'],
-          correct: 'ნახვამდის',
-          explanation: 'ნახვამდის (nakhvamdis) is the standard way to say "goodbye" in Georgian'
-        }
+      id: 'travel',
+      title: 'Travel & Transportation',
+      description: 'Vocabulary for travel and getting around',
+      words: [
+        { georgian: 'მანქანა', latin: 'manqana', english: 'car', example: 'მანქანით მივდივარ - I go by car' },
+        { georgian: 'ავტობუსი', latin: 'avtobusi', english: 'bus', example: 'ავტობუსით მგზავრობა - Traveling by bus' },
+        { georgian: 'მატარებელი', latin: 'matarebeli', english: 'train', example: 'მატარებელი მოდის - The train is coming' },
+        { georgian: 'თვითმფრინავი', latin: 'tvitmfrinavi', english: 'airplane', example: 'თვითმფრინავით მივფრინავ - I fly by airplane' },
+        { georgian: 'აეროპორტი', latin: 'aeroporti', english: 'airport', example: 'აეროპორტში მივდივარ - I am going to the airport' },
+        { georgian: 'სადგური', latin: 'sadguri', english: 'station', example: 'მეტროს სადგური - Metro station' },
+        { georgian: 'ბილეთი', latin: 'bileti', english: 'ticket', example: 'ბილეთის ყიდვა - Buying a ticket' },
+        { georgian: 'მგზავრობა', latin: 'mgzavroba', english: 'journey', example: 'გრძელი მგზავრობა - Long journey' }
       ]
     },
     {
-      id: 'speaking',
-      title: 'Speaking Vocabulary',
-      description: 'Words you use when talking',
-      icon: <MessageSquare size={24} />,
-      color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
-      examples: [
-        'დიახ (diakh) - yes',
-        'არა (ara) - no',
-        'გთხოვთ (gtkhovt) - please',
-        'გმადლობთ (gmadlobt) - thank you',
-        'ბოდიში (bodishi) - sorry',
-        'გასაგებია (gasagebia) - I understand',
-        'არ ვიცი (ar vitsi) - I don\'t know',
-        'მინდა (minda) - I want',
-        'მიყვარს (miqvars) - I love',
-        'მომწონს (momtsons) - I like',
-        'დამეხმარე (damekhmare) - help me',
-        'გაიმეორეთ (gaimeoret) - repeat please',
-        'რა ღირს? (ra ghirs?) - how much is it?'
-      ],
-      exercises: [
-        {
-          question: 'Practice saying: How would you say "I don\'t know" in Georgian?',
-          options: ['მინდა', 'არ ვიცი', 'გასაგებია', 'ბოდიში'],
-          correct: 'არ ვიცი',
-          explanation: 'არ ვიცი (ar vitsi) is how you say "I don\'t know" in Georgian'
-        },
-        {
-          question: 'What would you say to express "I like it"?',
-          options: ['მიყვარს', 'მომწონს', 'მინდა', 'გთხოვთ'],
-          correct: 'მომწონს',
-          explanation: 'მომწონს (momtsons) means "I like" in Georgian'
-        },
-        {
-          question: 'How do you ask for help in Georgian?',
-          options: ['გაიმეორეთ', 'დამეხმარე', 'რა ღირს?', 'ბოდიში'],
-          correct: 'დამეხმარე',
-          explanation: 'დამეხმარე (damekhmare) means "help me" in Georgian'
-        },
-        {
-          question: 'Choose the correct way to ask "How much is it?"',
-          options: ['გმადლობთ', 'რა ღირს?', 'გასაგებია', 'მინდა'],
-          correct: 'რა ღირს?',
-          explanation: 'რა ღირს? (ra ghirs?) is how you ask "How much is it?" in Georgian'
-        },
-        {
-          question: 'What would you say to apologize?',
-          options: ['გთხოვთ', 'ბოდიში', 'დიახ', 'არა'],
-          correct: 'ბოდიში',
-          explanation: 'ბოდიში (bodishi) means "sorry" in Georgian'
-        }
+      id: 'nature',
+      title: 'Nature & Environment',
+      description: 'Natural world and environmental terms',
+      words: [
+        { georgian: 'ტყე', latin: 'tqe', english: 'forest', example: 'დიდი ტყე - Big forest' },
+        { georgian: 'მთა', latin: 'mta', english: 'mountain', example: 'მაღალი მთა - High mountain' },
+        { georgian: 'მდინარე', latin: 'mdinare', english: 'river', example: 'გრძელი მდინარე - Long river' },
+        { georgian: 'ზღვა', latin: 'zghva', english: 'sea', example: 'შავი ზღვა - Black Sea' },
+        { georgian: 'ტბა', latin: 'tba', english: 'lake', example: 'ლამაზი ტბა - Beautiful lake' },
+        { georgian: 'ყვავილი', latin: 'qvavili', english: 'flower', example: 'წითელი ყვავილი - Red flower' },
+        { georgian: 'ხე', latin: 'khe', english: 'tree', example: 'მაღალი ხე - Tall tree' },
+        { georgian: 'ბალახი', latin: 'balakhi', english: 'grass', example: 'მწვანე ბალახი - Green grass' }
       ]
     },
     {
-      id: 'writing',
-      title: 'Writing Vocabulary',
-      description: 'Words you use when writing',
-      icon: <Pencil size={24} />,
-      color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
-      examples: [
-        'და (da) - and',
-        'მაგრამ (magram) - but',
-        'რომ (rom) - that',
-        'თუ (tu) - if',
-        'ან (an) - or',
-        'რადგან (radgan) - because',
-        'ასევე (aseve) - also',
-        'შემდეგ (shemdeg) - after',
-        'პირველი (pirveli) - first',
-        'ბოლოს (bolos) - finally',
-        'მაგალითად (magalitad) - for example',
-        'სხვათაშორის (skhvatashоris) - by the way',
-        'მიუხედავად (miukhedavad) - despite'
-      ],
-      exercises: [
-        {
-          question: 'Complete the sentence: მე მინდა წასვლა, _____ არ შემიძლია',
-          options: ['და', 'მაგრამ', 'რომ', 'თუ'],
-          correct: 'მაგრამ',
-          explanation: 'მაგრამ (magram) means "but" and is used to show contrast'
-        },
-        {
-          question: 'Choose the correct word for "because"',
-          options: ['რადგან', 'ასევე', 'შემდეგ', 'ბოლოს'],
-          correct: 'რადგან',
-          explanation: 'რადგან (radgan) means "because" and is used to give reasons'
-        },
-        {
-          question: 'What conjunction means "and"?',
-          options: ['ან', 'და', 'თუ', 'რომ'],
-          correct: 'და',
-          explanation: 'და (da) is the Georgian word for "and"'
-        },
-        {
-          question: 'Select the word meaning "for example"',
-          options: ['მაგალითად', 'სხვათაშორის', 'მიუხედავად', 'ასევე'],
-          correct: 'მაგალითად',
-          explanation: 'მაგალითად (magalitad) means "for example" in Georgian'
-        },
-        {
-          question: 'Which word means "despite"?',
-          options: ['შემდეგ', 'პირველი', 'მიუხედავად', 'ბოლოს'],
-          correct: 'მიუხედავად',
-          explanation: 'მიუხედავად (miukhedavad) means "despite" in Georgian'
-        }
+      id: 'emotions',
+      title: 'Emotions & Feelings',
+      description: 'Words to express emotions and feelings',
+      words: [
+        { georgian: 'ბედნიერება', latin: 'bedniereba', english: 'happiness', example: 'დიდი ბედნიერება - Great happiness' },
+        { georgian: 'სიყვარული', latin: 'siqvaruli', english: 'love', example: 'შენი სიყვარული - Your love' },
+        { georgian: 'სიხარული', latin: 'sikharuli', english: 'joy', example: 'სიხარულით სავსე - Full of joy' },
+        { georgian: 'მოწყენილობა', latin: 'motsqeniloba', english: 'sadness', example: 'მოწყენილობა მეუფლება - Sadness overtakes me' },
+        { georgian: 'ბრაზი', latin: 'brazi', english: 'anger', example: 'ბრაზი მოდის - Anger comes' },
+        { georgian: 'შიში', latin: 'shishi', english: 'fear', example: 'შიშის გრძნობა - Feeling of fear' },
+        { georgian: 'გაკვირვება', latin: 'gakvirveba', english: 'surprise', example: 'დიდი გაკვირვება - Big surprise' },
+        { georgian: 'იმედი', latin: 'imedi', english: 'hope', example: 'იმედი მაქვს - I have hope' }
+      ]
+    },
+    {
+      id: 'professions',
+      title: 'Professions & Occupations',
+      description: 'Common jobs and career vocabulary',
+      words: [
+        { georgian: 'მასწავლებელი', latin: 'mastsavlebeli', english: 'teacher', example: 'კარგი მასწავლებელი - Good teacher' },
+        { georgian: 'ექიმი', latin: 'eqimi', english: 'doctor', example: 'გამოცდილი ექიმი - Experienced doctor' },
+        { georgian: 'ინჟინერი', latin: 'inzhineri', english: 'engineer', example: 'ნიჭიერი ინჟინერი - Talented engineer' },
+        { georgian: 'მძღოლი', latin: 'mdzgholi', english: 'driver', example: 'ავტობუსის მძღოლი - Bus driver' },
+        { georgian: 'მზარეული', latin: 'mzareuli', english: 'cook', example: 'პროფესიონალი მზარეული - Professional cook' },
+        { georgian: 'მუსიკოსი', latin: 'musikosi', english: 'musician', example: 'ცნობილი მუსიკოსი - Famous musician' },
+        { georgian: 'მხატვარი', latin: 'mkhtvari', english: 'artist', example: 'ნიჭიერი მხატვარი - Talented artist' },
+        { georgian: 'პროგრამისტი', latin: 'programisti', english: 'programmer', example: 'გამოცდილი პროგრამისტი - Experienced programmer' }
+      ]
+    },
+    {
+      id: 'technology',
+      title: 'Technology & Devices',
+      description: 'Modern technology vocabulary',
+      words: [
+        { georgian: 'კომპიუტერი', latin: 'kompiuteri', english: 'computer', example: 'ახალი კომპიუტერი - New computer' },
+        { georgian: 'ტელეფონი', latin: 'telefoni', english: 'phone', example: 'ჭკვიანი ტელეფონი - Smartphone' },
+        { georgian: 'ინტერნეტი', latin: 'interneti', english: 'internet', example: 'სწრაფი ინტერნეტი - Fast internet' },
+        { georgian: 'აპლიკაცია', latin: 'aplikatsia', english: 'application', example: 'სასარგებლო აპლიკაცია - Useful application' },
+        { georgian: 'ვებგვერდი', latin: 'vebgverdi', english: 'website', example: 'საინტერესო ვებგვერდი - Interesting website' },
+        { georgian: 'პროგრამა', latin: 'programa', english: 'program', example: 'ახალი პროგრამა - New program' },
+        { georgian: 'ელფოსტა', latin: 'elposta', english: 'email', example: 'ელფოსტის გაგზავნა - Sending an email' },
+        { georgian: 'პაროლი', latin: 'paroli', english: 'password', example: 'უსაფრთხო პაროლი - Secure password' }
+      ]
+    },
+    {
+      id: 'shopping',
+      title: 'Shopping & Commerce',
+      description: 'Vocabulary for shopping and business',
+      words: [
+        { georgian: 'მაღაზია', latin: 'maghazia', english: 'store', example: 'დიდი მაღაზია - Big store' },
+        { georgian: 'ფასი', latin: 'pasi', english: 'price', example: 'კარგი ფასი - Good price' },
+        { georgian: 'ფული', latin: 'puli', english: 'money', example: 'ბევრი ფული - Lots of money' },
+        { georgian: 'ყიდვა', latin: 'qidva', english: 'buying', example: 'საჭმლის ყიდვა - Buying food' },
+        { georgian: 'გაყიდვა', latin: 'gaqidva', english: 'selling', example: 'სახლის გაყიდვა - Selling a house' },
+        { georgian: 'ფასდაკლება', latin: 'pasdakleba', english: 'discount', example: 'დიდი ფასდაკლება - Big discount' },
+        { georgian: 'ბარათი', latin: 'barati', english: 'card', example: 'საკრედიტო ბარათი - Credit card' },
+        { georgian: 'ქვითარი', latin: 'qvitari', english: 'receipt', example: 'ქვითრის შენახვა - Keeping the receipt' }
+      ]
+    },
+    {
+      id: 'health',
+      title: 'Health & Wellness',
+      description: 'Health-related vocabulary',
+      words: [
+        { georgian: 'ჯანმრთელობა', latin: 'janmrteloba', english: 'health', example: 'კარგი ჯანმრთელობა - Good health' },
+        { georgian: 'ავადმყოფობა', latin: 'avadmqopoba', english: 'illness', example: 'მძიმე ავადმყოფობა - Serious illness' },
+        { georgian: 'ექიმი', latin: 'eqimi', english: 'doctor', example: 'კარგი ექიმი - Good doctor' },
+        { georgian: 'წამალი', latin: 'tsamali', english: 'medicine', example: 'წამლის მიღება - Taking medicine' },
+        { georgian: 'ტკივილი', latin: 'tkivili', english: 'pain', example: 'თავის ტკივილი - Headache' },
+        { georgian: 'ვარჯიში', latin: 'varjishi', english: 'exercise', example: 'რეგულარული ვარჯიში - Regular exercise' },
+        { georgian: 'დასვენება', latin: 'dasveneba', english: 'rest', example: 'კარგი დასვენება - Good rest' },
+        { georgian: 'ძილი', latin: 'dzili', english: 'sleep', example: 'ღრმა ძილი - Deep sleep' }
       ]
     }
   ];
 
-  const toggleType = (typeId: string) => {
-    if (expandedType === typeId) {
-      setExpandedType(null);
+  const toggleCategory = (categoryId: string) => {
+    if (expandedCategory === categoryId) {
+      setExpandedCategory(null);
     } else {
-      setExpandedType(typeId);
+      setExpandedCategory(categoryId);
       setTimeout(() => {
-        if (contentRefs.current[typeId]) {
-          contentRefs.current[typeId]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (categoryRefs.current[categoryId]) {
+          categoryRefs.current[categoryId]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }, 100);
     }
   };
 
   const playAudio = (word: string) => {
-    if (audioRef.current) {
-      if (isPlaying === word) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-        setIsPlaying(null);
-      } else {
-        audioRef.current.src = `https://api.example.com/audio/${word}.mp3`;
-        audioRef.current.play().catch(error => {
-          console.error('Error playing audio:', error);
-        });
-        setIsPlaying(word);
-      }
-    }
-  };
-
-  const playAllAudio = (words: string[]) => {
-    let currentIndex = 0;
-
-    const playNext = () => {
-      if (currentIndex < words.length) {
-        playAudio(words[currentIndex]);
-        currentIndex++;
-      }
-    };
-
-    if (audioRef.current) {
-      audioRef.current.addEventListener('ended', playNext);
-      playNext();
+    if (isPlaying === word) {
+      setIsPlaying(null);
+    } else {
+      setIsPlaying(word);
+      // Here you would normally play the audio file
+      setTimeout(() => setIsPlaying(null), 1000);
     }
   };
 
   return (
     <div className="pt-16 pb-16">
-      <audio 
-        ref={audioRef} 
-        onEnded={() => setIsPlaying(null)}
-        onError={() => {
-          console.log('Audio file not found or error playing audio');
-          setIsPlaying(null);
-        }}
-      />
-      
-      <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-green-50'}`}>
+      <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gradient-to-br from-indigo-50 to-purple-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-green-400' : 'text-green-600'}>Vocabulary Types</span>
+                <span className={theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600'}>Vocabulary</span> - ლექსიკა
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Master different types of Georgian vocabulary to improve your language skills.
+                Explore Georgian vocabulary by categories to expand your language skills.
               </p>
               <div className="flex flex-wrap gap-2">
                 <Link
-                  to="/beginner"
+                  to="/"
                   className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
                     theme === 'dark' 
                       ? 'bg-gray-700 text-white hover:bg-gray-600' 
@@ -350,30 +192,21 @@ const VocabularyPage: React.FC = () => {
                   }`}
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to Beginner Level
-                </Link>
-                <Link
-                  to="/beginner/quiz/vocabulary"
-                  className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
-                    theme === 'dark' ? 'bg-green-700 text-white hover:bg-green-800' : 'bg-green-600 text-white hover:bg-green-700'
-                  }`}
-                >
-                  Take Quiz
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  Back to Home
                 </Link>
               </div>
             </div>
             <div className="hidden md:block md:w-1/3">
-              <div className={`p-6 rounded-lg shadow-xl ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
-                <Brain className={`w-12 h-12 mb-4 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
+              <div className={`p-6 rounded-lg shadow-xl ${theme === 'dark' ? 'bg-gray-700' : 'bg-white bg-opacity-50 backdrop-blur-lg'}`}>
+                <Brain className={`w-12 h-12 mb-4 ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600'}`} />
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Learning Path
+                  Learning Tips
                 </h3>
                 <ul className={`space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  <li>• Start with reading vocabulary</li>
-                  <li>• Practice listening comprehension</li>
-                  <li>• Build speaking confidence</li>
-                  <li>• Develop writing skills</li>
+                  <li>• Focus on one category at a time</li>
+                  <li>• Practice pronunciation with audio</li>
+                  <li>• Create flashcards for review</li>
+                  <li>• Use words in simple sentences</li>
                 </ul>
               </div>
             </div>
@@ -383,164 +216,69 @@ const VocabularyPage: React.FC = () => {
 
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-8">
-            {vocabularyTypes.map((type) => (
+          <div className="space-y-6">
+            {vocabularyCategories.map((category) => (
               <div
-                key={type.id}
-                className={`rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg overflow-hidden`}
-                ref={el => contentRefs.current[type.id] = el}
+                key={category.id}
+                ref={el => categoryRefs.current[category.id] = el}
               >
                 <button
-                  onClick={() => toggleType(type.id)}
-                  className={`w-full p-6 flex items-center justify-between ${
-                    theme === 'dark' ? 'hover:bg-gray-750' : 'hover:bg-gray-50'
-                  }`}
+                  onClick={() => toggleCategory(category.id)}
+                  className={`w-full p-6 rounded-lg text-left transition-colors ${
+                    theme === 'dark' ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
+                  } shadow-lg`}
                 >
-                  <div className="flex items-center">
-                    <div className={`p-3 rounded-full mr-4 ${type.color}`}>
-                      {type.icon}
-                    </div>
-                    <div className="text-left">
-                      <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {type.title}
-                      </h3>
-                      <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                        {type.description}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {category.title}
+                      </h2>
+                      <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                        {category.description}
                       </p>
                     </div>
+                    {expandedCategory === category.id ? (
+                      <ChevronUp className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
+                    ) : (
+                      <ChevronDown className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
+                    )}
                   </div>
-                  {expandedType === type.id ? (
-                    <ChevronUp className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
-                  ) : (
-                    <ChevronDown className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
-                  )}
                 </button>
 
-                {expandedType === type.id && (
-                  <div className="p-6 border-t border-gray-200 dark:border-gray-700">
-                    <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'} mb-6`}>
-                      <div className="flex justify-between items-center mb-4">
-                        <h4 className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                          Study Tips for {type.title}:
-                        </h4>
-                        <button
-                          onClick={() => playAllAudio(type.examples.map(ex => ex.split(' ')[0]))}
-                          className={`flex items-center px-3 py-1 rounded-md ${
-                            theme === 'dark' 
-                              ? 'bg-gray-600 text-gray-200 hover:bg-gray-500' 
-                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                          }`}
-                        >
-                          <Volume2 size={16} className="mr-2" />
-                          Play All
-                        </button>
-                      </div>
-                      <ul className={`space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                        {studyTips[type.id as keyof typeof studyTips].map((tip, i) => (
-                          <li key={i} className="flex items-start">
-                            <Check size={16} className={`mt-1 mr-2 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
-                            <span>{tip}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'} mb-6`}>
-                      <h4 className={`font-medium mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        Example Words:
-                      </h4>
-                      <ul className={`space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                        {type.examples.map((example, i) => (
-                          <li key={i} className="flex items-center justify-between">
-                            <div>
-                              <span className="font-medium">{example}</span>
-                              <span className="text-sm opacity-75 ml-2">(pronunciation)</span>
-                            </div>
-                            <button
-                              onClick={() => playAudio(example.split(' ')[0])}
-                              className={`p-2 rounded-full transition-colors ${
-                                isPlaying === example.split(' ')[0]
-                                  ? (theme === 'dark' ? 'bg-blue-600' : 'bg-blue-500')
-                                  : (theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500' : 'bg-gray-200 hover:bg-gray-300')
-                              }`}
-                            >
-                              <Play size={16} className={
-                                isPlaying === example.split(' ')[0]
-                                  ? 'text-white'
-                                  : (theme === 'dark' ? 'text-gray-300' : 'text-gray-700')
-                              } />
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h4 className={`font-medium mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        Practice Exercises:
-                      </h4>
-                      <div className="space-y-6">
-                        {type.exercises.map((exercise, i) => (
-                          <div key={i} className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
-                            <div className="flex items-center justify-between mb-4">
-                              <p className={`${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                {exercise.question}
-                              </p>
-                              {exercise.audio && (
-                                <button
-                                  onClick={() => playAudio(exercise.audio!)}
-                                  className={`p-2 rounded-full ${
-                                    theme === 'dark' 
-                                      ? 'bg-gray-600 hover:bg-gray-500' 
-                                      : 'bg-gray-200 hover:bg-gray-300'
-                                  }`}
-                                >
-                                  <Play size={16} />
-                                </button>
-                              )}
-                            </div>
-
-                            <div className="space-y-2">
-                              {exercise.options.map((option, j) => (
-                                <button
-                                  key={j}
-                                  onClick={() => {
-                                    setSelectedAnswer(option);
-                                    setShowExplanation(true);
-                                  }}
-                                  className={`w-full text-left p-4 rounded-lg transition-colors ${
-                                    selectedAnswer === option
-                                      ? option === exercise.correct
-                                        ? (theme === 'dark' ? 'bg-green-900 text-white' : 'bg-green-100 text-green-800')
-                                        : (theme === 'dark' ? 'bg-red-900 text-white' : 'bg-red-100 text-red-800')
-                                      : (theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500' : 'bg-white hover:bg-gray-100')
-                                  }`}
-                                >
-                                  <div className="flex items-center justify-between">
-                                    <span>{option}</span>
-                                    {selectedAnswer === option && (
-                                      option === exercise.correct
-                                        ? <Check size={18} className="text-green-500" />
-                                        : <X size={18} className="text-red-500" />
-                                    )}
-                                  </div>
-                                </button>
-                              ))}
-                            </div>
-
-                            {showExplanation && selectedAnswer && (
-                              <div className={`mt-4 p-4 rounded-lg ${
-                                selectedAnswer === exercise.correct
-                                  ? (theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800')
-                                  : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
-                              }`}>
-                                <p>{exercise.explanation}</p>
-                              </div>
+                {expandedCategory === category.id && (
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {category.words.map((word, index) => (
+                      <Card key={index} className={`p-6 ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-700' : 'bg-white border-gray-200'}`}>
+                        <div className="flex items-center justify-between mb-4">
+                          <span className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            {word.georgian}
+                          </span>
+                          <button
+                            onClick={() => playAudio(word.georgian)}
+                            className={`p-2 rounded-full transition-colors ${
+                              isPlaying === word.georgian
+                                ? (theme === 'dark' ? 'bg-indigo-600' : 'bg-indigo-500')
+                                : (theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200')
+                            }`}
+                          >
+                            {isPlaying === word.georgian ? (
+                              <X size={16} className="text-white" />
+                            ) : (
+                              <Volume2 size={16} className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} />
                             )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                          </button>
+                        </div>
+                        <div className={`space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                            /{word.latin}/
+                          </p>
+                          <p className="font-medium">{word.english}</p>
+                          {word.example && (
+                            <p className="text-sm italic">{word.example}</p>
+                          )}
+                        </div>
+                      </Card>
+                    ))}
                   </div>
                 )}
               </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check, ChevronDown, ChevronUp, Pencil, Play, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -49,75 +49,116 @@ const exerciseCategories: ExerciseCategory[] = [
         expectedAnswer: 'მე ვსწავლობ ქართულს',
         hint: 'Structure: მე (I) + ვსწავლობ (am learning) + ქართულს (Georgian)',
         explanation: 'The verb სწავლა (to learn) becomes ვსწავლობ in first person present tense'
-      }
-    ]
-  },
-  {
-    id: 'daily',
-    title: 'Daily Activities',
-    description: 'Write about everyday activities in Georgian',
-    exercises: [
+      },
       {
-        id: 'morning',
+        id: 'daily-routine',
         type: 'composition',
-        prompt: 'Write three sentences about your morning routine',
-        example: 'დილით ადრე ვდგები. ყავას ვსვამ. საუზმეს ვამზადებ.',
-        hint: 'Use present tense verbs and time expressions',
-        explanation: 'Morning routine verbs: ადგომა (wake up), დალევა (drink), მომზადება (prepare)'
+        prompt: 'Write a sentence about your morning routine using the verb "ადგომა" (to wake up)',
+        example: 'დილით ადრე ვდგები - I wake up early in the morning',
+        hint: 'Use დილით (in the morning) and the appropriate form of ვდგები (I wake up)',
+        explanation: 'Morning routine sentences typically start with a time expression like დილით'
       },
       {
-        id: 'activities',
+        id: 'likes',
         type: 'translation',
-        prompt: 'Translate: "I go to work at 9 AM"',
-        expectedAnswer: 'მე სამსახურში მივდივარ ცხრა საათზე',
-        hint: 'Structure: მე + სამსახურში (to work) + მივდივარ (I go) + time',
-        explanation: 'Time expressions in Georgian use -ზე suffix to indicate "at" (specific time)'
+        prompt: 'Translate: "I like Georgian food"',
+        expectedAnswer: 'მე მომწონს ქართული საჭმელი',
+        hint: 'Use მომწონს (like) with the appropriate adjective form',
+        explanation: 'ქართული is the adjective form of საქართველო (Georgia)'
       }
     ]
   },
   {
-    id: 'descriptions',
-    title: 'Descriptions and Details',
-    description: 'Practice descriptive writing in Georgian',
+    id: 'intermediate',
+    title: 'Intermediate Sentences',
+    description: 'Create more complex Georgian sentences',
     exercises: [
       {
-        id: 'weather',
+        id: 'past-tense',
+        type: 'translation',
+        prompt: 'Write in the past tense: "I went to Tbilisi yesterday"',
+        expectedAnswer: 'გუშინ თბილისში წავედი',
+        hint: 'Use გუშინ (yesterday) and the past tense form წავედი (went)',
+        explanation: 'Past tense verbs often change their form significantly from present tense'
+      },
+      {
+        id: 'future-plans',
         type: 'composition',
-        prompt: 'Describe today\'s weather in Georgian',
-        example: 'დღეს მზიანი ამინდია. ცოტა ქარიანია.',
-        hint: 'Use weather-related vocabulary: მზიანი (sunny), წვიმიანი (rainy), ქარიანი (windy)',
-        explanation: 'Weather descriptions typically use -ია ending to indicate state'
+        prompt: 'Write about your future plans using მინდა (want)',
+        example: 'მინდა საქართველოში წასვლა - I want to go to Georgia',
+        hint: 'Structure: მინდა + action in verbal noun form',
+        explanation: 'Future intentions are often expressed using მინდა with a verbal noun'
       },
       {
-        id: 'family',
+        id: 'conditional',
         type: 'translation',
-        prompt: 'Translate: "I have two brothers and one sister"',
-        expectedAnswer: 'მე მყავს ორი ძმა და ერთი და',
-        hint: 'Use მყავს (have for animate objects) instead of მაქვს',
-        explanation: 'Georgian uses different verbs for possession based on the type of object'
+        prompt: 'Translate: "If it rains, I will stay home"',
+        expectedAnswer: 'თუ იწვიმებს, სახლში დავრჩები',
+        hint: 'Use თუ (if) and future tense forms',
+        explanation: 'Conditional sentences use თუ for "if" and typically use future tense in both clauses'
+      },
+      {
+        id: 'complex-sentence',
+        type: 'composition',
+        prompt: 'Create a sentence using both რომ (that) and მინდა (want)',
+        example: 'მინდა, რომ ქართული ვისწავლო - I want to learn Georgian',
+        hint: 'რომ is used to connect clauses in complex sentences',
+        explanation: 'Complex sentences with რომ require specific verb forms in the subordinate clause'
+      },
+      {
+        id: 'reason',
+        type: 'translation',
+        prompt: 'Translate: "I am learning Georgian because I love the culture"',
+        expectedAnswer: 'ვსწავლობ ქართულს, რადგან მიყვარს კულტურა',
+        hint: 'Use რადგან (because) to connect the two ideas',
+        explanation: 'Causal relationships are expressed using რადგან followed by a complete clause'
       }
     ]
   },
   {
-    id: 'correction',
-    title: 'Error Correction',
-    description: 'Find and fix mistakes in Georgian sentences',
+    id: 'advanced',
+    title: 'Advanced Writing',
+    description: 'Master complex Georgian sentence structures',
     exercises: [
       {
-        id: 'word-order',
-        type: 'correction',
-        prompt: 'Correct this sentence: "წიგნს კითხულობს ის"',
-        expectedAnswer: 'ის წიგნს კითხულობს',
-        hint: 'Georgian typically follows Subject-Object-Verb order',
-        explanation: 'The natural word order in Georgian is Subject-Object-Verb (SOV)'
+        id: 'subjunctive',
+        type: 'translation',
+        prompt: 'Express wish: "I wish I could speak Georgian fluently"',
+        expectedAnswer: 'ნეტავ ქართულად თავისუფლად ლაპარაკი შემეძლოს',
+        hint: 'Use ნეტავ for wishes and subjunctive mood',
+        explanation: 'Wishes use ნეტავ and require the verb in subjunctive mood'
       },
       {
-        id: 'verb-agreement',
-        type: 'correction',
-        prompt: 'Correct this sentence: "მე წერს წერილს"',
-        expectedAnswer: 'მე ვწერ წერილს',
-        hint: 'First person singular verbs usually start with ვ-',
-        explanation: 'The verb should agree with the subject - მე (I) requires ვწერ not წერს'
+        id: 'reported-speech',
+        type: 'composition',
+        prompt: 'Convert to reported speech: "I am tired" → "He said that..."',
+        example: 'მან თქვა, რომ დაღლილი იყო',
+        hint: 'Use თქვა (said) and რომ (that) with appropriate tense changes',
+        explanation: 'Reported speech requires tense adjustments and the conjunction რომ'
+      },
+      {
+        id: 'passive-voice',
+        type: 'translation',
+        prompt: 'Convert to passive: "They are building a house"',
+        expectedAnswer: 'სახლი შენდება',
+        hint: 'Use the passive form of the verb შენება (to build)',
+        explanation: 'Passive voice in Georgian often uses the -დება suffix'
+      },
+      {
+        id: 'relative-clause',
+        type: 'composition',
+        prompt: 'Create a sentence with a relative clause using რომელიც (which/who)',
+        example: 'კაცი, რომელიც აქ ცხოვრობს, ჩემი მეზობელია',
+        hint: 'Place რომელიც after the noun it modifies',
+        explanation: 'Relative clauses follow the noun they modify and use რომელიც'
+      },
+      {
+        id: 'causative',
+        type: 'translation',
+        prompt: 'Express causation: "The teacher made the students write"',
+        expectedAnswer: 'მასწავლებელმა მოსწავლეებს დააწერინა',
+        hint: 'Use the causative form of წერა (to write)',
+        explanation: 'Causative verbs in Georgian use specific forms with -ინ- infix'
       }
     ]
   }
@@ -129,6 +170,7 @@ const WritingExercisesPage: React.FC = () => {
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [feedback, setFeedback] = useState<Record<string, boolean>>({});
   const [showHints, setShowHints] = useState<Record<string, boolean>>({});
+  const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   const handleResponseChange = (exerciseId: string, value: string) => {
     setResponses(prev => ({
@@ -140,6 +182,19 @@ const WritingExercisesPage: React.FC = () => {
       ...prev,
       [exerciseId]: false
     }));
+  };
+
+  const toggleCategory = (categoryId: string) => {
+    if (expandedCategory === categoryId) {
+      setExpandedCategory(null);
+    } else {
+      setExpandedCategory(categoryId);
+      setTimeout(() => {
+        if (categoryRefs.current[categoryId]) {
+          categoryRefs.current[categoryId]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
   };
 
   const toggleHint = (exerciseId: string) => {
@@ -216,9 +271,13 @@ const WritingExercisesPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-6">
             {exerciseCategories.map(category => (
-              <div key={category.id} className={`rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
+              <div
+                key={category.id}
+                ref={el => categoryRefs.current[category.id] = el}
+                className={`rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg`}
+              >
                 <button
-                  onClick={() => setExpandedCategory(expandedCategory === category.id ? null : category.id)}
+                  onClick={() => toggleCategory(category.id)}
                   className="w-full p-6 text-left"
                 >
                   <div className="flex items-center justify-between">

@@ -15,270 +15,343 @@ interface Question {
 
 interface QuizParams {
   topic: string;
-  level: string;
 }
 
-const QuizPage: React.FC<{ level: string }> = ({ level }) => {
+const QuizPage: React.FC = () => {
   const { theme } = useTheme();
   const { topic } = useParams<QuizParams>();
   const navigate = useNavigate();
   
-  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [answerStatus, setAnswerStatus] = useState<'correct' | 'incorrect' | null>(null);
   const [remainingTime, setRemainingTime] = useState(30);
   const [isChecking, setIsChecking] = useState(false);
-  
-  // Mock questions based on topic and level
-  useEffect(() => {
-    let quizQuestions: Question[] = [];
-    
-    if (level === 'beginner' && topic === 'alphabet') {
-      quizQuestions = [
-        {
-          id: 1,
-          question: 'What is the Georgian letter "ა" called?',
-          options: ['Ani', 'Bani', 'Gani', 'Doni'],
-          correctAnswer: 'Ani',
-          type: 'reading'
-        },
-        {
-          id: 2,
-          question: 'Which Georgian letter corresponds to the sound "m"?',
-          options: ['მ', 'ნ', 'პ', 'ბ'],
-          correctAnswer: 'მ',
-          type: 'listening'
-        },
-        {
-          id: 3,
-          question: 'How many letters are in the Georgian alphabet?',
-          options: ['26', '28', '33', '36'],
-          correctAnswer: '33',
-          type: 'reading'
-        },
-        {
-          id: 4,
-          question: 'Which of these is NOT a Georgian letter?',
-          options: ['ვ', 'ღ', 'ჩ', 'ფ'],
-          correctAnswer: 'ვ',
-          type: 'reading'
-        },
-        {
-          id: 5,
-          question: 'The Georgian letter "თ" corresponds to which sound?',
-          options: ['t', 'th', 'f', 'v'],
-          correctAnswer: 'th',
-          type: 'listening'
-        },
-        {
-          id: 6,
-          question: 'Write the Georgian letter that makes the "k" sound',
-          options: ['კ', 'ქ', 'გ', 'ხ'],
-          correctAnswer: 'კ',
-          type: 'writing'
-        },
-        {
-          id: 7,
-          question: 'Pronounce the Georgian letter "ძ"',
-          options: ['dz', 'ts', 'zh', 'sh'],
-          correctAnswer: 'dz',
-          type: 'speaking'
-        }
-      ];
-    } else if (level === 'beginner' && topic === 'colors') {
-      quizQuestions = [
-        {
-          id: 1,
-          question: 'How do you say "red" in Georgian?',
-          options: ['ლურჯი - lurji', 'წითელი - tsiteli', 'მწვანე - mtsvane', 'ყვითელი - qviteli'],
-          correctAnswer: 'წითელი - tsiteli',
-          type: 'reading'
-        },
-        {
-          id: 2,
-          question: 'What color is "შავი - shavi" in English?',
-          options: ['White', 'Black', 'Blue', 'Green'],
-          correctAnswer: 'Black',
-          type: 'listening'
-        },
-        {
-          id: 3,
-          question: 'Which is the Georgian word for "blue - lurji"?',
-          options: ['ლურჯი', 'მწვანე', 'ყვითელი', 'თეთრი'],
-          correctAnswer: 'ლურჯი',
-          type: 'writing'
-        },
-        {
-          id: 4,
-          question: 'How do you say "yellow - qviteli" in Georgian?',
-          options: ['წითელი', 'მწვანე', 'ყვითელი', 'ნარინჯისფერი'],
-          correctAnswer: 'ყვითელი',
-          type: 'speaking'
-        },
-        {
-          id: 5,
-          question: 'What color is "ვარდისფერი - vardisperi" in English?',
-          options: ['Purple', 'Orange', 'Red', 'Pink'],
-          correctAnswer: 'Pink',
-          type: 'reading'
-        },
-        {
-          id: 6,
-          question: 'Listen and choose the correct color word',
-          options: ['მწვანე', 'წითელი', 'ლურჯი', 'ყვითელი'],
-          correctAnswer: 'მწვანე',
-          type: 'listening'
-        },
-        {
-          id: 7,
-          question: 'Write the Georgian word for "brown"',
-          options: ['ყავისფერი', 'ნაცრისფერი', 'ოქროსფერი', 'შავი'],
-          correctAnswer: 'ყავისფერი',
-          type: 'writing'
-        }
-      ];
-    } else if (level === 'beginner' && topic === 'numbers') {
-      quizQuestions = [
-        {
-          id: 1,
-          question: 'What is "erti" in English?',
-          options: ['Two', 'Three', 'One', 'Four'],
-          correctAnswer: 'One',
-          type: 'reading'
-        },
-        {
-          id: 2,
-          question: 'How do you say "five" in Georgian?',
-          options: ['ოთხი - otkhi', 'ხუთი - khuti', 'ექვსი - ekvsi', 'შვიდი - shvidi'],
-          correctAnswer: 'ხუთი - khuti',
-          type: 'speaking'
-        },
-        {
-          id: 3,
-          question: 'What is the Georgian word for "ten"?',
-          options: ['ცხრა - tskhra', 'რვა - rva', 'ათი - ati', 'თერთმეტი - tertmeti'],
-          correctAnswer: 'ათი - ati',
-          type: 'writing'
-        },
-        {
-          id: 4,
-          question: 'How do you say "three" in Georgian?',
-          options: ['ორი - ori', 'სამი - sami', 'ოთხი - otkhi', 'ხუთი - khuti'],
-          correctAnswer: 'სამი - sami',
-          type: 'listening'
-        },
-        {
-          id: 5,
-          question: 'What is "ოთხი - otkhi" in English?',
-          options: ['Three', 'Four', 'Five', 'Six'],
-          correctAnswer: 'Four',
-          type: 'reading'
-        },
-        {
-          id: 6,
-          question: 'Listen and write the number you hear',
-          options: ['შვიდი', 'რვა', 'ცხრა', 'ათი'],
-          correctAnswer: 'შვიდი',
-          type: 'listening'
-        },
-        {
-          id: 7,
-          question: 'Count from one to five in Georgian',
-          options: [
-            'ერთი, ორი, სამი, ოთხი, ხუთი',
-            'ერთი, სამი, ორი, ხუთი, ოთხი',
-            'ორი, სამი, ოთხი, ხუთი, ერთი',
-            'ხუთი, ოთხი, სამი, ორი, ერთი'
-          ],
-          correctAnswer: 'ერთი, ორი, სამი, ოთხი, ხუთი',
-          type: 'speaking'
-        }
-      ];
-    } else if (level === 'beginner' && topic === 'food') {
-      quizQuestions = [
-        {
-          id: 1,
-          question: 'What is "პური" in English?',
-          options: ['Water', 'Cheese', 'Bread', 'Wine'],
-          correctAnswer: 'Bread',
-          type: 'reading'
-        },
-        {
-          id: 2,
-          question: 'How do you say "cheese" in Georgian?',
-          options: ['ყველი', 'პური', 'ხაჭაპური', 'ხინკალი'],
-          correctAnswer: 'ყველი',
-          type: 'speaking'
-        },
-        {
-          id: 3,
-          question: 'What is "ღვინო" in English?',
-          options: ['Beer', 'Juice', 'Water', 'Wine'],
-          correctAnswer: 'Wine',
-          type: 'reading'
-        },
-        {
-          id: 4,
-          question: 'Which is the Georgian word for "water"?',
-          options: ['წყალი', 'ჩაი', 'ყავა', 'ლუდი'],
-          correctAnswer: 'წყალი',
-          type: 'writing'
-        },
-        {
-          id: 5,
-          question: 'What Georgian food is "ხაჭაპური"?',
-          options: ['Dumplings', 'Cheese bread', 'Grilled meat', 'Soup'],
-          correctAnswer: 'Cheese bread',
-          type: 'reading'
-        },
-        {
-          id: 6,
-          question: 'Listen and identify the food item',
-          options: ['ხინკალი', 'მწვადი', 'ლობიანი', 'ხაჭაპური'],
-          correctAnswer: 'ხინკალი',
-          type: 'listening'
-        },
-        {
-          id: 7,
-          question: 'Order these foods in Georgian',
-          options: [
-            'ხაჭაპური და წყალი',
-            'ღვინო და პური',
-            'ყველი და ჩაი',
-            'ხინკალი და ლუდი'
-          ],
-          correctAnswer: 'ხაჭაპური და წყალი',
-          type: 'speaking'
-        }
-      ];
-    } else {
-      // Default questions if topic doesn't match
-      quizQuestions = [
-        {
-          id: 1,
-          question: 'Sample question 1',
-          options: ['Option A', 'Option B', 'Option C', 'Option D'],
-          correctAnswer: 'Option A',
-          type: 'reading'
-        },
-        {
-          id: 2,
-          question: 'Sample question 2',
-          options: ['Option A', 'Option B', 'Option C', 'Option D'],
-          correctAnswer: 'Option B',
-          type: 'reading'
-        },
-      ];
-    }
-    
-    setQuestions(quizQuestions);
-    setRemainingTime(30);
-  }, [level, topic]);
 
-  // Timer effect
+  // Get quiz questions based on topic
+  const getQuizQuestions = (topic: string): Question[] => {
+    switch (topic) {
+      case 'alphabet':
+        return [
+          {
+            id: 1,
+            question: "What is the Georgian letter 'ა' called?",
+            options: ['ანი (ani)', 'ბანი (bani)', 'განი (gani)', 'დონი (doni)'],
+            correctAnswer: 'ანი (ani)',
+            explanation: 'ანი (ani) is the first letter of the Georgian alphabet'
+          },
+          {
+            id: 2,
+            question: "Which Georgian letter makes the 'k' sound?",
+            options: ['კ', 'ქ', 'ღ', 'ყ'],
+            correctAnswer: 'კ',
+            explanation: 'კ makes the "k" sound as in "king"'
+          },
+          {
+            id: 3,
+            question: "How many letters are in the Georgian alphabet?",
+            options: ['26', '30', '33', '36'],
+            correctAnswer: '33',
+            explanation: 'The Georgian alphabet consists of 33 unique letters'
+          },
+          {
+            id: 4,
+            question: "Which letter represents the 'ch' sound?",
+            options: ['ჩ', 'ც', 'წ', 'ჭ'],
+            correctAnswer: 'ჩ',
+            explanation: 'ჩ makes the "ch" sound as in "church"'
+          },
+          {
+            id: 5,
+            question: "What sound does 'შ' make?",
+            options: ['s', 'z', 'sh', 'zh'],
+            correctAnswer: 'sh',
+            explanation: 'შ makes the "sh" sound as in "ship"'
+          }
+        ];
+
+      case 'colors':
+        return [
+          {
+            id: 1,
+            question: "What is 'red' in Georgian?",
+            options: ['წითელი', 'ლურჯი', 'მწვანე', 'ყვითელი'],
+            correctAnswer: 'წითელი',
+            explanation: 'წითელი (tsiteli) means "red"'
+          },
+          {
+            id: 2,
+            question: "Which color is 'მწვანე'?",
+            options: ['Blue', 'Green', 'Yellow', 'Purple'],
+            correctAnswer: 'Green',
+            explanation: 'მწვანე (mtsvane) means "green"'
+          },
+          {
+            id: 3,
+            question: "What is 'black' in Georgian?",
+            options: ['თეთრი', 'შავი', 'რუხი', 'ყავისფერი'],
+            correctAnswer: 'შავი',
+            explanation: 'შავი (shavi) means "black"'
+          },
+          {
+            id: 4,
+            question: "Which is the correct translation for 'blue'?",
+            options: ['ლურჯი', 'იისფერი', 'ნარინჯისფერი', 'ვარდისფერი'],
+            correctAnswer: 'ლურჯი',
+            explanation: 'ლურჯი (lurji) means "blue"'
+          },
+          {
+            id: 5,
+            question: "What color is 'ყვითელი'?",
+            options: ['Red', 'Blue', 'Yellow', 'Green'],
+            correctAnswer: 'Yellow',
+            explanation: 'ყვითელი (qviteli) means "yellow"'
+          }
+        ];
+
+      case 'numbers':
+        return [
+          {
+            id: 1,
+            question: "What is 'five' in Georgian?",
+            options: ['სამი', 'ოთხი', 'ხუთი', 'ექვსი'],
+            correctAnswer: 'ხუთი',
+            explanation: 'ხუთი (khuti) means "five"'
+          },
+          {
+            id: 2,
+            question: "Which number is 'ათი'?",
+            options: ['Eight', 'Nine', 'Ten', 'Eleven'],
+            correctAnswer: 'Ten',
+            explanation: 'ათი (ati) means "ten"'
+          },
+          {
+            id: 3,
+            question: "What is the Georgian word for 'twenty'?",
+            options: ['ოცი', 'ოცდაათი', 'ორმოცი', 'ორი'],
+            correctAnswer: 'ოცი',
+            explanation: 'ოცი (otsi) means "twenty"'
+          },
+          {
+            id: 4,
+            question: "Which is the correct translation for 'seven'?",
+            options: ['ექვსი', 'შვიდი', 'რვა', 'ცხრა'],
+            correctAnswer: 'შვიდი',
+            explanation: 'შვიდი (shvidi) means "seven"'
+          },
+          {
+            id: 5,
+            question: "What number is 'ორმოცდაათი'?",
+            options: ['Thirty', 'Forty', 'Fifty', 'Sixty'],
+            correctAnswer: 'Fifty',
+            explanation: 'ორმოცდაათი (ormotsdaati) means "fifty"'
+          }
+        ];
+
+      case 'months':
+        return [
+          {
+            id: 1,
+            question: "What is 'January' in Georgian?",
+            options: ['იანვარი', 'თებერვალი', 'მარტი', 'აპრილი'],
+            correctAnswer: 'იანვარი',
+            explanation: 'იანვარი (ianuari) means "January"'
+          },
+          {
+            id: 2,
+            question: "Which season is 'ზაფხული'?",
+            options: ['Spring', 'Summer', 'Autumn', 'Winter'],
+            correctAnswer: 'Summer',
+            explanation: 'ზაფხული (zapkhuli) means "summer"'
+          },
+          {
+            id: 3,
+            question: "What is 'autumn' in Georgian?",
+            options: ['ზაფხული', 'შემოდგომა', 'ზამთარი', 'გაზაფხული'],
+            correctAnswer: 'შემოდგომა',
+            explanation: 'შემოდგომა (shemodgoma) means "autumn"'
+          },
+          {
+            id: 4,
+            question: "Which month is 'ივლისი'?",
+            options: ['June', 'July', 'August', 'September'],
+            correctAnswer: 'July',
+            explanation: 'ივლისი (ivlisi) means "July"'
+          },
+          {
+            id: 5,
+            question: "What is the Georgian word for 'spring'?",
+            options: ['ზამთარი', 'შემოდგომა', 'გაზაფხული', 'ზაფხული'],
+            correctAnswer: 'გაზაფხული',
+            explanation: 'გაზაფხული (gazapkhuli) means "spring"'
+          }
+        ];
+
+      case 'food':
+        return [
+          {
+            id: 1,
+            question: "What is 'bread' in Georgian?",
+            options: ['პური', 'ყველი', 'ხორცი', 'თევზი'],
+            correctAnswer: 'პური',
+            explanation: 'პური (puri) means "bread"'
+          },
+          {
+            id: 2,
+            question: "Which food is 'ხაჭაპური'?",
+            options: ['Meat pie', 'Cheese bread', 'Bean soup', 'Dumpling'],
+            correctAnswer: 'Cheese bread',
+            explanation: 'ხაჭაპური (khachapuri) is Georgian cheese-filled bread'
+          },
+          {
+            id: 3,
+            question: "What is 'wine' in Georgian?",
+            options: ['წყალი', 'ღვინო', 'ლუდი', 'ჩაი'],
+            correctAnswer: 'ღვინო',
+            explanation: 'ღვინო (ghvino) means "wine"'
+          },
+          {
+            id: 4,
+            question: "Which is the correct translation for 'water'?",
+            options: ['ჩაი', 'ყავა', 'წყალი', 'რძე'],
+            correctAnswer: 'წყალი',
+            explanation: 'წყალი (tsqali) means "water"'
+          },
+          {
+            id: 5,
+            question: "What food is 'ხინკალი'?",
+            options: ['Bread', 'Cheese', 'Dumplings', 'Soup'],
+            correctAnswer: 'Dumplings',
+            explanation: 'ხინკალი (khinkali) are Georgian dumplings'
+          }
+        ];
+
+      case 'body':
+        return [
+          {
+            id: 1,
+            question: "What is 'head' in Georgian?",
+            options: ['თავი', 'ხელი', 'ფეხი', 'გული'],
+            correctAnswer: 'თავი',
+            explanation: 'თავი (tavi) means "head"'
+          },
+          {
+            id: 2,
+            question: "Which body part is 'თვალი'?",
+            options: ['Nose', 'Eye', 'Ear', 'Mouth'],
+            correctAnswer: 'Eye',
+            explanation: 'თვალი (tvali) means "eye"'
+          },
+          {
+            id: 3,
+            question: "What is 'heart' in Georgian?",
+            options: ['თავი', 'ხელი', 'გული', 'ფეხი'],
+            correctAnswer: 'გული',
+            explanation: 'გული (guli) means "heart"'
+          },
+          {
+            id: 4,
+            question: "Which is the correct translation for 'hand'?",
+            options: ['ფეხი', 'ხელი', 'თავი', 'ყური'],
+            correctAnswer: 'ხელი',
+            explanation: 'ხელი (kheli) means "hand"'
+          },
+          {
+            id: 5,
+            question: "What body part is 'პირი'?",
+            options: ['Eye', 'Nose', 'Mouth', 'Ear'],
+            correctAnswer: 'Mouth',
+            explanation: 'პირი (piri) means "mouth"'
+          }
+        ];
+
+      case 'animals':
+        return [
+          {
+            id: 1,
+            question: "What is 'dog' in Georgian?",
+            options: ['კატა', 'ძაღლი', 'ცხენი', 'თაგვი'],
+            correctAnswer: 'ძაღლი',
+            explanation: 'ძაღლი (dzaghli) means "dog"'
+          },
+          {
+            id: 2,
+            question: "Which animal is 'კატა'?",
+            options: ['Dog', 'Cat', 'Horse', 'Mouse'],
+            correctAnswer: 'Cat',
+            explanation: 'კატა (kata) means "cat"'
+          },
+          {
+            id: 3,
+            question: "What is 'bird' in Georgian?",
+            options: ['ჩიტი', 'თევზი', 'გველი', 'სპილო'],
+            correctAnswer: 'ჩიტი',
+            explanation: 'ჩიტი (chiti) means "bird"'
+          },
+          {
+            id: 4,
+            question: "Which is the correct translation for 'lion'?",
+            options: ['დათვი', 'მგელი', 'ლომი', 'ვეფხვი'],
+            correctAnswer: 'ლომი',
+            explanation: 'ლომი (lomi) means "lion"'
+          },
+          {
+            id: 5,
+            question: "What animal is 'თევზი'?",
+            options: ['Bird', 'Snake', 'Fish', 'Mouse'],
+            correctAnswer: 'Fish',
+            explanation: 'თევზი (tevzi) means "fish"'
+          }
+        ];
+
+      case 'activities':
+        return [
+          {
+            id: 1,
+            question: "What does 'გაღვიძება' mean?",
+            options: ['Sleeping', 'Waking up', 'Eating', 'Working'],
+            correctAnswer: 'Waking up',
+            explanation: 'გაღვიძება (gaghvidzeba) means "waking up"'
+          },
+          {
+            id: 2,
+            question: "Which activity is 'მუშაობა'?",
+            options: ['Studying', 'Working', 'Reading', 'Writing'],
+            correctAnswer: 'Working',
+            explanation: 'მუშაობა (mushaoba) means "working"'
+          },
+          {
+            id: 3,
+            question: "What is 'cooking' in Georgian?",
+            options: ['ჭამა', 'სმა', 'საჭმლის მომზადება', 'დალაგება'],
+            correctAnswer: 'საჭმლის მომზადება',
+            explanation: 'საჭმლის მომზადება (sachmlis momzadeba) means "cooking"'
+          },
+          {
+            id: 4,
+            question: "Which is the correct translation for 'reading'?",
+            options: ['წერა', 'კითხვა', 'სწავლა', 'თამაში'],
+            correctAnswer: 'კითხვა',
+            explanation: 'კითხვა (kitkhva) means "reading"'
+          },
+          {
+            id: 5,
+            question: "What activity is 'სეირნობა'?",
+            options: ['Running', 'Walking', 'Swimming', 'Dancing'],
+            correctAnswer: 'Walking',
+            explanation: 'სეირნობა (seirnoba) means "taking a walk"'
+          }
+        ];
+
+      default:
+        return [];
+    }
+  };
+
+  const questions = getQuizQuestions(topic || '');
+
   useEffect(() => {
     if (showScore || isChecking) return;
 
@@ -286,7 +359,7 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
       setRemainingTime((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(timer);
-          handleAnswer(null); // Auto-submit when time runs out
+          handleAnswer(null);
           return 0;
         }
         return prevTime - 1;
@@ -296,52 +369,23 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
     return () => clearInterval(timer);
   }, [currentQuestion, showScore, isChecking]);
 
-  const handleOptionClick = (option: string) => {
-    if (answerStatus || isChecking) return; // Prevent changing answer after submission
-    setSelectedOption(option);
-  };
-
-  const handleCheckAnswer = () => {
-    if (!selectedOption || isChecking) return;
+  const handleAnswer = (answer: string | null) => {
+    if (isChecking) return;
     
     setIsChecking(true);
-    const isCorrect = selectedOption === questions[currentQuestion].correctAnswer;
+    setSelectedAnswer(answer);
+    
+    const isCorrect = answer === questions[currentQuestion].correctAnswer;
     setAnswerStatus(isCorrect ? 'correct' : 'incorrect');
     
     if (isCorrect) {
       setScore(score + 1);
     }
     
-    // Wait for 1.5 seconds before moving to the next question
     setTimeout(() => {
       if (currentQuestion < questions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
-        setSelectedOption(null);
-        setAnswerStatus(null);
-        setRemainingTime(30);
-      } else {
-        setShowScore(true);
-      }
-      setIsChecking(false);
-    }, 1500);
-  };
-
-  const handleAnswer = (option: string | null) => {
-    setSelectedOption(option);
-    setIsChecking(true);
-    
-    const isCorrect = option === questions[currentQuestion].correctAnswer;
-    setAnswerStatus(isCorrect ? 'correct' : 'incorrect');
-    
-    if (isCorrect) {
-      setScore(score + 1);
-    }
-    
-    // Wait for 1.5 seconds before moving to the next question
-    setTimeout(() => {
-      if (currentQuestion < questions.length - 1) {
-        setCurrentQuestion(currentQuestion + 1);
-        setSelectedOption(null);
+        setSelectedAnswer(null);
         setAnswerStatus(null);
         setRemainingTime(30);
       } else {
@@ -355,45 +399,39 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
     setCurrentQuestion(0);
     setScore(0);
     setShowScore(false);
-    setSelectedOption(null);
+    setSelectedAnswer(null);
     setAnswerStatus(null);
     setRemainingTime(30);
-  };
-
-  const handleFinishQuiz = () => {
-    if (level === 'intermediate') {
-      navigate('/intermediate');
-    } else {
-      navigate('/beginner');
-    }
   };
 
   const getTopicName = () => {
     const topicMap: Record<string, string> = {
       alphabet: 'Georgian Alphabet',
-      colors: 'Colors',
+      colors: 'Colors & Shapes',
       numbers: 'Numbers',
+      months: 'Months & Seasons',
       food: 'Food & Drinks',
-      grammar: 'Grammar',
-      sentences: 'Sentence Construction'
+      body: 'Human Body',
+      animals: 'Animals',
+      activities: 'Daily Activities'
     };
     
-    return topicMap[topic as string] || 'Quiz';
+    return topicMap[topic || ''] || 'Quiz';
   };
 
-  const getQuestionTypeIcon = (type: string = 'reading') => {
-    switch (type) {
-      case 'reading':
-        return '📖';
-      case 'listening':
-        return '🎧';
-      case 'speaking':
-        return '🗣️';
-      case 'writing':
-        return '✍️';
-      default:
-        return '📝';
-    }
+  const getBackLink = () => {
+    const linkMap: Record<string, string> = {
+      alphabet: '/beginner/alphabet',
+      colors: '/beginner/colors-and-shapes',
+      numbers: '/beginner/numbers',
+      months: '/beginner/months-and-seasons',
+      food: '/beginner/food-and-drinks',
+      body: '/beginner/human-body',
+      animals: '/beginner/animals',
+      activities: '/beginner/daily-activities'
+    };
+    
+    return linkMap[topic || ''] || '/beginner';
   };
 
   return (
@@ -406,11 +444,11 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
                 <span className={theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}>{getTopicName()} Quiz</span>
               </h1>
               <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Test your knowledge of {getTopicName().toLowerCase()} in Georgian
+                Test your knowledge of {getTopicName().toLowerCase()}
               </p>
             </div>
             <Link
-              to={topic === 'alphabet' ? '/beginner/alphabet' : `/beginner/vocabulary/${topic}`}
+              to={getBackLink()}
               className={`inline-flex items-center px-3 py-1.5 rounded text-sm font-medium ${
                 theme === 'dark' 
                   ? 'bg-gray-700 text-white hover:bg-gray-600' 
@@ -444,106 +482,78 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                   <div 
-                    className="bg-yellow-500 h-2.5 rounded-full" 
-                    style={{ 
-                      width: `${((currentQuestion) / questions.length) * 100}%`,
-                      transition: 'width 0.5s ease'
-                    }}
+                    className="bg-yellow-500 h-2.5 rounded-full transition-all duration-300" 
+                    style={{ width: `${((currentQuestion) / questions.length) * 100}%` }}
                   ></div>
                 </div>
               </div>
-              
-              {questions.length > 0 && (
-                <>
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className={`text-sm px-2 py-1 rounded ${
-                        theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {getQuestionTypeIcon(questions[currentQuestion].type)}
-                        {questions[currentQuestion].type?.charAt(0).toUpperCase() + questions[currentQuestion].type?.slice(1)}
-                      </span>
-                    </div>
-                    <h2 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      {questions[currentQuestion].question}
-                    </h2>
-                    
-                    {questions[currentQuestion].image && (
-                      <img 
-                        src={questions[currentQuestion].image} 
-                        alt="Question" 
-                        className="rounded-lg mb-4 max-h-48 mx-auto"
-                      />
-                    )}
-                  </div>
-                  
-                  <div className="space-y-3 mb-6">
-                    {questions[currentQuestion].options.map((option, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleOptionClick(option)}
-                        className={`w-full text-left p-4 rounded-lg border transition-colors ${
-                          selectedOption === option
-                            ? answerStatus === 'correct'
-                              ? (theme === 'dark' ? 'bg-green-900 border-green-700 text-white' : 'bg-green-100 border-green-500 text-green-800')
-                              : answerStatus === 'incorrect'
-                                ? option === questions[currentQuestion].correctAnswer
-                                  ? (theme === 'dark' ? 'bg-green-900 border-green-700 text-white' : 'bg-green-100 border-green-500 text-green-800')
-                                  : (theme === 'dark' ? 'bg-red-900 border-red-700 text-white' : 'bg-red-100 border-red-500 text-red-800')
-                                : (theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : 'bg-yellow-50 border-yellow-300 text-gray-800')
-                            : (theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700' : 'bg-white border-gray-200 text-gray-800 hover:bg-gray-50')
-                        }`}
-                        disabled={answerStatus !== null || isChecking}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span>{option}</span>
-                          {selectedOption === option && answerStatus === 'correct' && (
-                            <Check size={20} className={theme === 'dark' ? 'text-green-400' : 'text-green-500'} />
-                          )}
-                          {selectedOption === option && answerStatus === 'incorrect' && (
-                            <X size={20} className={theme === 'dark' ? 'text-red-400' : 'text-red-500'} />
-                          )}
-                          {option === questions[currentQuestion].correctAnswer && selectedOption !== null && selectedOption !== option && answerStatus === 'incorrect' && (
-                            <Check size={20} className={theme === 'dark' ? 'text-green-400' : 'text-green-500'} />
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
 
-                  {answerStatus !== null && questions[currentQuestion].explanation && (
-                    <div className={`p-4 rounded-md mb-6 ${
-                      answerStatus === 'correct'
-                        ? (theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800')
-                        : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
-                    }`}>
-                      <p>{questions[currentQuestion].explanation}</p>
-                    </div>
-                  )}
-                  
-                  <div className="flex justify-center">
+              <div className="mb-6">
+                <h2 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {questions[currentQuestion].question}
+                </h2>
+                
+                <div className="space-y-3">
+                  {questions[currentQuestion].options.map((option, index) => (
                     <button
-                      onClick={handleCheckAnswer}
-                      disabled={!selectedOption || answerStatus !== null || isChecking}
-                      className={`px-6 py-3 rounded-lg font-medium flex items-center ${
-                        !selectedOption || answerStatus !== null || isChecking
-                          ? (theme === 'dark' ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-500 cursor-not-allowed')
-                          : (theme === 'dark' ? 'bg-yellow-700 text-white hover:bg-yellow-800' : 'bg-yellow-500 text-white hover:bg-yellow-600')
-                      }`}
+                      key={index}
+                      onClick={() => handleAnswer(option)}
+                      className={`w-full text-left p-4 rounded-lg transition-colors ${
+                        selectedAnswer === option
+                          ? option === questions[currentQuestion].correctAnswer
+                            ? (theme === 'dark' ? 'bg-green-900 text-white' : 'bg-green-100 text-green-800')
+                            : (theme === 'dark' ? 'bg-red-900 text-white' : 'bg-red-100 text-red-800')
+                          : (theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-white hover:bg-gray-50 text-gray-900')
+                      } border ${theme === 'dark' ? 'border-gray-600' : 'border-gray-200'}`}
+                      disabled={isChecking}
                     >
-                      Check Answer
-                      <ChevronRight size={18} className="ml-1" />
+                      <div className="flex items-center justify-between">
+                        <span>{option}</span>
+                        {selectedAnswer === option && (
+                          option === questions[currentQuestion].correctAnswer
+                            ? <Check size={20} className={theme === 'dark' ? 'text-green-400' : 'text-green-500'} />
+                            : <X size={20} className={theme === 'dark' ? 'text-red-400' : 'text-red-500'} />
+                        )}
+                        {option === questions[currentQuestion].correctAnswer && selectedAnswer !== null && selectedAnswer !== option && (
+                          <Check size={20} className={theme === 'dark' ? 'text-green-400' : 'text-green-500'} />
+                        )}
+                      </div>
                     </button>
+                  ))}
+                </div>
+
+                {answerStatus !== null && questions[currentQuestion].explanation && (
+                  <div className={`mt-4 p-4 rounded-md ${
+                    answerStatus === 'correct'
+                      ? (theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800')
+                      : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
+                  }`}>
+                    <p>{questions[currentQuestion].explanation}</p>
                   </div>
-                </>
-              )}
+                )}
+              </div>
+
+              <div className="flex justify-center">
+                <button
+                  onClick={() => handleAnswer(selectedAnswer)}
+                  disabled={!selectedAnswer || isChecking}
+                  className={`px-6 py-3 rounded-lg font-medium flex items-center ${
+                    !selectedAnswer || isChecking
+                      ? (theme === 'dark' ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-500 cursor-not-allowed')
+                      : (theme === 'dark' ? 'bg-yellow-700 text-white hover:bg-yellow-800' : 'bg-yellow-500 text-white hover:bg-yellow-600')
+                  }`}
+                >
+                  {isChecking ? 'Checking...' : 'Check Answer'}
+                  <ChevronRight size={18} className="ml-1" />
+                </button>
+              </div>
             </div>
           ) : (
             <div className={`p-8 rounded-lg text-center ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
               <Trophy size={64} className={`mx-auto mb-4 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-500'}`} />
               
               <h2 className={`text-2xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Quiz Completed!
+                Quiz Complete!
               </h2>
               
               <p className={`text-xl mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -571,8 +581,8 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
                   {score / questions.length >= 0.8 
                     ? 'Excellent! You have a great understanding of this topic.'
                     : score / questions.length >= 0.6
-                      ? 'Good job! You\'re doing well, but there\'s still room for improvement.'
-                      : 'Keep practicing! Review the lesson material and try again.'}
+                      ? 'Good job! Keep practicing to improve your score.'
+                      : 'Keep learning! Review the material and try again.'}
                 </p>
               </div>
               
@@ -588,16 +598,16 @@ const QuizPage: React.FC<{ level: string }> = ({ level }) => {
                   Retake Quiz
                 </button>
                 
-                <button
-                  onClick={handleFinishQuiz}
+                <Link
+                  to={getBackLink()}
                   className={`px-6 py-3 rounded-lg font-medium ${
                     theme === 'dark' 
-                      ? 'bg-blue-700 text-white hover:bg-blue-800' 
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                      : 'bg-white border border-gray-300 text-gray-800 hover:bg-gray-50'
                   }`}
                 >
-                  Return to {level === 'intermediate' ? 'Intermediate' : 'Beginner'} Level
-                </button>
+                  Back to Lesson
+                </Link>
               </div>
             </div>
           )}

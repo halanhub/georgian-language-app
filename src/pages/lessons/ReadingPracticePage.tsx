@@ -465,144 +465,45 @@ const readingCategories: Category[] = [
         ]
       }
     ]
-  },
-  {
-    name: "Georgian Cities",
-    description: "Learn about major Georgian cities and their characteristics",
-    texts: [
-      {
-        id: "tbilisi",
-        title: "თბილისი - საქართველოს დედაქალაქი",
-        georgianText: "თბილისი საქართველოს დედაქალაქია. ის მტკვრის ნაპირებზე მდებარეობს. ქალაქში ძველი და ახალი არქიტექტურა ერთმანეთს ერწყმის. აქ არის გოგირდის აბანოები, ნარიყალას ციხე და მეტეხის ტაძარი. თბილისში დაახლოებით 1.2 მილიონი ადამიანი ცხოვრობს.",
-        englishText: "Tbilisi is the capital of Georgia. It is located on the banks of the Mtkvari River. Old and new architecture blend together in the city. There are sulfur baths, Narikala Fortress, and Metekhi Church here. About 1.2 million people live in Tbilisi.",
-        vocabulary: [
-          { word: "დედაქალაქი", pronunciation: "dedakalaki", translation: "capital city" },
-          { word: "აბანო", pronunciation: "abano", translation: "bath" },
-          { word: "ციხე", pronunciation: "tsikhe", translation: "fortress" },
-          { word: "ტაძარი", pronunciation: "tadzari", translation: "church" },
-          { word: "ნაპირი", pronunciation: "napiri", translation: "bank (of river)" }
-        ],
-        questions: [
-          {
-            question: "What river flows through Tbilisi?",
-            options: ["Rioni", "Mtkvari", "Aragvi", "Alazani"],
-            correctAnswer: 1
-          },
-          {
-            question: "What is the approximate population of Tbilisi?",
-            options: ["800,000", "1 million", "1.2 million", "1.5 million"],
-            correctAnswer: 2
-          },
-          {
-            question: "Which of these is NOT mentioned as a landmark in Tbilisi?",
-            options: [
-              "Sulfur baths",
-              "Narikala Fortress",
-              "Metekhi Church",
-              "Freedom Square"
-            ],
-            correctAnswer: 3
-          }
-        ]
-      },
-      {
-        id: "batumi",
-        title: "ბათუმი - შავი ზღვის მარგალიტი",
-        georgianText: "ბათუმი აჭარის ავტონომიური რესპუბლიკის დედაქალაქია. ის შავი ზღვის სანაპიროზე მდებარეობს. ქალაქი ცნობილია თავისი ბოტანიკური ბაღით, ბულვარით და თანამედროვე არქიტექტურით. ბათუმი საქართველოს მთავარი საზღვაო პორტია.",
-        englishText: "Batumi is the capital of the Autonomous Republic of Adjara. It is located on the Black Sea coast. The city is famous for its Botanical Garden, Boulevard, and modern architecture. Batumi is Georgia's main seaport.",
-        vocabulary: [
-          { word: "სანაპირო", pronunciation: "sanapiro", translation: "coast" },
-          { word: "ბოტანიკური", pronunciation: "botanikuri", translation: "botanical" },
-          { word: "ბულვარი", pronunciation: "bulvari", translation: "boulevard" },
-          { word: "პორტი", pronunciation: "porti", translation: "port" },
-          { word: "ზღვა", pronunciation: "zghva", translation: "sea" }
-        ],
-        questions: [
-          {
-            question: "What is Batumi's role in Adjara?",
-            options: [
-              "Tourist city",
-              "Capital city",
-              "Port city",
-              "All of the above"
-            ],
-            correctAnswer: 3
-          },
-          {
-            question: "What is Batumi famous for?",
-            options: [
-              "Mountains",
-              "Deserts",
-              "Botanical Garden and Boulevard",
-              "Lakes"
-            ],
-            correctAnswer: 2
-          }
-        ]
-      },
-      {
-        id: "kutaisi",
-        title: "ქუთაისი - უძველესი ქალაქი",
-        georgianText: "ქუთაისი საქართველოს უძველესი ქალაქია და იმერეთის რეგიონის დედაქალაქი. აქ მდებარეობს ბაგრატის ტაძარი და გელათის მონასტერი, რომლებიც UNESCO-ს მსოფლიო მემკვიდრეობის ძეგლებია. ქალაქში ასევე არის პარლამენტის შენობა და საერთაშორისო აეროპორტი.",
-        englishText: "Kutaisi is Georgia's oldest city and the capital of the Imereti region. It is home to Bagrati Cathedral and Gelati Monastery, which are UNESCO World Heritage sites. The city also has the Parliament building and an international airport.",
-        vocabulary: [
-          { word: "უძველესი", pronunciation: "udzvelesi", translation: "oldest" },
-          { word: "რეგიონი", pronunciation: "regioni", translation: "region" },
-          { word: "მონასტერი", pronunciation: "monasteri", translation: "monastery" },
-          { word: "პარლამენტი", pronunciation: "parlamenti", translation: "parliament" },
-          { word: "აეროპორტი", pronunciation: "aeroporti", translation: "airport" }
-        ],
-        questions: [
-          {
-            question: "What UNESCO sites are in Kutaisi?",
-            options: [
-              "Only Bagrati Cathedral",
-              "Only Gelati Monastery",
-              "Both Bagrati Cathedral and Gelati Monastery",
-              "Neither"
-            ],
-            correctAnswer: 2
-          },
-          {
-            question: "What makes Kutaisi significant?",
-            options: [
-              "It's Georgia's newest city",
-              "It's Georgia's oldest city",
-              "It's the largest city",
-              "It's the capital city"
-            ],
-            correctAnswer: 1
-          }
-        ]
-      }
-    ]
   }
 ];
 
 const ReadingPracticePage: React.FC = () => {
   const { theme } = useTheme();
-  const [selectedCategory, setSelectedCategory] = useState<string>(readingCategories[0].name);
-  const [showTranslation, setShowTranslation] = useState<Record<string, boolean>>({});
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
-  const [expandedText, setExpandedText] = useState<string | null>(null);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [isPlaying, setIsPlaying] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  const toggleTranslation = (textId: string) => {
-    setShowTranslation(prev => ({
-      ...prev,
-      [textId]: !prev[textId]
-    }));
-  };
-
-  const handleAnswerSelect = (textId: string, questionIndex: number, answerIndex: number) => {
-    setSelectedAnswers(prev => ({
-      ...prev,
-      [`${textId}-${questionIndex}`]: answerIndex
-    }));
+  const toggleCategory = (categoryName: string) => {
+    if (expandedCategory === categoryName) {
+      setExpandedCategory(null);
+    } else {
+      setExpandedCategory(categoryName);
+      setTimeout(() => {
+        if (categoryRefs.current[categoryName]) {
+          categoryRefs.current[categoryName]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
   };
 
   const playAudio = (text: string) => {
-    // Audio playback would be implemented here
-    console.log('Playing audio for:', text);
+    if (audioRef.current) {
+      if (isPlaying === text) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        setIsPlaying(null);
+      } else {
+        audioRef.current.src = `https://api.example.com/audio/${text}.mp3`;
+        audioRef.current.play().catch(error => {
+          console.error('Error playing audio:', error);
+        });
+        setIsPlaying(text);
+      }
+    }
   };
 
   return (
@@ -660,152 +561,105 @@ const ReadingPracticePage: React.FC = () => {
 
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Category Selection */}
-          <div className="mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {readingCategories.map(category => (
+          <div className="grid grid-cols-1 gap-8">
+            {readingCategories.map((category) => (
+              <div
+                key={category.name}
+                ref={el => categoryRefs.current[category.name] = el}
+                className={`rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg overflow-hidden`}
+              >
                 <button
-                  key={category.name}
-                  onClick={() => setSelectedCategory(category.name)}
-                  className={`p-4 rounded-lg text-left transition-colors ${
-                    selectedCategory === category.name
-                      ? (theme === 'dark' ? 'bg-blue-900 border-blue-700' : 'bg-blue-50 border-blue-200')
-                      : (theme === 'dark' ? 'bg-gray-800 border-gray-700 hover:bg-gray-750' : 'bg-white border-gray-200 hover:bg-gray-50')
-                  } border`}
+                  onClick={() => toggleCategory(category.name)}
+                  className={`w-full p-6 text-left transition-colors ${
+                    theme === 'dark' ? 'hover:bg-gray-750' : 'hover:bg-gray-50'
+                  }`}
                 >
-                  <h3 className={`text-lg font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {category.name}
-                  </h3>
-                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    {category.description}
-                  </p>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Reading Texts */}
-          <div className="space-y-8">
-            {readingCategories
-              .find(cat => cat.name === selectedCategory)
-              ?.texts.map(text => (
-                <div
-                  key={text.id}
-                  className={`rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg overflow-hidden`}
-                >
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {text.title}
-                      </h2>
-                      <button
-                        onClick={() => setExpandedText(expandedText === text.id ? null : text.id)}
-                        className={`p-2 rounded-full ${
-                          theme === 'dark' 
-                            ? 'hover:bg-gray-700' 
-                            : 'hover:bg-gray-100'
-                        }`}
-                      >
-                        {expandedText === text.id ? (
-                          <ChevronUp className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
-                        ) : (
-                          <ChevronDown className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
-                        )}
-                      </button>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {category.name}
+                      </h3>
+                      <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                        {category.description}
+                      </p>
                     </div>
+                    {expandedCategory === category.name ? (
+                      <ChevronUp className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
+                    ) : (
+                      <ChevronDown className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
+                    )}
+                  </div>
+                </button>
 
-                    {expandedText === text.id && (
-                      <>
-                        {/* Text Content */}
-                        <div className="mb-6">
-                          <div className="flex items-center justify-between mb-4">
-                            <button
-                              onClick={() => toggleTranslation(text.id)}
-                              className={`px-4 py-2 rounded ${
-                                theme === 'dark'
-                                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                              }`}
-                            >
-                              {showTranslation[text.id] ? 'Hide' : 'Show'} Translation
-                            </button>
-                            <button
-                              onClick={() => playAudio(text.georgianText)}
-                              className={`flex items-center gap-2 px-4 py-2 rounded ${
-                                theme === 'dark'
-                                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                              }`}
-                            >
-                              <Play size={16} />
-                              Play Audio
-                            </button>
-                          </div>
+                {expandedCategory === category.name && (
+                  <div className="p-6 border-t border-gray-200 dark:border-gray-700">
+                    <div className="space-y-8">
+                      {category.texts.map((text) => (
+                        <div key={text.id} className="space-y-4">
+                          <h4 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            {text.title}
+                          </h4>
                           
-                          <div className={`p-4 rounded-lg mb-4 ${
-                            theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
-                          }`}>
+                          <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                            <div className="flex justify-between items-center mb-4">
+                              <button
+                                onClick={() => playAudio(text.georgianText)}
+                                className={`flex items-center gap-2 px-3 py-1 rounded ${
+                                  theme === 'dark'
+                                    ? 'bg-gray-600 text-gray-200 hover:bg-gray-500'
+                                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                                }`}
+                              >
+                                {isPlaying === text.georgianText ? (
+                                  <X size={16} />
+                                ) : (
+                                  <Volume2 size={16} />
+                                )}
+                                {isPlaying === text.georgianText ? 'Stop' : 'Listen'}
+                              </button>
+                            </div>
                             <p className={`text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                               {text.georgianText}
                             </p>
+                            <p className={`mt-4 italic ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                              {text.englishText}
+                            </p>
                           </div>
 
-                          {showTranslation[text.id] && (
-                            <div className={`p-4 rounded-lg ${
-                              theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
-                            }`}>
-                              <p className={`italic ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                                {text.englishText}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Vocabulary */}
-                        <div className="mb-6">
-                          <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            Key Vocabulary
-                          </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {text.vocabulary.map((item, index) => (
+                            {text.vocabulary.map((word, index) => (
                               <div
                                 key={index}
                                 className={`p-3 rounded-lg ${
                                   theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
                                 }`}
                               >
-                                <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center justify-between">
                                   <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                    {item.word}
+                                    {word.word}
                                   </span>
                                   <button
-                                    onClick={() => playAudio(item.word)}
+                                    onClick={() => playAudio(word.word)}
                                     className={`p-1 rounded-full ${
                                       theme === 'dark'
                                         ? 'hover:bg-gray-600'
                                         : 'hover:bg-gray-200'
                                     }`}
                                   >
-                                    <Play size={14} className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
+                                    <Volume2 size={14} />
                                   </button>
                                 </div>
-                                <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                                  /{item.pronunciation}/
+                                <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>
+                                  /{word.pronunciation}/
                                 </div>
-                                <div className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                                  {item.translation}
+                                <div className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                                  {word.translation}
                                 </div>
                               </div>
                             ))}
                           </div>
-                        </div>
 
-                        {/* Comprehension Questions */}
-                        <div>
-                          <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            Comprehension Questions
-                          </h3>
-                          <div className="space-y-6">
+                          <div className="space-y-4">
                             {text.questions.map((question, qIndex) => (
                               <div
                                 key={qIndex}
@@ -813,26 +667,39 @@ const ReadingPracticePage: React.FC = () => {
                                   theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
                                 }`}
                               >
-                                <p className={`font-medium mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                <p className={`font-medium mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                                   {question.question}
                                 </p>
-                                
                                 <div className="space-y-2">
                                   {question.options.map((option, oIndex) => {
-                                    const isSelected = selectedAnswers[`${text.id}-${qIndex}`] === oIndex;
-                                    const isCorrect = question.correctAnswer === oIndex;
-                                    const showResult = isSelected;
-                                    
+                                    const questionId = `${text.id}-${qIndex}`;
+                                    const isSelected = selectedAnswer === `${questionId}-${oIndex}`;
+                                    const showResult = selectedAnswer?.startsWith(questionId);
+                                    const isCorrect = oIndex === question.correctAnswer;
+
                                     return (
                                       <button
                                         key={oIndex}
-                                        onClick={() => handleAnswerSelect(text.id, qIndex, oIndex)}
-                                        className={`w-full text-left p-4 rounded-lg transition-colors ${
-                                          isSelected
+                                        onClick={() => {
+                                          setSelectedAnswer(`${questionId}-${oIndex}`);
+                                          setShowExplanation(true);
+                                        }}
+                                        className={`w-full text-left p-3 rounded ${
+                                          showResult
                                             ? isCorrect
-                                              ? (theme === 'dark' ? 'bg-green-900 text-white' : 'bg-green-100 text-green-800')
-                                              : (theme === 'dark' ? 'bg-red-900 text-white' : 'bg-red-100 text-red-800')
-                                            : (theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500' : 'bg-white hover:bg-gray-100')
+                                              ? theme === 'dark'
+                                                ? 'bg-green-900 text-white'
+                                                : 'bg-green-100 text-green-800'
+                                              : isSelected
+                                                ? theme === 'dark'
+                                                  ? 'bg-red-900 text-white'
+                                                  : 'bg-red-100 text-red-800'
+                                                : theme === 'dark'
+                                                  ? 'bg-gray-600 text-gray-300'
+                                                  : 'bg-white text-gray-600'
+                                            : theme === 'dark'
+                                              ? 'bg-gray-600 hover:bg-gray-500 text-gray-200'
+                                              : 'bg-white hover:bg-gray-100 text-gray-700'
                                         }`}
                                       >
                                         {option}
@@ -844,11 +711,12 @@ const ReadingPracticePage: React.FC = () => {
                             ))}
                           </div>
                         </div>
-                      </>
-                    )}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </section>

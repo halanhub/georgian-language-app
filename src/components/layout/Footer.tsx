@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart, Mail, Github as GitHub } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   const { theme } = useTheme();
@@ -16,14 +17,14 @@ const Footer: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center space-x-4">
-            <a 
-              href="#" 
+            <Link 
+              to="/contact" 
               className={`text-sm hover:${theme === 'dark' ? 'text-white' : 'text-red-600'} transition-colors`}
               aria-label="Contact us"
             >
               <Mail size={18} className="inline mr-1" />
               Contact
-            </a>
+            </Link>
             <div className="flex items-center">
               <span className="text-sm">Made with</span>
               <Heart size={16} className={`mx-1 ${theme === 'dark' ? 'text-red-400' : 'text-red-500'}`} />
