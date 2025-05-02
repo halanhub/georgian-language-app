@@ -35,6 +35,8 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import AchievementsPage from './pages/AchievementsPage';
 import LearningTipsPage from './pages/LearningTipsPage';
 import PricingPage from './pages/PricingPage';
+import TermsOfServicePage from './pages/legal/TermsOfServicePage';
+import PrivacyPolicyPage from './pages/legal/PrivacyPolicyPage';
 
 function App() {
   return (
@@ -47,6 +49,8 @@ function App() {
               <Route path="login" element={<LoginPage />} />
               <Route path="signup" element={<SignupPage />} />
               <Route path="pricing" element={<PricingPage />} />
+              <Route path="terms-of-service" element={<TermsOfServicePage />} />
+              <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
               
               <Route path="beginner" element={
                 <ProtectedRoute>

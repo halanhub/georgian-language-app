@@ -5,6 +5,12 @@ export const STRIPE_PRODUCTS = {
     name: 'Premium',
     description: 'Access to all lessons (Beginner to Advanced), unlimited vocabulary practice, and all quizzes and exercises',
     mode: 'subscription' as const
+  },
+  annual: {
+    priceId: 'price_1RKLOqPJT7FVTkW5ZFAsbRrH',
+    name: 'Annual',
+    description: 'Save 16% with annual billing - access to all premium features',
+    mode: 'subscription' as const
   }
 };
 
