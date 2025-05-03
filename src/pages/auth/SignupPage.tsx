@@ -14,6 +14,7 @@ const SignupPage: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
   
   const { signup, user } = useAuth();
   const { theme } = useTheme();
@@ -38,6 +39,10 @@ const SignupPage: React.FC = () => {
     
     if (password.length < 6) {
       return setError('Password must be at least 6 characters');
+    }
+    
+    if (!agreeToTerms) {
+      return setError('You must agree to the Terms of Service and Privacy Policy');
     }
     
     setIsLoading(true);
@@ -234,7 +239,8 @@ const SignupPage: React.FC = () => {
               id="terms"
               name="terms"
               type="checkbox"
-              required
+              checked={agreeToTerms}
+              onChange={(e) => setAgreeToTerms(e.target.checked)}
               className={`h-4 w-4 rounded border focus:ring-2 ${
                 theme === 'dark' 
                   ? 'bg-gray-700 border-gray-600 focus:ring-red-500 text-red-600' 
@@ -245,17 +251,17 @@ const SignupPage: React.FC = () => {
               theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
             }`}>
               I agree to the{' '}
-              <a href="#" className={`font-medium hover:underline ${
+              <Link to="/terms-of-service" className={`font-medium hover:underline ${
                 theme === 'dark' ? 'text-red-400' : 'text-red-600'
               }`}>
                 Terms of Service
-              </a>{' '}
+              </Link>{' '}
               and{' '}
-              <a href="#" className={`font-medium hover:underline ${
+              <Link to="/privacy-policy" className={`font-medium hover:underline ${
                 theme === 'dark' ? 'text-red-400' : 'text-red-600'
               }`}>
                 Privacy Policy
-              </a>
+              </Link>
             </label>
           </div>
 

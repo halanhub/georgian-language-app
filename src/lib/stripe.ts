@@ -11,16 +11,17 @@ export const getStripe = () => {
 
 // Create a checkout session
 export const createCheckoutSession = async (
-  priceId: string, 
+  productName: 'premium' | 'annual', 
   successUrl: string, 
   cancelUrl: string
 ): Promise<CheckoutSession> => {
   try {
-    const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+    const { data, error } = await supabase.functions.invoke('stripe-checkout', {
       body: { 
-        priceId, 
-        successUrl, 
-        cancelUrl 
+        price_id: productName === 'premium' ? 'price_1RKLOQPJT7FVTkW5ZFAsbRrH' : 'price_1RKLOqPJT7FVTkW5ZFAsbRrH', 
+        success_url: successUrl, 
+        cancel_url: cancelUrl,
+        mode: 'subscription'
       }
     });
 
