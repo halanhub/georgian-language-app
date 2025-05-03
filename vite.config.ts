@@ -13,6 +13,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
+    include: ['@supabase/postgrest-js']
   },
   build: {
     outDir: 'dist',
@@ -24,9 +25,12 @@ export default defineConfig({
       plugins: [
         nodeResolve({
           preferBuiltins: false,
-          browser: true
+          browser: true,
+          mainFields: ['module', 'main']
         }),
-        commonjs()
+        commonjs({
+          requireReturnsDefault: 'auto'
+        })
       ],
       external: []
     }
@@ -35,5 +39,5 @@ export default defineConfig({
     host: true,
     port: 5173,
   },
-  base: '/', // Use absolute path instead of relative
+  base: './', // Use relative path for GitHub Pages
 });
