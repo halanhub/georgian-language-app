@@ -75,6 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
+        console.log('Auth state changed:', event, newSession);
         setSession(newSession);
         
         if (event === 'SIGNED_IN' && newSession?.user) {
@@ -198,7 +199,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           data: {
             display_name: displayName
           },
-          // Disable email confirmation for production
           emailRedirectTo: `${window.location.origin}/confirmation`,
         }
       });

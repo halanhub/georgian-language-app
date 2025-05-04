@@ -37,6 +37,11 @@ const LoginPage: React.FC = () => {
   }, [user, navigate, from]);
 
   const handleResendConfirmation = async () => {
+    if (!email) {
+      setError('Please enter your email address to resend the confirmation.');
+      return;
+    }
+    
     setIsResendingEmail(true);
     setResendSuccess(false);
     try {
