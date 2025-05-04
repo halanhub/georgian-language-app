@@ -7,6 +7,7 @@ import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
+import ConfirmationPage from './pages/auth/ConfirmationPage';
 import BeginnerLevelPage from './pages/levels/BeginnerLevelPage';
 import IntermediateLevelPage from './pages/levels/IntermediateLevelPage';
 import AdvancedLevelPage from './pages/levels/AdvancedLevelPage';
@@ -44,14 +45,15 @@ import FAQPage from './pages/FAQPage';
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <LanguageProvider>
-          <Router>
+      <Router>
+        <AuthProvider>
+          <LanguageProvider>
             <Routes>
               <Route path="/" element={<Layout />}>
                 <Route index element={<HomePage />} />
                 <Route path="login" element={<LoginPage />} />
                 <Route path="signup" element={<SignupPage />} />
+                <Route path="confirmation" element={<ConfirmationPage />} />
                 <Route path="pricing" element={<PricingPage />} />
                 <Route path="terms-of-service" element={<TermsOfServicePage />} />
                 <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
@@ -203,9 +205,9 @@ function App() {
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Route>
             </Routes>
-          </Router>
-        </LanguageProvider>
-      </AuthProvider>
+          </LanguageProvider>
+        </AuthProvider>
+      </Router>
     </ThemeProvider>
   );
 }

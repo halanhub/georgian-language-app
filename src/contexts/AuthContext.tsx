@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 
 // Define user type
 export type UserProfile = {
@@ -43,6 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Check if the user is already logged in
   useEffect(() => {
@@ -197,7 +199,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             display_name: displayName
           },
           // Disable email confirmation for production
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: `${window.location.origin}/confirmation`,
         }
       });
       
@@ -205,7 +207,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw error;
       }
       
-      // User profile will be created by the auth state change listener
+      // Redirect to confirmation page after signup
+      navigate('/confirmation');
     } catch (error) {
       console.error('Signup error:', error);
       throw error;

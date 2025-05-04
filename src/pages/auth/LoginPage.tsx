@@ -44,7 +44,7 @@ const LoginPage: React.FC = () => {
         type: 'signup',
         email: email,
         options: {
-          emailRedirectTo: window.location.origin
+          emailRedirectTo: `${window.location.origin}/confirmation`
         }
       });
       
@@ -91,26 +91,20 @@ const LoginPage: React.FC = () => {
     setResetPasswordSuccess(false);
     
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          throw new Error('The email or password you entered is incorrect. Please try again.');
-        } else if (error.message.includes('Email not confirmed')) {
-          throw new Error('Please confirm your email address before logging in.');
-        } else {
-          throw error;
-        }
-      }
-
+      await login(email, password);
       // If successful, navigate to the intended page
       navigate(from, { replace: true });
     } catch (err: any) {
       console.error('Login error:', err);
-      setError(err.message);
+      
+      // Handle different error types
+      if (err.message.includes('Invalid login credentials')) {
+        setError('The email or password you entered is incorrect. Please try again.');
+      } else if (err.message.includes('Email not confirmed')) {
+        setError('Please confirm your email address before logging in.');
+      } else {
+        setError(err.message);
+      }
       setIsLoading(false);
     }
   };

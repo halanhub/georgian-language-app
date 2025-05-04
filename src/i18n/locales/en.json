@@ -222,5 +222,10 @@
         "content": "Whether you're a complete beginner or looking to advance your existing Georgian language skills, our platform offers the resources you need to succeed. With interactive lessons, pronunciation guides, grammar explanations, and cultural insights, you'll be speaking Georgian with confidence in no time. Join thousands of learners who have discovered the beauty and richness of the Georgian language through our comprehensive online courses."
       }
     }
+  },
+  "confirmation": {
+    "title": "Email Verification Required",
+    "subtitle": "Your account has been created successfully! Please verify your email address to activate your account and start learning Georgian.",
+    "login": "Back to Login"
   }
 }

@@ -48,12 +48,13 @@ const SignupPage: React.FC = () => {
     setIsLoading(true);
     
     try {
+      // Store email in localStorage for the confirmation page
+      localStorage.setItem('signupEmail', email);
+      
       await signup(email, password, displayName);
       setSuccess(true);
-      // Navigate to home after successful signup
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
+      // Navigate to confirmation page after successful signup
+      navigate('/confirmation');
     } catch (err: any) {
       console.error('Signup error:', err);
       
