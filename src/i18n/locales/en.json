@@ -1,0 +1,175 @@
+{
+  "common": {
+    "home": "Home",
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "settings": "Settings",
+    "subscription": "Subscription",
+    "contact": "Contact",
+    "back": "Back",
+    "next": "Next",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "search": "Search",
+    "language": "Language"
+  },
+  "nav": {
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "profile": "Profile",
+    "achievements": "Achievements",
+    "quizzes": "Quizzes",
+    "vocabulary": "Vocabulary",
+    "alphabet": "Georgian Alphabet",
+    "learning_tips": "Learning Tips"
+  },
+  "home": {
+    "title": "Learn Georgian Language",
+    "subtitle": "Start your journey to learn the beautiful Georgian language with our interactive lessons, quizzes, and practice exercises.",
+    "start_learning": "Start Learning Now",
+    "continue_learning": "Continue Learning",
+    "take_quiz": "Take a Quiz",
+    "smart_way": "Learn Georgian the Smart Way",
+    "platform_description": "Our platform offers everything you need to master the Georgian language, from alphabet to advanced conversations.",
+    "features": {
+      "learning_paths": "Structured Learning Paths",
+      "learning_paths_desc": "From beginner to advanced, our curriculum provides a clear path to fluency in Georgian.",
+      "interactive": "Interactive Exercises",
+      "interactive_desc": "Practice with engaging quizzes, drag-and-drop games, and pronunciation exercises.",
+      "resources": "Comprehensive Resources",
+      "resources_desc": "Access a wide range of learning materials, vocabulary lists, and grammar guides."
+    },
+    "levels": {
+      "title": "Learning Levels",
+      "description": "Progress through carefully designed levels to build your Georgian language skills.",
+      "beginner": "Beginner",
+      "beginner_features": [
+        "Georgian Alphabet",
+        "Basic Greetings",
+        "Colors and Numbers",
+        "Food and Drinks",
+        "Simple Phrases"
+      ],
+      "intermediate": "Intermediate",
+      "intermediate_features": [
+        "Grammar Fundamentals",
+        "Sentence Construction",
+        "Top 100 Common Words",
+        "Daily Conversations",
+        "Reading Practice"
+      ],
+      "advanced": "Advanced",
+      "advanced_features": [
+        "Complex Grammar",
+        "Cultural Nuances",
+        "Literature & Poetry",
+        "Idiomatic Expressions",
+        "Fluent Conversations"
+      ],
+      "start_learning": "Start Learning",
+      "continue_learning": "Continue Learning",
+      "upgrade_to_access": "Upgrade to Access"
+    },
+    "pricing": {
+      "title": "Choose Your Learning Plan",
+      "description": "Select the plan that best fits your learning needs and goals",
+      "free": "Free",
+      "forever": "/forever",
+      "premium": "Premium",
+      "month": "/month",
+      "annual": "Annual",
+      "year": "/year",
+      "save": "Save 16% compared to monthly",
+      "features": {
+        "free": [
+          "Access to beginner lessons",
+          "Basic vocabulary practice",
+          "Limited quizzes",
+          "Basic progress tracking"
+        ],
+        "premium": [
+          "Access to all lessons (Beginner to Advanced)",
+          "Unlimited vocabulary practice",
+          "All quizzes and exercises",
+          "Advanced progress tracking"
+        ],
+        "annual": [
+          "All Premium features",
+          "Priority support",
+          "Early access to new features",
+          "16% savings compared to monthly plan"
+        ]
+      },
+      "get_started": "Get Started",
+      "subscribe_now": "Subscribe Now",
+      "subscribe_annually": "Subscribe Annually"
+    },
+    "cta": {
+      "title": "Ready to Start Your Georgian Language Journey?",
+      "description": "Join thousands of learners discovering the beauty of the Georgian language and culture.",
+      "create_account": "Create Your Free Account",
+      "continue_journey": "Continue Your Learning Journey"
+    }
+  },
+  "beginner": {
+    "title": "Beginner Level",
+    "subtitle": "Start your Georgian language journey with essential vocabulary and basic phrases.",
+    "start_alphabet": "Start with Alphabet",
+    "take_quiz": "Take a Quiz",
+    "progress": "Your Progress",
+    "complete": "Complete these beginner lessons to build a strong foundation in Georgian.",
+    "lessons_completed": "Lessons Completed",
+    "topics": {
+      "title": "Learning Topics",
+      "alphabet": {
+        "name": "Georgian Alphabet",
+        "description": "Learn the 33 unique letters"
+      },
+      "vocabulary": {
+        "name": "Basic Vocabulary",
+        "description": "Essential words and phrases"
+      },
+      "colors": {
+        "name": "Colors & Shapes",
+        "description": "Learn colors and shapes"
+      },
+      "numbers": {
+        "name": "Numbers",
+        "description": "Count from 1 to 100"
+      },
+      "months": {
+        "name": "Months & Seasons",
+        "description": "Time expressions"
+      },
+      "food": {
+        "name": "Food & Drinks",
+        "description": "Georgian cuisine basics"
+      },
+      "body": {
+        "name": "Human Body",
+        "description": "Body parts and health"
+      },
+      "animals": {
+        "name": "Animals",
+        "description": "Common animal names"
+      },
+      "activities": {
+        "name": "Daily Activities",
+        "description": "Everyday routines"
+      }
+    },
+    "quizzes": {
+      "title": "Test Your Knowledge",
+      "description": "Take these quizzes to reinforce what you've learned"
+    }
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "contact": "Contact",
+    "made_with": "Made with",
+    "for_learners": "for Georgian language learners"
+  }
+}

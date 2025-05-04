@@ -195,7 +195,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         options: {
           data: {
             display_name: displayName
-          }
+          },
+          // Disable email confirmation for production
+          emailRedirectTo: window.location.origin,
         }
       });
       
