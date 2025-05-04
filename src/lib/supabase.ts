@@ -20,11 +20,41 @@ try {
   );
 }
 
-// Create the Supabase client
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true
-  }
-});
+// Validate that the URL is a Supabase URL
+if (!supabaseUrl.includes('supabase.co') && !supabaseUrl.includes('supabase.in')) {
+  console.warn(
+    'Warning: The Supabase URL does not contain supabase.co or supabase.in. Make sure you are using the correct URL.'
+  );
+}
+
+// Validate anon key format (should be a long string)
+if (supabaseAnonKey.length < 20) {
+  throw new Error(
+    'Invalid Supabase anon key format. Please check your VITE_SUPABASE_ANON_KEY in your .env file.'
+  );
+}
+
+// Create the Supabase client with proper error handling
+let supabaseClient;
+
+try {
+  supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storageKey: 'supabase.auth.token'
+    }
+  });
+  
+  // Test the connection
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    console.log('Supabase auth state changed:', event);
+  });
+  
+} catch (error) {
+  console.error('Failed to initialize Supabase client:', error);
+  throw new Error('Failed to initialize Supabase client. Please check your credentials and try again.');
+}
+
+export const supabase = supabaseClient;

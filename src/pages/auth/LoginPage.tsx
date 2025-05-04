@@ -53,11 +53,15 @@ const LoginPage: React.FC = () => {
         }
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error resending confirmation email:', error);
+        throw error;
+      }
       
       setResendSuccess(true);
       setError('');
     } catch (err: any) {
+      console.error('Failed to resend confirmation email:', err);
       setError('Failed to resend confirmation email. Please try again later.');
     } finally {
       setIsResendingEmail(false);
@@ -77,11 +81,15 @@ const LoginPage: React.FC = () => {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error sending password reset email:', error);
+        throw error;
+      }
 
       setResetPasswordSuccess(true);
       setError('');
     } catch (err: any) {
+      console.error('Failed to send password reset email:', err);
       setError('Failed to send password reset email. Please try again later.');
     } finally {
       setIsResettingPassword(false);

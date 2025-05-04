@@ -17,6 +17,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { hasActiveSubscription, loading: subscriptionLoading } = useSubscription();
   const location = useLocation();
 
+  // Show loading state while checking authentication
   if (loading || (requiresSubscription && subscriptionLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -25,13 +26,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
+  // If not authenticated, redirect to login
   if (!user) {
+    console.log('User not authenticated, redirecting to login');
     // Redirect to login but save the current location they were trying to access
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // If the route requires subscription and user doesn't have one, redirect to pricing
   if (requiresSubscription && !hasActiveSubscription) {
+    console.log('Subscription required but not active, redirecting to pricing');
     return <Navigate to="/pricing" state={{ from: location }} replace />;
   }
 
@@ -45,6 +49,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
+  // User is authenticated and meets all requirements
   return <>{children}</>;
 };
 

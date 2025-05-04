@@ -58,6 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
         
+        console.log('Session fetched:', session ? 'Session exists' : 'No session');
         setSession(session);
         
         if (session?.user) {
@@ -75,13 +76,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
-        console.log('Auth state changed:', event, newSession);
+        console.log('Auth state changed:', event, newSession ? 'Session exists' : 'No session');
         setSession(newSession);
         
         if (event === 'SIGNED_IN' && newSession?.user) {
           await fetchUserProfile(newSession.user);
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
+        } else if (event === 'USER_UPDATED') {
+          if (newSession?.user) {
+            await fetchUserProfile(newSession.user);
+          }
         }
       }
     );
@@ -95,6 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Fetch user profile from database
   const fetchUserProfile = async (authUser: User) => {
     try {
+      console.log('Fetching user profile for:', authUser.id);
       // First, check if user profile exists
       const { data: profile, error } = await supabase
         .from('user_profiles')
@@ -110,6 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (profile) {
         // Profile exists, use it
+        console.log('User profile found:', profile);
         setUser({
           id: authUser.id,
           email: authUser.email || '',
@@ -123,6 +130,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
       } else {
         // Profile doesn't exist, create it
+        console.log('Creating new user profile for:', authUser.id);
         const newProfile = {
           id: authUser.id,
           display_name: authUser.email?.split('@')[0] || 'User',
@@ -175,9 +183,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (error) {
+        console.error('Login error:', error);
         throw error;
       }
       
+      console.log('Login successful');
       // User profile will be fetched by the auth state change listener
     } catch (error) {
       console.error('Login error:', error);
@@ -204,9 +214,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (error) {
+        console.error('Signup error:', error);
         throw error;
       }
       
+      console.log('Signup successful, confirmation email sent');
       // Redirect to confirmation page after signup
       navigate('/confirmation');
     } catch (error) {
@@ -224,11 +236,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { error } = await supabase.auth.signOut();
       
       if (error) {
+        console.error('Logout error:', error);
         throw error;
       }
       
       setUser(null);
       setSession(null);
+      console.log('Logout successful');
     } catch (error) {
       console.error('Logout error:', error);
       throw error;
@@ -264,11 +278,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('id', user.id);
       
       if (error) {
+        console.error('Profile update error:', error);
         throw error;
       }
       
       // Update local state
       setUser({ ...user, ...data });
+      console.log('Profile updated successfully');
     } catch (error) {
       console.error('Profile update error:', error);
       throw error;

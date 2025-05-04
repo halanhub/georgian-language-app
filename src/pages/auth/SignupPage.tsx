@@ -112,7 +112,7 @@ const SignupPage: React.FC = () => {
           <div className={`p-3 rounded-md ${
             theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-700'
           }`}>
-            Account created successfully! You can now start learning Georgian.
+            Account created successfully! Please check your email to verify your account.
           </div>
         )}
         
