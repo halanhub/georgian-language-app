@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Mail, Github as GitHub } from 'lucide-react';
+import { Heart, Mail, Github as GitHub, HelpCircle } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +30,16 @@ const Footer: React.FC = () => {
               <Mail size={18} className="inline mr-1" />
               {t('footer.contact')}
             </Link>
+
+            <Link 
+              to="/faq" 
+              className={`text-sm hover:${theme === 'dark' ? 'text-white' : 'text-red-600'} transition-colors`}
+              aria-label="FAQ"
+            >
+              <HelpCircle size={18} className="inline mr-1" />
+              FAQ
+            </Link>
+
             <div className="flex items-center">
               <span className="text-sm">{t('footer.made_with')}</span>
               <Heart size={16} className={`mx-1 ${theme === 'dark' ? 'text-red-400' : 'text-red-500'}`} />

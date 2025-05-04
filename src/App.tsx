@@ -39,6 +39,7 @@ import PricingPage from './pages/PricingPage';
 import TermsOfServicePage from './pages/legal/TermsOfServicePage';
 import PrivacyPolicyPage from './pages/legal/PrivacyPolicyPage';
 import DatabaseTestPage from './pages/DatabaseTestPage';
+import FAQPage from './pages/FAQPage';
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
                 <Route path="terms-of-service" element={<TermsOfServicePage />} />
                 <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
                 <Route path="database-test" element={<DatabaseTestPage />} />
+                <Route path="faq" element={<FAQPage />} />
                 
                 <Route path="beginner" element={
                   <ProtectedRoute>

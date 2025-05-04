@@ -351,7 +351,7 @@ const ProfileSettingsPage: React.FC = () => {
                           } sm:text-sm`}
                         >
                           <option value="en">English</option>
-                          <option value="ka">ქართული</option>
+                          <option value="ru">Русский</option>
                         </select>
                       </div>
                     </div>

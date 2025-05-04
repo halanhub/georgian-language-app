@@ -37,7 +37,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
     setIsOpen(!isOpen);
   };
 
-  const handleLanguageChange = (lang: 'en' | 'ru' | 'ka') => {
+  const handleLanguageChange = (lang: 'en' | 'ru') => {
     changeLanguage(lang);
     setIsOpen(false);
   };

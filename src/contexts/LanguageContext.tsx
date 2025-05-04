@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type Language = 'en' | 'ru' | 'ka';
+type Language = 'en' | 'ru';
 
 type LanguageContextType = {
   language: Language;
@@ -25,14 +25,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const availableLanguages = [
     { code: 'en' as Language, name: 'English' },
-    { code: 'ru' as Language, name: 'Русский' },
-    { code: 'ka' as Language, name: 'ქართული' }
+    { code: 'ru' as Language, name: 'Русский' }
   ];
 
   useEffect(() => {
     // Initialize language from i18n
     const currentLang = i18n.language.split('-')[0];
-    if (currentLang === 'en' || currentLang === 'ru' || currentLang === 'ka') {
+    if (currentLang === 'en' || currentLang === 'ru') {
       setLanguage(currentLang as Language);
     }
   }, [i18n.language]);

@@ -13,7 +13,8 @@
     "cancel": "Cancel",
     "loading": "Loading...",
     "search": "Search",
-    "language": "Language"
+    "language": "Language",
+    "faq": "FAQ"
   },
   "nav": {
     "beginner": "Beginner",
@@ -170,6 +171,56 @@
     "rights": "All rights reserved.",
     "contact": "Contact",
     "made_with": "Made with",
-    "for_learners": "for Georgian language learners"
+    "for_learners": "for Georgian language learners",
+    "faq": "FAQ"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to common questions about learning Georgian language and using our platform.",
+    "search_placeholder": "Search questions...",
+    "no_results": "No questions found matching your search. Try a different search term.",
+    "categories": {
+      "general": "General Questions",
+      "learning": "Learning Process",
+      "platform": "Our Platform",
+      "cultural": "Georgian Culture & Travel"
+    },
+    "questions": {
+      "what_is_georgian": {
+        "question": "What is the Georgian language?",
+        "answer": "Georgian (ქართული ენა, romanized: kartuli ena) is the official language of Georgia and the primary language of about 4 million people. It belongs to the Kartvelian language family and has its own unique alphabet with 33 letters. Georgian is one of the oldest living languages in the world with a rich literary tradition dating back to the 5th century."
+      },
+      "how_difficult": {
+        "question": "How difficult is it to learn Georgian?",
+        "answer": "Georgian is considered a challenging language for English speakers due to its unique alphabet, complex verb system, and consonant clusters. However, with consistent practice and the right resources, it is definitely learnable. Our structured approach breaks down the complexity into manageable lessons, making the learning process more accessible."
+      },
+      "how_long": {
+        "question": "How long does it take to learn Georgian?",
+        "answer": "The time needed to learn Georgian varies depending on your learning pace, prior language learning experience, and dedication. For basic conversational skills, expect 3-6 months of consistent study. To reach intermediate fluency, 1-2 years is typical. Advanced proficiency may take 3-5 years. Our platform provides a structured path from beginner to advanced levels."
+      }
+    },
+    "seo": {
+      "title": "Learn Georgian Language Online",
+      "why_learn": {
+        "title": "Why Learn Georgian?",
+        "content": "Learning Georgian opens doors to a rich culture with over 1,500 years of written history. As one of the world's oldest languages with its own unique alphabet, Georgian offers language enthusiasts a fascinating linguistic journey. Whether you're planning to visit Georgia's stunning landscapes, connect with Georgian heritage, or simply expand your language repertoire with a truly unique addition, our comprehensive online Georgian lessons provide the perfect starting point."
+      },
+      "approach": {
+        "title": "Our Approach to Georgian Language Learning",
+        "content": "Our platform offers a structured approach to learning Georgian, starting with the alphabet and basic vocabulary before progressing to grammar, conversation, and advanced topics. We combine interactive exercises, audio pronunciation guides, and cultural context to create an immersive learning experience. Our Georgian language courses are designed by language experts and native speakers to ensure accuracy and relevance."
+      },
+      "alphabet": {
+        "title": "Georgian Alphabet and Pronunciation",
+        "content": "The Georgian alphabet (ქართული ანბანი) consists of 33 unique letters. Unlike many languages, each letter in Georgian has a single pronunciation, making reading relatively straightforward once you've learned the alphabet. Our Georgian alphabet lessons break down each letter with audio pronunciation guides, writing practice, and common words to help you master this fundamental aspect of the language."
+      },
+      "grammar": {
+        "title": "Georgian Grammar and Vocabulary",
+        "content": "Georgian grammar has some unique features, including an agglutinative structure where prefixes and suffixes are added to word roots to express different grammatical functions. Our grammar lessons simplify these concepts with clear explanations and plenty of examples. Meanwhile, our vocabulary lessons cover essential Georgian words and phrases organized by themes like greetings, food, travel, and daily activities, helping you build a practical Georgian vocabulary quickly."
+      },
+      "start": {
+        "title": "Start Your Georgian Language Journey Today",
+        "content": "Whether you're a complete beginner or looking to advance your existing Georgian language skills, our platform offers the resources you need to succeed. With interactive lessons, pronunciation guides, grammar explanations, and cultural insights, you'll be speaking Georgian with confidence in no time. Join thousands of learners who have discovered the beauty and richness of the Georgian language through our comprehensive online courses."
+      }
+    }
   }
 }
