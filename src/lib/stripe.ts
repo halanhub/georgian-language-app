@@ -16,9 +16,23 @@ export const createCheckoutSession = async (
   cancelUrl: string
 ): Promise<CheckoutSession> => {
   try {
+    // Map product names to price IDs
+    const priceIds = {
+      premium: 'price_1RKLOQPJT7FVTkW5ZFAsbRrH',
+      annual: 'price_1RKLOqPJT7FVTkW5ZFAsbRrH'
+    };
+    
+    const priceId = priceIds[productName];
+    
+    if (!priceId) {
+      throw new Error(`Invalid product name: ${productName}`);
+    }
+    
+    console.log(`Creating checkout session for ${productName} (${priceId})`);
+    
     const { data, error } = await supabase.functions.invoke('stripe-checkout', {
       body: { 
-        price_id: productName === 'premium' ? 'price_1RKLOQPJT7FVTkW5ZFAsbRrH' : 'price_1RKLOqPJT7FVTkW5ZFAsbRrH', 
+        price_id: priceId, 
         success_url: successUrl, 
         cancel_url: cancelUrl,
         mode: 'subscription'
@@ -26,6 +40,7 @@ export const createCheckoutSession = async (
     });
 
     if (error) {
+      console.error('Error creating checkout session:', error);
       throw error;
     }
 
@@ -46,6 +61,7 @@ export const createCustomerPortalSession = async (
     });
 
     if (error) {
+      console.error('Error creating customer portal session:', error);
       throw error;
     }
 
@@ -62,6 +78,7 @@ export const getUserSubscription = async (): Promise<{ subscription: Subscriptio
     const { data, error } = await supabase.functions.invoke('get-user-subscription');
 
     if (error) {
+      console.error('Error fetching user subscription:', error);
       throw error;
     }
 

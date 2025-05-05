@@ -59,6 +59,7 @@ export function useUserProgress(lessonId?: string) {
           }));
           
           setProgress(formattedProgress);
+          console.log('Fetched user progress:', formattedProgress);
         }
       } catch (err) {
         console.error('Error fetching user progress:', err);
@@ -92,6 +93,7 @@ export function useUserProgress(lessonId?: string) {
       
       if (existingProgress) {
         // Update existing progress
+        console.log('Updating existing progress for lesson:', lessonId, updates);
         const { data, error } = await supabase
           .from('user_progress')
           .update({
@@ -126,11 +128,17 @@ export function useUserProgress(lessonId?: string) {
                 }
               : p
           ));
+          
+          // If lesson was completed, update user profile
+          if (updates.completed && !existingProgress.completed) {
+            await updateUserProfile(user.id);
+          }
         }
         
         return data;
       } else {
         // Create new progress record
+        console.log('Creating new progress for lesson:', lessonId, updates);
         const now = new Date().toISOString();
         
         const { data, error } = await supabase
@@ -163,6 +171,11 @@ export function useUserProgress(lessonId?: string) {
             createdAt: data.created_at,
             updatedAt: data.updated_at
           }]);
+          
+          // If lesson was completed, update user profile
+          if (updates.completed) {
+            await updateUserProfile(user.id);
+          }
         }
         
         return data;
@@ -173,6 +186,52 @@ export function useUserProgress(lessonId?: string) {
       throw err;
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Update user profile with progress statistics
+  const updateUserProfile = async (userId: string) => {
+    try {
+      // Get all completed lessons
+      const { data: completedLessons, error: countError } = await supabase
+        .from('user_progress')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('completed', true);
+      
+      if (countError) {
+        throw countError;
+      }
+      
+      // Calculate total study time
+      const { data: timeData, error: timeError } = await supabase
+        .from('user_progress')
+        .select('time_spent')
+        .eq('user_id', userId);
+      
+      if (timeError) {
+        throw timeError;
+      }
+      
+      const totalStudyTime = timeData.reduce((sum, item) => sum + (item.time_spent || 0), 0);
+      
+      // Update user profile
+      const { error: updateError } = await supabase
+        .from('user_profiles')
+        .update({
+          lessons_completed: completedLessons?.length || 0,
+          total_study_time: Math.floor(totalStudyTime / 60), // Convert minutes to hours
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
+      
+      if (updateError) {
+        throw updateError;
+      }
+      
+      console.log('Updated user profile with progress statistics');
+    } catch (error) {
+      console.error('Error updating user profile with progress:', error);
     }
   };
 
@@ -215,6 +274,9 @@ export function useUserProgress(lessonId?: string) {
         throw updateError;
       }
       
+      // Reinitialize progress records
+      await initializeProgress(user.id);
+      
       return true;
     } catch (err) {
       console.error('Error resetting user progress:', err);
@@ -225,5 +287,40 @@ export function useUserProgress(lessonId?: string) {
     }
   };
 
-  return { progress, loading, error, updateProgress, resetAllProgress };
+  // Initialize progress records for a user
+  const initializeProgress = async (userId: string) => {
+    try {
+      const initialProgress = [
+        { user_id: userId, lesson_id: 'alphabet', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'basic-vocabulary', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'colors-shapes', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'numbers', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'months', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'food', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'body', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'animals', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'activities', completed: false, time_spent: 0 }
+      ];
+      
+      const { error } = await supabase
+        .from('user_progress')
+        .insert(initialProgress);
+      
+      if (error) {
+        throw error;
+      }
+      
+      console.log('Successfully initialized progress records');
+    } catch (error) {
+      console.error('Error initializing progress records:', error);
+    }
+  };
+
+  return { 
+    progress, 
+    loading, 
+    error, 
+    updateProgress, 
+    resetAllProgress 
+  };
 }

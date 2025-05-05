@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 // Define user type
 export type UserProfile = {
@@ -25,6 +26,7 @@ type AuthContextType = {
   signup: (email: string, password: string, displayName: string) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<string>;
 };
 
 // Create context with a default value
@@ -344,6 +346,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Upload avatar image
+  const uploadAvatar = async (file: File): Promise<string> => {
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    try {
+      setLoading(true);
+      
+      // Create a unique file name
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${uuidv4()}.${fileExt}`;
+      const filePath = `avatars/${user.id}/${fileName}`;
+      
+      // Upload file to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('user-avatars')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+      
+      if (uploadError) {
+        console.error('Avatar upload error:', uploadError);
+        throw uploadError;
+      }
+      
+      // Get public URL for the uploaded file
+      const { data } = supabase.storage
+        .from('user-avatars')
+        .getPublicUrl(filePath);
+      
+      const avatarUrl = data.publicUrl;
+      
+      // Update user profile with new avatar URL
+      await updateProfile({ avatarUrl });
+      
+      console.log('Avatar uploaded successfully:', avatarUrl);
+      return avatarUrl;
+    } catch (error) {
+      console.error('Avatar upload error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value = {
     user,
     session,
@@ -351,7 +400,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     signup,
     logout,
-    updateProfile
+    updateProfile,
+    uploadAvatar
   };
 
   return (

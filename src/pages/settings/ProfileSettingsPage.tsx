@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowLeft, Camera, Mail, Save, User, Award, Clock, BookOpen, Brain, Calendar, CheckCircle2, AlertCircle, CreditCard } from 'lucide-react';
+import { ArrowLeft, Camera, Mail, Save, User, Award, Clock, BookOpen, Brain, Calendar, CheckCircle2, AlertCircle, CreditCard, Loader, Trash2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useUserProfile } from '../../hooks/useUserProfile';
@@ -16,7 +16,7 @@ const truncateEmail = (email: string) => {
 };
 
 const ProfileSettingsPage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, uploadAvatar } = useAuth();
   const { theme } = useTheme();
   const location = useLocation();
   const { profile, loading: profileLoading, updateProfile } = useUserProfile();
@@ -35,6 +35,12 @@ const ProfileSettingsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'success' | 'error' | null>(null);
   const [activeTab, setActiveTab] = useState<'profile' | 'tracking' | 'subscription'>('profile');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Check for query parameters that might indicate checkout status
   useEffect(() => {
@@ -56,6 +62,11 @@ const ProfileSettingsPage: React.FC = () => {
     if (profile) {
       setDisplayName(profile.displayName || '');
       setEmail(profile.email || '');
+      
+      // Set avatar preview if available
+      if (profile.avatarUrl) {
+        setAvatarPreview(profile.avatarUrl);
+      }
     }
   }, [profile]);
 
@@ -65,6 +76,22 @@ const ProfileSettingsPage: React.FC = () => {
     setSaveStatus(null);
     
     try {
+      // First, handle avatar upload if there's a new file
+      if (avatarFile) {
+        setIsUploading(true);
+        try {
+          await uploadAvatar(avatarFile);
+          setAvatarFile(null); // Clear the file after upload
+        } catch (error) {
+          console.error('Error uploading avatar:', error);
+          setUploadError('Failed to upload avatar. Please try again.');
+          // Continue with other profile updates even if avatar upload fails
+        } finally {
+          setIsUploading(false);
+        }
+      }
+      
+      // Update other profile information
       await updateProfile({
         displayName
       });
@@ -72,6 +99,57 @@ const ProfileSettingsPage: React.FC = () => {
       setSaveStatus('success');
     } catch (error) {
       console.error('Error updating profile:', error);
+      setSaveStatus('error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle avatar file selection
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setUploadError('Please select an image file (JPEG, PNG, etc.)');
+        return;
+      }
+      
+      // Validate file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        setUploadError('Image size should be less than 2MB');
+        return;
+      }
+      
+      setAvatarFile(file);
+      setUploadError(null);
+      
+      // Create a preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Trigger file input click
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Remove avatar
+  const handleRemoveAvatar = async () => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    try {
+      await updateProfile({ avatarUrl: null });
+      setAvatarPreview(null);
+      setAvatarFile(null);
+      setSaveStatus('success');
+    } catch (error) {
+      console.error('Error removing avatar:', error);
       setSaveStatus('error');
     } finally {
       setIsLoading(false);
@@ -153,15 +231,24 @@ const ProfileSettingsPage: React.FC = () => {
                 <button
                   type="submit"
                   form="settings-form"
-                  disabled={isLoading}
+                  disabled={isLoading || isUploading}
                   className={`inline-flex items-center px-4 py-2 rounded-md shadow-sm text-sm font-medium ${
-                    isLoading
+                    isLoading || isUploading
                       ? (theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-300 text-gray-500')
                       : (theme === 'dark' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-600 text-white hover:bg-blue-700')
                   }`}
                 >
-                  <Save size={16} className="mr-2" />
-                  {isLoading ? 'Saving...' : 'Save Changes'}
+                  {isLoading || isUploading ? (
+                    <>
+                      <Loader size={16} className="mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={16} className="mr-2" />
+                      Save Changes
+                    </>
+                  )}
                 </button>
               )}
             </div>
@@ -229,16 +316,39 @@ const ProfileSettingsPage: React.FC = () => {
             </div>
           )}
           
+          {uploadError && (
+            <div className={`mb-6 p-4 rounded-md flex items-start ${
+              theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800'
+            }`}>
+              <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+              <p>{uploadError}</p>
+            </div>
+          )}
+          
           {activeTab === 'profile' && (
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
               {/* Profile Picture Section */}
               <div className={`md:col-span-1 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg p-6 shadow`}>
                 <div className="text-center">
                   <div className="relative inline-block">
-                    <div className={`w-32 h-32 rounded-full mx-auto ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'} flex items-center justify-center`}>
-                      <User size={64} className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} />
+                    <div 
+                      className={`w-32 h-32 rounded-full mx-auto overflow-hidden cursor-pointer ${
+                        theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'
+                      } flex items-center justify-center`}
+                      onClick={handleAvatarClick}
+                    >
+                      {avatarPreview || profile?.avatarUrl ? (
+                        <img 
+                          src={avatarPreview || profile?.avatarUrl} 
+                          alt="Profile" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <User size={64} className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} />
+                      )}
                     </div>
                     <button
+                      onClick={handleAvatarClick}
                       className={`absolute bottom-0 right-0 p-2 rounded-full ${
                         theme === 'dark' 
                           ? 'bg-gray-700 text-blue-400 hover:bg-gray-600' 
@@ -247,7 +357,27 @@ const ProfileSettingsPage: React.FC = () => {
                     >
                       <Camera size={20} />
                     </button>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleAvatarChange}
+                      accept="image/*"
+                      className="hidden"
+                    />
                   </div>
+                  
+                  {(avatarPreview || profile?.avatarUrl) && (
+                    <button
+                      onClick={handleRemoveAvatar}
+                      className={`mt-2 text-sm flex items-center mx-auto ${
+                        theme === 'dark' ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700'
+                      }`}
+                    >
+                      <Trash2 size={14} className="mr-1" />
+                      Remove photo
+                    </button>
+                  )}
+                  
                   <h2 className={`mt-4 text-lg font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {profile?.displayName || 'Your Name'}
                   </h2>

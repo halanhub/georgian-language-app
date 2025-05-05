@@ -28,8 +28,10 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
       const cancelUrl = `${window.location.origin}/pricing?checkout=canceled`;
       
       const priceId = selectedPlan === 'premium' 
-        ? 'price_1OvXYZLkdIwHu7xJQZjKl2Js' 
-        : 'price_1OvXZaLkdIwHu7xJRTjKl3Kt';
+        ? 'price_1RKLOQPJT7FVTkW5ZFAsbRrH' 
+        : 'price_1RKLOqPJT7FVTkW5ZFAsbRrH';
+      
+      console.log("Creating checkout session with price ID:", priceId);
       
       const { data, error } = await supabase.functions.invoke('stripe-checkout', {
         body: { 
@@ -49,11 +51,11 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
       if (data?.url) {
         window.location.href = data.url;
       } else {
-        throw new Error('Failed to create checkout session');
+        throw new Error('Failed to create checkout session - no URL returned');
       }
     } catch (err: any) {
       console.error('Error creating checkout session:', err);
-      setError('Failed to process subscription. Please try again later.');
+      setError('Failed to process subscription. Please try again later. Error: ' + (err.message || 'Unknown error'));
       setIsLoading(false);
     }
   };
@@ -77,11 +79,11 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
       if (data?.url) {
         window.location.href = data.url;
       } else {
-        throw new Error('Failed to create customer portal session');
+        throw new Error('Failed to create customer portal session - no URL returned');
       }
     } catch (err: any) {
       console.error('Error creating customer portal session:', err);
-      setError('Failed to access subscription management. Please try again later.');
+      setError('Failed to access subscription management. Please try again later. Error: ' + (err.message || 'Unknown error'));
       setIsLoading(false);
     }
   };
