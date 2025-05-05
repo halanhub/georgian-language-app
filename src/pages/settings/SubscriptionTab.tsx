@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { CreditCard, Check, X, Loader } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useSubscription } from '../../hooks/useSubscription';
-import { supabase } from '../../lib/supabase';
+import { createCheckoutSession, createCustomerPortalSession } from '../../lib/stripe';
+import { STRIPE_PRODUCTS } from '../../stripe-config';
 
 interface SubscriptionTabProps {
   showSuccessMessage?: boolean;
@@ -12,7 +13,6 @@ interface SubscriptionTabProps {
 const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = false }) => {
   const { theme } = useTheme();
   const { hasActiveSubscription, subscriptionDetails, loading } = useSubscription();
-  const navigate = useNavigate();
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,29 +27,14 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
       const successUrl = `${window.location.origin}/settings?checkout=success&tab=subscription`;
       const cancelUrl = `${window.location.origin}/pricing?checkout=canceled`;
       
-      const priceId = selectedPlan === 'premium' 
-        ? 'price_1RKLOQPJT7FVTkW5ZFAsbRrH' 
-        : 'price_1RKLOqPJT7FVTkW5ZFAsbRrH';
+      const { url } = await createCheckoutSession(
+        selectedPlan,
+        successUrl,
+        cancelUrl
+      );
       
-      console.log("Creating checkout session with price ID:", priceId);
-      
-      const { data, error } = await supabase.functions.invoke('stripe-checkout', {
-        body: { 
-          price_id: priceId,
-          success_url: successUrl,
-          cancel_url: cancelUrl,
-          mode: 'subscription'
-        }
-      });
-      
-      if (error) {
-        console.error('Error creating checkout session:', error);
-        throw error;
-      }
-      
-      // Redirect to Stripe checkout
-      if (data?.url) {
-        window.location.href = data.url;
+      if (url) {
+        window.location.href = url;
       } else {
         throw new Error('Failed to create checkout session - no URL returned');
       }
@@ -67,17 +52,10 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
     try {
       const returnUrl = `${window.location.origin}/settings?tab=subscription`;
       
-      const { data, error } = await supabase.functions.invoke('create-portal-session', {
-        body: { returnUrl }
-      });
+      const { url } = await createCustomerPortalSession(returnUrl);
       
-      if (error) {
-        console.error('Error creating customer portal session:', error);
-        throw error;
-      }
-      
-      if (data?.url) {
-        window.location.href = data.url;
+      if (url) {
+        window.location.href = url;
       } else {
         throw new Error('Failed to create customer portal session - no URL returned');
       }
@@ -97,6 +75,23 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
       month: 'long', 
       day: 'numeric' 
     });
+  };
+
+  // Get product name from price ID
+  const getProductName = (priceId: string | null) => {
+    if (!priceId) return 'Premium';
+    
+    const product = Object.values(STRIPE_PRODUCTS).find(p => p.priceId === priceId);
+    if (!product) return 'Premium';
+    
+    return product.name;
+  };
+
+  // Get subscription type (monthly/annual)
+  const getSubscriptionType = (priceId: string | null) => {
+    if (!priceId) return 'Monthly';
+    
+    return priceId === STRIPE_PRODUCTS.annual.priceId ? 'Annual' : 'Monthly';
   };
 
   if (loading) {
@@ -148,7 +143,7 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
             </div>
             <div>
               <h4 className={`text-lg font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                {hasActiveSubscription ? 'Premium Subscription' : 'Free Plan'}
+                {hasActiveSubscription ? `${getProductName(subscriptionDetails?.price_id)} Subscription` : 'Free Plan'}
               </h4>
               <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                 {hasActiveSubscription 
@@ -171,7 +166,7 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
               <div className="flex justify-between">
                 <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>Plan:</span>
                 <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  {subscriptionDetails.price_id?.includes('annual') ? 'Annual' : 'Monthly'} Premium
+                  {getSubscriptionType(subscriptionDetails.price_id)} {getProductName(subscriptionDetails.price_id)}
                 </span>
               </div>
               <div className="flex justify-between">

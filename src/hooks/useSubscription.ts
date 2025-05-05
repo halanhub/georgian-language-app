@@ -40,9 +40,16 @@ export function useSubscription() {
           
           setHasActiveSubscription(isActive);
           setSubscriptionDetails(data);
+          
+          console.log('Subscription data loaded:', {
+            isActive,
+            status: data.subscription_status,
+            priceId: data.price_id
+          });
         } else {
           setHasActiveSubscription(false);
           setSubscriptionDetails(null);
+          console.log('No subscription found for user');
         }
       } catch (err) {
         console.error('Error fetching subscription:', err);

@@ -6,6 +6,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useSubscription } from '../hooks/useSubscription';
 import { useTranslation } from 'react-i18next';
 import learnGeorgianImage from '../assets/images/learn-georgian.png';
+import { STRIPE_PRODUCTS } from '../stripe-config';
 
 const HomePage: React.FC = () => {
   const { user } = useAuth();

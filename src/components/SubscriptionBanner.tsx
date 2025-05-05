@@ -10,9 +10,9 @@ interface SubscriptionBannerProps {
 
 const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({ type = 'inline' }) => {
   const { theme } = useTheme();
-  const { hasActiveSubscription } = useSubscription();
+  const { hasActiveSubscription, loading } = useSubscription();
 
-  if (hasActiveSubscription) {
+  if (loading || hasActiveSubscription) {
     return null;
   }
 
