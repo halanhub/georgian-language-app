@@ -17,7 +17,6 @@ export const createCheckoutSession = async (
   cancelUrl: string
 ): Promise<CheckoutSession> => {
   try {
-    // Get price ID from product configuration
     const product = STRIPE_PRODUCTS[productName];
     
     if (!product) {
@@ -25,12 +24,12 @@ export const createCheckoutSession = async (
     }
     
     console.log(`Creating checkout session for ${productName} (${product.priceId})`);
-    
+
     const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { 
-        price_id: product.priceId, 
-        success_url: successUrl, 
-        cancel_url: cancelUrl,
+      body: { 
+        priceId: product.priceId,        
+        successUrl: successUrl,           
+        cancelUrl: cancelUrl,            
         mode: 'subscription'
       }
     });
