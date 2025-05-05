@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useRef } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   AlignJustify, 
   BookOpen, 
@@ -8,6 +8,7 @@ import {
   Dices, 
   GraduationCap, 
   Lightbulb, 
+  Lock,
   Mail,
   PenTool, 
   Palette, 
@@ -17,26 +18,48 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useSubscription } from '../../hooks/useSubscription';
+import { useUserProgress } from '../../hooks/useUserProgress';
 
 const Sidebar: React.FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
+  const { hasActiveSubscription } = useSubscription();
+  const { progress } = useUserProgress();
   const location = useLocation();
   const [isProfileExpanded, setIsProfileExpanded] = useState(false);
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // Mock progress data - in a real app, this would come from a database
-  const progressData = {
-    lessonsCompleted: 15,
-    totalLessons: 45,
-    quizScore: 75,
-    studyStreak: 5
+  if (!user) return null;
+
+  // Calculate progress metrics
+  const calculateProgress = () => {
+    if (!progress) return {
+      lessonsCompleted: 0,
+      totalLessons: 9,
+      quizScore: 0,
+      studyStreak: 0
+    };
+
+    const completedLessons = progress.filter(p => p.completed).length;
+    const totalLessons = 9; // Total number of beginner lessons
+    const quizzes = progress.filter(p => p.lessonId.includes('quiz'));
+    const quizScore = quizzes.length > 0 
+      ? Math.round(quizzes.reduce((sum, q) => sum + (q.score || 0), 0) / quizzes.length) 
+      : 0;
+    
+    return {
+      lessonsCompleted: completedLessons,
+      totalLessons,
+      quizScore,
+      studyStreak: user.studyStreak || 0
+    };
   };
 
+  const progressData = calculateProgress();
+  
   // Calculate overall progress percentage
   const overallProgress = Math.round((progressData.lessonsCompleted / progressData.totalLessons) * 100);
-
-  if (!user) return null;
 
   const isActive = (path: string) => location.pathname.includes(path);
 
@@ -69,7 +92,7 @@ const Sidebar: React.FC = () => {
                   <span className="text-sm">Learning Level:</span>
                   <span className={`px-2 py-1 rounded text-xs ${
                     theme === 'dark' ? 'bg-gray-600' : 'bg-red-100'
-                  }`}>Beginner</span>
+                  }`}>{user.level || 'Beginner'}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Overall Progress:</span>
@@ -132,26 +155,36 @@ const Sidebar: React.FC = () => {
           
           <Link 
             to="/intermediate" 
-            className={`flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
+            className={`flex items-center justify-between px-3 py-2 rounded-md transition-colors ${
               isActive('/intermediate') 
                 ? (theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-red-100 text-red-700') 
                 : (theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-red-50')
             }`}
           >
-            <PenTool size={18} />
-            <span>Intermediate</span>
+            <div className="flex items-center space-x-3">
+              <PenTool size={18} />
+              <span>Intermediate</span>
+            </div>
+            {!hasActiveSubscription && (
+              <Lock size={14} className="ml-auto text-gray-400" />
+            )}
           </Link>
           
           <Link 
             to="/advanced" 
-            className={`flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
+            className={`flex items-center justify-between px-3 py-2 rounded-md transition-colors ${
               isActive('/advanced') 
                 ? (theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-red-100 text-red-700') 
                 : (theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-red-50')
             }`}
           >
-            <GraduationCap size={18} />
-            <span>Advanced</span>
+            <div className="flex items-center space-x-3">
+              <GraduationCap size={18} />
+              <span>Advanced</span>
+            </div>
+            {!hasActiveSubscription && (
+              <Lock size={14} className="ml-auto text-gray-400" />
+            )}
           </Link>
           
           <div className="my-2 text-xs uppercase font-semibold opacity-70 px-3 pt-3">Learning Tools</div>

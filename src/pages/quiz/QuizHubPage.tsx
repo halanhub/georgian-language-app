@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, BookOpen, Brain, Check, Dices, GraduationCap, Lightbulb, Palette, Search } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, Brain, Check, Dices, GraduationCap, Lightbulb, Lock, Palette, Search } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useSubscription } from '../../hooks/useSubscription';
 
 interface QuizCategory {
   id: string;
@@ -12,10 +13,12 @@ interface QuizCategory {
   color: string;
   path: string;
   available: boolean;
+  requiresSubscription: boolean;
 }
 
 const QuizHubPage: React.FC = () => {
   const { theme } = useTheme();
+  const { hasActiveSubscription } = useSubscription();
   const [activeTab, setActiveTab] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -29,7 +32,8 @@ const QuizHubPage: React.FC = () => {
       icon: <BookOpen size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
       path: '/beginner/quiz/alphabet',
-      available: true
+      available: true,
+      requiresSubscription: false
     },
     { 
       id: 'vocabulary', 
@@ -39,7 +43,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Brain size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
       path: '/beginner/quiz/vocabulary',
-      available: true
+      available: true,
+      requiresSubscription: false
     },
     { 
       id: 'colors', 
@@ -49,7 +54,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Palette size={24} />,
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
       path: '/beginner/quiz/colors',
-      available: true
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'numbers', 
@@ -59,7 +65,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Dices size={24} />,
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
       path: '/beginner/quiz/numbers',
-      available: true
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'months', 
@@ -69,7 +76,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Dices size={24} />,
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
       path: '/beginner/quiz/months',
-      available: true
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'food', 
@@ -79,7 +87,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Dices size={24} />,
       color: theme === 'dark' ? 'bg-orange-900 text-orange-200' : 'bg-orange-100 text-orange-800',
       path: '/beginner/quiz/food',
-      available: true
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'body', 
@@ -89,7 +98,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Dices size={24} />,
       color: theme === 'dark' ? 'bg-pink-900 text-pink-200' : 'bg-pink-100 text-pink-800',
       path: '/beginner/quiz/body',
-      available: true
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'animals', 
@@ -99,7 +109,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Dices size={24} />,
       color: theme === 'dark' ? 'bg-amber-900 text-amber-200' : 'bg-amber-100 text-amber-800',
       path: '/beginner/quiz/animals',
-      available: true
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'activities', 
@@ -109,7 +120,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Dices size={24} />,
       color: theme === 'dark' ? 'bg-cyan-900 text-cyan-200' : 'bg-cyan-100 text-cyan-800',
       path: '/beginner/quiz/activities',
-      available: true
+      available: false,
+      requiresSubscription: true
     },
     
     // Intermediate Quizzes
@@ -121,7 +133,8 @@ const QuizHubPage: React.FC = () => {
       icon: <BookOpen size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
       path: '/intermediate/quiz/grammar',
-      available: true
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'sentences', 
@@ -131,7 +144,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Brain size={24} />,
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
       path: '/intermediate/quiz/sentences',
-      available: true
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'common-words', 
@@ -141,7 +155,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Dices size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
       path: '/intermediate/quiz/common-words',
-      available: true
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'conversations', 
@@ -151,7 +166,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Dices size={24} />,
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
       path: '/intermediate/quiz/conversations',
-      available: true
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'reading', 
@@ -161,7 +177,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Dices size={24} />,
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
       path: '/intermediate/quiz/reading',
-      available: true
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'writing', 
@@ -171,7 +188,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Dices size={24} />,
       color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
       path: '/intermediate/quiz/writing',
-      available: true
+      available: false,
+      requiresSubscription: true
     },
     
     // Advanced Quizzes
@@ -183,7 +201,8 @@ const QuizHubPage: React.FC = () => {
       icon: <GraduationCap size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
       path: '/advanced/quiz/grammar',
-      available: false
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'idioms', 
@@ -193,7 +212,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Lightbulb size={24} />,
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
       path: '/advanced/quiz/idioms',
-      available: false
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'literature', 
@@ -203,7 +223,8 @@ const QuizHubPage: React.FC = () => {
       icon: <BookOpen size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
       path: '/advanced/quiz/literature',
-      available: false
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'cultural', 
@@ -213,7 +234,8 @@ const QuizHubPage: React.FC = () => {
       icon: <Dices size={24} />,
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
       path: '/advanced/quiz/cultural',
-      available: false
+      available: false,
+      requiresSubscription: true
     },
     { 
       id: 'listening', 
@@ -223,11 +245,18 @@ const QuizHubPage: React.FC = () => {
       icon: <Dices size={24} />,
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
       path: '/advanced/quiz/listening',
-      available: false
+      available: false,
+      requiresSubscription: true
     }
   ];
 
-  const filteredQuizzes = quizCategories.filter(quiz => 
+  // Apply subscription check to availability
+  const processedQuizzes = quizCategories.map(quiz => ({
+    ...quiz,
+    available: quiz.requiresSubscription ? (hasActiveSubscription && quiz.available) : quiz.available
+  }));
+
+  const filteredQuizzes = processedQuizzes.filter(quiz => 
     quiz.level === activeTab && 
     (searchQuery === '' || 
      quiz.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -353,7 +382,7 @@ const QuizHubPage: React.FC = () => {
                   className={`p-6 rounded-lg shadow-md transition-transform hover:scale-105 ${
                     quiz.available
                       ? (theme === 'dark' ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50')
-                      : (theme === 'dark' ? 'bg-gray-800 opacity-50' : 'bg-white opacity-50')
+                      : (theme === 'dark' ? 'bg-gray-800 opacity-70' : 'bg-white opacity-70')
                   }`}
                 >
                   <div className={`p-3 rounded-full inline-block mb-4 ${quiz.color}`}>
@@ -381,12 +410,25 @@ const QuizHubPage: React.FC = () => {
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   ) : (
-                    <div className={`flex items-center text-sm font-medium ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-400'
-                    }`}>
-                      Complete previous levels to unlock
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </div>
+                    quiz.requiresSubscription ? (
+                      <Link
+                        to="/pricing"
+                        className={`flex items-center text-sm font-medium ${
+                          theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-600'
+                        }`}
+                      >
+                        <Lock size={14} className="mr-1" />
+                        Upgrade to Access
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    ) : (
+                      <div className={`flex items-center text-sm font-medium ${
+                        theme === 'dark' ? 'text-gray-400' : 'text-gray-400'
+                      }`}>
+                        <Lock size={14} className="mr-1" />
+                        Complete previous levels to unlock
+                      </div>
+                    )
                   )}
                 </div>
               ))}

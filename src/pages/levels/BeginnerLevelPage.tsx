@@ -109,8 +109,6 @@ const BeginnerLevelPage: React.FC = () => {
   const quizzes = [
     { id: 'alphabet', name: 'Alphabet Quiz', path: '/beginner/quiz/alphabet' },
     { id: 'vocabulary', name: 'Basic Vocabulary Quiz', path: '/beginner/quiz/vocabulary' },
-    { id: 'colors', name: 'Colors & Shapes Quiz', path: '/beginner/quiz/colors' },
-    { id: 'numbers', name: 'Numbers Quiz', path: '/beginner/quiz/numbers' }
   ];
 
   return (
@@ -124,7 +122,7 @@ const BeginnerLevelPage: React.FC = () => {
                 <span className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>Beginner Level</span> - დამწყები
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Start your Georgian language journey with essential vocabulary and basic phrases.
+                Start your Georgian language journey by learning the alphabet, basic vocabulary, and essential phrases for everyday situations.
               </p>
               <div className="flex flex-wrap gap-2">
                 <Link
