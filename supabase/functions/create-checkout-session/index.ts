@@ -12,7 +12,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
@@ -21,92 +20,93 @@ serve(async (req) => {
   }
 
   try {
-    // Get the authorization header from the request
-    const authHeader = req.headers.get('Authorization');
+    const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'No authorization header' }),
-        { 
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        }
-      );
+      console.error("❌ No Authorization header provided");
+      return new Response(JSON.stringify({ error: "No authorization header" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    // Get the JWT token from the authorization header
-    const token = authHeader.replace('Bearer ', '');
-    
-    // Verify the JWT token with Supabase
+    const token = authHeader.replace("Bearer ", "");
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-    
+
     const verifyResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
         apikey: supabaseKey,
       },
     });
-    
+
     if (!verifyResponse.ok) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid token' }),
-        { 
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        }
-      );
+      console.error("❌ Invalid Supabase token");
+      return new Response(JSON.stringify({ error: "Invalid token" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
-    
+
     const user = await verifyResponse.json();
-    
-    // Get the request body
-    const { price_id, success_url, cancel_url, mode } = await req.json();
-    
+
+    const body = await req.json();
+    console.log("👉 Incoming request body:", body);
+
+    const { price_id, success_url, cancel_url, mode } = body;
+
     if (!price_id || !success_url || !cancel_url) {
-      return new Response(
-        JSON.stringify({ error: 'Missing required parameters' }),
-        { 
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        }
-      );
+      console.error("❌ Missing required parameters", { price_id, success_url, cancel_url });
+      return new Response(JSON.stringify({ error: "Missing required parameters" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
-    
-    // Create a checkout session
+
+    const priceIdMap = {
+      premium: "price_1RKLGCAZyAKEiVfuqpDnlxcU", // Replace with your real Stripe price ID
+    };
+
+    const actualPriceId = priceIdMap[price_id] || price_id;
+
+    console.log("📦 Stripe session create payload:", {
+      email: user.email,
+      userId: user.id,
+      actualPriceId,
+      success_url,
+      cancel_url,
+      mode,
+    });
+
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
       client_reference_id: user.id,
-      payment_method_types: ['card'],
+      payment_method_types: ["card"],
       line_items: [
         {
-          price: price_id,
+          price: actualPriceId,
           quantity: 1,
         },
       ],
-      mode: mode || 'subscription',
-      success_url: success_url,
-      cancel_url: cancel_url,
+      mode: mode || "subscription",
+      success_url,
+      cancel_url,
       metadata: {
         user_id: user.id,
       },
     });
-    
-    return new Response(
-      JSON.stringify({ id: session.id, url: session.url }),
-      { 
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      }
-    );
+
+    console.log("✅ Stripe session created:", session.id);
+
+    return new Response(JSON.stringify({ id: session.id, url: session.url }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error('Error creating checkout session:', error);
-    
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      }
-    );
+    console.error("🔥 Error creating checkout session:", error.message || error);
+    return new Response(JSON.stringify({ error: error.message || "Unknown error" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

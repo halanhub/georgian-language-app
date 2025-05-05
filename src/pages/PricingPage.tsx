@@ -40,10 +40,11 @@ const PricingPage: React.FC = () => {
       const cancelUrl = `${window.location.origin}/pricing?checkout=canceled`;
       
       const { url } = await createCheckoutSession(
-        selectedPlan,
+        { price_id: selectedPlan }, // ✅ changed to snake_case to match backend expectations
         successUrl,
         cancelUrl
       );
+      
       
       if (url) {
         window.location.href = url;
