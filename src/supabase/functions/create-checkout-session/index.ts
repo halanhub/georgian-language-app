@@ -12,7 +12,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
@@ -21,7 +20,8 @@ serve(async (req) => {
   }
 
   try {
-    // Get the authorization header
+    console.log("📥 Incoming checkout session request");
+
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       console.error("❌ Missing Authorization header");
@@ -35,6 +35,7 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 
+    console.log("🔐 Verifying Supabase user token...");
     const verifyResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -43,7 +44,8 @@ serve(async (req) => {
     });
 
     if (!verifyResponse.ok) {
-      console.error("❌ Supabase token verification failed");
+      const text = await verifyResponse.text();
+      console.error("❌ Supabase token verification failed:", text);
       return new Response(
         JSON.stringify({ error: "Invalid token" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -51,8 +53,8 @@ serve(async (req) => {
     }
 
     const user = await verifyResponse.json();
+    console.log("✅ Verified user:", user?.email || "Unknown");
 
-    // Get request body and log for debugging
     const body = await req.json();
     console.log("📦 Request body:", body);
 
@@ -66,7 +68,6 @@ serve(async (req) => {
       );
     }
 
-    // Optional mapping of custom price labels
     const priceIdMap = {
       "price_monthly_4_99": "price_1OvXYZLkdIwHu7xJQZjKl2Js",
       "price_annual_49_99": "price_1OvXZaLkdIwHu7xJRTjKl3Kt",
@@ -74,7 +75,8 @@ serve(async (req) => {
 
     const actualPriceId = priceIdMap[priceId] || priceId;
 
-    // Create Stripe Checkout session
+    console.log(`🧾 Creating Stripe checkout session for ${actualPriceId}...`);
+
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
       client_reference_id: user.id,
@@ -93,14 +95,16 @@ serve(async (req) => {
       },
     });
 
+    console.log("✅ Stripe session created:", session.id);
+
     return new Response(
       JSON.stringify({ id: session.id, url: session.url }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("🔥 Error in checkout function:", error);
+    console.error("🔥 Error in checkout function:", error.message || error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message || "Unexpected error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
