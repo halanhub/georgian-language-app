@@ -26,8 +26,8 @@ export const createCheckoutSession = async (
     
     console.log(`Creating checkout session for ${productName} (${product.priceId})`);
     
-    const { data, error } = await supabase.functions.invoke('stripe-checkout', {
-      body: { 
+    const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: { 
         price_id: product.priceId, 
         success_url: successUrl, 
         cancel_url: cancelUrl,
