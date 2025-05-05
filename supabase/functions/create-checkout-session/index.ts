@@ -33,6 +33,7 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 
+    console.log("🔐 Verifying Supabase token...");
     const verifyResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -49,6 +50,7 @@ serve(async (req) => {
     }
 
     const user = await verifyResponse.json();
+    console.log("👤 Authenticated user:", user);
 
     const body = await req.json();
     console.log("👉 Incoming request body:", body);
@@ -64,37 +66,46 @@ serve(async (req) => {
     }
 
     const priceIdMap = {
-      premium: "price_1RKLGCAZyAKEiVfuqpDnlxcU", // Replace with your real Stripe price ID
+      premium: "price_1RKLGCAZyAKEiVfuqpDnlxcU", // Replace if needed
     };
 
     const actualPriceId = priceIdMap[price_id] || price_id;
 
     console.log("📦 Stripe session create payload:", {
-      email: user.email,
-      userId: user.id,
-      actualPriceId,
+      customer_email: user.email,
+      client_reference_id: user.id,
+      price: actualPriceId,
       success_url,
       cancel_url,
       mode,
     });
 
-    const session = await stripe.checkout.sessions.create({
-      customer_email: user.email,
-      client_reference_id: user.id,
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price: actualPriceId,
-          quantity: 1,
+    let session;
+    try {
+      session = await stripe.checkout.sessions.create({
+        customer_email: user.email,
+        client_reference_id: user.id,
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price: actualPriceId,
+            quantity: 1,
+          },
+        ],
+        mode: mode || "subscription",
+        success_url,
+        cancel_url,
+        metadata: {
+          user_id: user.id,
         },
-      ],
-      mode: mode || "subscription",
-      success_url,
-      cancel_url,
-      metadata: {
-        user_id: user.id,
-      },
-    });
+      });
+    } catch (stripeError) {
+      console.error("❌ Stripe API error:", stripeError);
+      return new Response(JSON.stringify({ error: stripeError.message || "Stripe error" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     console.log("✅ Stripe session created:", session.id);
 

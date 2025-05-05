@@ -28,9 +28,9 @@ export const createCheckoutSession = async (
     
     const { data, error } = await supabase.functions.invoke('create-checkout-session', {
       body: { 
-        price_id: product.priceId, 
-        success_url: successUrl, 
-        cancel_url: cancelUrl,
+        price_id: product.priceId,  // changed to snake_case
+        success_url: successUrl,     // changed to snake_case
+        cancel_url: cancelUrl,       // changed to snake_case
         mode: 'subscription'
       }
     });
