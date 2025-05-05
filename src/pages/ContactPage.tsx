@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Mail, Send } from 'lucide-react';
+import { ArrowLeft, Mail, Send, CheckCircle, XCircle, Loader } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import emailjs from '@emailjs/browser';
 
 const ContactPage: React.FC = () => {
   const { theme } = useTheme();
+  const formRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -13,6 +15,7 @@ const ContactPage: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -26,19 +29,41 @@ const ContactPage: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
+    setErrorMessage('');
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // EmailJS configuration
+      const serviceId = 'service_lhutv6w';
+      const templateId = 'template_gnfcdat';
+      const publicKey = 'Dvvd7uv3oERbrebKR';
+      
+      // Send the email
+      const result = await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          subject: formData.subject,
+          message: formData.message
+        },
+        publicKey
+      );
+      
+      console.log('Email sent successfully:', result.text);
+      setSubmitStatus('success');
+      
+      // Reset form
       setFormData({
         name: '',
         email: '',
         subject: '',
         message: ''
       });
-      setSubmitStatus('success');
     } catch (error) {
+      console.error('Error sending email:', error);
       setSubmitStatus('error');
+      setErrorMessage(error instanceof Error ? error.message : 'An unknown error occurred');
     } finally {
       setIsSubmitting(false);
     }
@@ -89,7 +114,7 @@ const ContactPage: React.FC = () => {
                         Email
                       </p>
                       <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                        support@georgianlearning.com
+                        contact@georgianlanguage.online
                       </p>
                     </div>
                   </div>
@@ -97,9 +122,9 @@ const ContactPage: React.FC = () => {
               </div>
 
               <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
-                <h2 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   Quick Links
-                </h2>
+                </h3>
                 <div className="space-y-2">
                   <Link
                     to="/support"
@@ -142,22 +167,28 @@ const ContactPage: React.FC = () => {
               </h2>
               
               {submitStatus === 'success' && (
-                <div className={`mb-6 p-4 rounded-md ${
+                <div className={`mb-6 p-4 rounded-md flex items-center ${
                   theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800'
                 }`}>
+                  <CheckCircle className="h-5 w-5 mr-2 flex-shrink-0" />
                   <p>Thank you for your message! We'll get back to you within 24 hours.</p>
                 </div>
               )}
               
               {submitStatus === 'error' && (
-                <div className={`mb-6 p-4 rounded-md ${
+                <div className={`mb-6 p-4 rounded-md flex items-center ${
                   theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800'
                 }`}>
-                  <p>There was an error sending your message. Please try again later.</p>
+                  <XCircle className="h-5 w-5 mr-2 flex-shrink-0" />
+                  <div>
+                    <p>There was an error sending your message.</p>
+                    {errorMessage && <p className="text-sm mt-1">{errorMessage}</p>}
+                    <p className="text-sm mt-1">Please try again or email us directly.</p>
+                  </div>
                 </div>
               )}
               
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label 
                     htmlFor="name" 
@@ -256,7 +287,10 @@ const ContactPage: React.FC = () => {
                   } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
                 >
                   {isSubmitting ? (
-                    'Sending...'
+                    <>
+                      <Loader size={16} className="animate-spin mr-2" />
+                      Sending...
+                    </>
                   ) : (
                     <>
                       <Send size={16} className="mr-2" />

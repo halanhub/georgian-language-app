@@ -190,17 +190,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       
-      // If user already has progress records, delete them first
+      // If user already has progress records, don't reset
       if (existingProgress && existingProgress.length > 0) {
-        const { error: deleteError } = await supabase
-          .from('user_progress')
-          .delete()
-          .eq('user_id', userId);
-        
-        if (deleteError) {
-          console.error('Error deleting existing progress:', deleteError);
-          return;
-        }
+        console.log('User already has progress records, not resetting');
+        return;
       }
       
       // Create initial progress records with 0% completion

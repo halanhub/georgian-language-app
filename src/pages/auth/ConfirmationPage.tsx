@@ -143,6 +143,11 @@ const ConfirmationPage: React.FC = () => {
                 }`}>
                   We've sent a confirmation email to {email || 'your email address'}. Click the link in the email to verify your account.
                 </p>
+                <p className={`mt-2 text-sm font-medium ${
+                  theme === 'dark' ? 'text-amber-300' : 'text-amber-600'
+                }`}>
+                  Please check your spam/junk folder if you don't see the email in your inbox.
+                </p>
               </div>
             </div>
             
@@ -181,7 +186,7 @@ const ConfirmationPage: React.FC = () => {
               <div className={`p-3 rounded-md mb-4 ${
                 theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800'
               }`}>
-                Confirmation email resent successfully! Please check your inbox.
+                Confirmation email resent successfully! Please check your inbox and spam folder.
               </div>
             )}
             

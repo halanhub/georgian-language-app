@@ -1,26 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, HelpCircle, Mail, Send } from 'lucide-react';
+import { ArrowLeft, HelpCircle, Mail, Send, CheckCircle, XCircle, Loader } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import emailjs from '@emailjs/browser';
 
 const SupportPage: React.FC = () => {
   const { theme } = useTheme();
-  const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
+  const formRef = useRef<HTMLFormElement>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus(null);
+    setErrorMessage('');
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setSubject('');
-      setMessage('');
-      // Show success message
+      // EmailJS configuration
+      const serviceId = 'service_lhutv6w';
+      const templateId = 'template_gnfcdat';
+      const publicKey = 'Dvvd7uv3oERbrebKR';
+      
+      // Send the email
+      const result = await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          subject: formData.subject,
+          message: formData.message
+        },
+        publicKey
+      );
+      
+      console.log('Email sent successfully:', result.text);
+      setSubmitStatus('success');
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
     } catch (error) {
-      // Handle error
+      console.error('Error sending email:', error);
+      setSubmitStatus('error');
+      setErrorMessage(error instanceof Error ? error.message : 'An unknown error occurred');
     } finally {
       setIsSubmitting(false);
     }
@@ -82,7 +125,72 @@ const SupportPage: React.FC = () => {
                 <h2 className={`text-xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   Contact Support
                 </h2>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                
+                {submitStatus === 'success' && (
+                  <div className={`mb-6 p-4 rounded-md flex items-center ${
+                    theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800'
+                  }`}>
+                    <CheckCircle className="h-5 w-5 mr-2 flex-shrink-0" />
+                    <p>Thank you for your message! We'll get back to you within 24 hours.</p>
+                  </div>
+                )}
+                
+                {submitStatus === 'error' && (
+                  <div className={`mb-6 p-4 rounded-md flex items-center ${
+                    theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800'
+                  }`}>
+                    <XCircle className="h-5 w-5 mr-2 flex-shrink-0" />
+                    <div>
+                      <p>There was an error sending your message.</p>
+                      {errorMessage && <p className="text-sm mt-1">{errorMessage}</p>}
+                      <p className="text-sm mt-1">Please try again or email us directly.</p>
+                    </div>
+                  </div>
+                )}
+                
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label 
+                      htmlFor="name" 
+                      className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}
+                    >
+                      Your Name
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className={`mt-1 block w-full rounded-md shadow-sm ${
+                        theme === 'dark'
+                          ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500'
+                          : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500'
+                      } sm:text-sm`}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label 
+                      htmlFor="email" 
+                      className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}
+                    >
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className={`mt-1 block w-full rounded-md shadow-sm ${
+                        theme === 'dark'
+                          ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500'
+                          : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500'
+                      } sm:text-sm`}
+                      required
+                    />
+                  </div>
                   <div>
                     <label 
                       htmlFor="subject" 
@@ -93,8 +201,9 @@ const SupportPage: React.FC = () => {
                     <input
                       type="text"
                       id="subject"
-                      value={subject}
-                      onChange={(e) => setSubject(e.target.value)}
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
                       className={`mt-1 block w-full rounded-md shadow-sm ${
                         theme === 'dark'
                           ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500'
@@ -112,9 +221,10 @@ const SupportPage: React.FC = () => {
                     </label>
                     <textarea
                       id="message"
+                      name="message"
                       rows={6}
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
+                      value={formData.message}
+                      onChange={handleChange}
                       className={`mt-1 block w-full rounded-md shadow-sm ${
                         theme === 'dark'
                           ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500'
@@ -134,7 +244,10 @@ const SupportPage: React.FC = () => {
                       } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
                     >
                       {isSubmitting ? (
-                        'Sending...'
+                        <>
+                          <Loader size={16} className="animate-spin mr-2" />
+                          Sending...
+                        </>
                       ) : (
                         <>
                           <Send size={16} className="mr-2" />
@@ -156,7 +269,7 @@ const SupportPage: React.FC = () => {
                 <div className="flex items-center">
                   <Mail className={`h-5 w-5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
                   <span className={`ml-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    support@georgian.com
+                    contact@georgianlanguage.online
                   </span>
                 </div>
               </div>

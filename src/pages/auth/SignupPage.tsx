@@ -266,6 +266,14 @@ const SignupPage: React.FC = () => {
             </label>
           </div>
 
+          <div className={`p-4 rounded-md ${
+            theme === 'dark' ? 'bg-blue-900/30 border border-blue-800' : 'bg-blue-50 border border-blue-100'
+          }`}>
+            <p className={`text-sm ${theme === 'dark' ? 'text-blue-200' : 'text-blue-700'}`}>
+              After signing up, please check your email (including spam/junk folder) for a confirmation link to activate your account.
+            </p>
+          </div>
+
           <div>
             <button
               type="submit"

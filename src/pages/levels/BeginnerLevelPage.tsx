@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { AlignJustify, ArrowRight, Book, Calendar, Palette, Brain, Utensils, Heart, Cat, Clock, Dices } from 'lucide-react';
+import { AlignJustify, ArrowRight, Book, Calendar, Palette, Brain, Utensils, Dices } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useUserProgress } from '../../hooks/useUserProgress';
@@ -76,33 +76,6 @@ const BeginnerLevelPage: React.FC = () => {
       color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
       path: '/beginner/food-and-drinks',
       progress: progress?.find(p => p.lessonId === 'food')?.completed ? 100 : 0
-    },
-    { 
-      id: 'body', 
-      name: 'Human Body', 
-      description: 'Body parts and health',
-      icon: <Heart size={24} />,
-      color: theme === 'dark' ? 'bg-pink-900 text-pink-200' : 'bg-pink-100 text-pink-800',
-      path: '/beginner/human-body',
-      progress: progress?.find(p => p.lessonId === 'body')?.completed ? 100 : 0
-    },
-    { 
-      id: 'animals', 
-      name: 'Animals', 
-      description: 'Common animal names',
-      icon: <Cat size={24} />,
-      color: theme === 'dark' ? 'bg-amber-900 text-amber-200' : 'bg-amber-100 text-amber-800',
-      path: '/beginner/animals',
-      progress: progress?.find(p => p.lessonId === 'animals')?.completed ? 100 : 0
-    },
-    { 
-      id: 'activities', 
-      name: 'Daily Activities', 
-      description: 'Everyday routines',
-      icon: <Clock size={24} />,
-      color: theme === 'dark' ? 'bg-cyan-900 text-cyan-200' : 'bg-cyan-100 text-cyan-800',
-      path: '/beginner/daily-activities',
-      progress: progress?.find(p => p.lessonId === 'activities')?.completed ? 100 : 0
     }
   ];
 
@@ -167,7 +140,7 @@ const BeginnerLevelPage: React.FC = () => {
                       Lessons Completed
                     </span>
                     <span className={`font-medium ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
-                      {progress?.filter(p => p.completed).length || 0}/{topics.length}
+                      {Math.floor(overallProgress / 20)}/5
                     </span>
                   </div>
                 </div>
