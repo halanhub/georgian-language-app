@@ -20,7 +20,7 @@ import FoodAndDrinksPage from './pages/lessons/FoodAndDrinksPage';
 import HumanBodyPage from './pages/lessons/HumanBodyPage';
 import AnimalsPage from './pages/lessons/AnimalsPage';
 import DailyActivitiesPage from './pages/lessons/DailyActivitiesPage';
-import VocabularyPage from './pages/lessons/VocabularyPage';
+import VocabularyPage from './pages/VocabularyPage';
 import GrammarPage from './pages/lessons/GrammarPage';
 import DailyConversationsPage from './pages/lessons/DailyConversationsPage';
 import CommonWordsPage from './pages/lessons/CommonWordsPage';
@@ -178,7 +178,7 @@ function App() {
                 <Route path="contact" element={<ContactPage />} />
                 
                 <Route path="vocabulary" element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiresSubscription={true}>
                     <VocabularyPage />
                   </ProtectedRoute>
                 } />

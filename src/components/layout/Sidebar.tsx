@@ -193,7 +193,14 @@ const Sidebar: React.FC = () => {
             }`}
           >
             <Brain size={18} />
-            <span>Vocabulary</span>
+            <span>
+              Vocabulary
+              {!hasActiveSubscription && (
+                <span className="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-600 text-gray-200">
+                  Premium
+                </span>
+              )}
+            </span>
           </Link>
           
           <Link 
