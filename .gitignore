@@ -25,3 +25,4 @@ dist-ssr
 supabase/functions/create-checkout-session/.env
 supabase/functions/create-checkout-session/.env
 supabase/functions/create-checkout-session/.env
+.env
