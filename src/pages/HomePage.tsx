@@ -78,7 +78,7 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className={`text-3xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              {t('home.smart_way')} <span className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>Smart Way</span>
+              Learn Georgian the <span className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>Smart Way</span>
             </h2>
             <p className={`max-w-2xl mx-auto text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
               {t('home.platform_description')}
@@ -273,7 +273,7 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className={`text-3xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              {t('home.pricing.title')} <span className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>Learning Plan</span>
+              Choose Your <span className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>Learning Plan</span>
             </h2>
             <p className={`max-w-2xl mx-auto text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
               {t('home.pricing.description')}

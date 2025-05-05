@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LogIn, Menu, Moon, Sun, X, User, Settings, LogOut, Mail, CreditCard, Database } from 'lucide-react';
+import { LogIn, Menu, Moon, Sun, X, User, Settings, LogOut, Mail, CreditCard } from 'lucide-react';
 import logo from '../../assets/images/logo.png'; 
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -149,16 +149,6 @@ const Navbar: React.FC = () => {
                         >
                           <CreditCard size={16} className="inline mr-2" />
                           {t('common.subscription')}
-                        </Link>
-                        <Link
-                          to="/database-test"
-                          className={`block px-4 py-2 text-sm ${
-                            theme === 'dark' ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-100'
-                          }`}
-                          onClick={() => setIsProfileMenuOpen(false)}
-                        >
-                          <Database size={16} className="inline mr-2" />
-                          Database Test
                         </Link>
                         <button
                           onClick={handleLogout}
@@ -312,19 +302,6 @@ const Navbar: React.FC = () => {
                 }`} onClick={() => setIsMenuOpen(false)}>
                   <CreditCard size={18} className="mr-2" />
                   {t('common.subscription')}
-                </Link>
-
-                <Link to="/database-test" className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${
-                  location.pathname === '/database-test'
-                    ? theme === 'dark'
-                      ? 'bg-gray-700 text-white'
-                      : 'bg-red-100 text-red-700'
-                    : theme === 'dark'
-                      ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                      : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
-                }`} onClick={() => setIsMenuOpen(false)}>
-                  <Database size={18} className="mr-2" />
-                  Database Test
                 </Link>
 
                 <Link to="/contact" className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${
