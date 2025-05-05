@@ -176,5 +176,54 @@ export function useUserProgress(lessonId?: string) {
     }
   };
 
-  return { progress, loading, error, updateProgress };
+  // Reset all progress for a user
+  const resetAllProgress = async () => {
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Delete all progress records for the user
+      const { error: deleteError } = await supabase
+        .from('user_progress')
+        .delete()
+        .eq('user_id', user.id);
+      
+      if (deleteError) {
+        throw deleteError;
+      }
+      
+      // Reset local state
+      setProgress([]);
+      
+      // Reset user profile stats
+      const { error: updateError } = await supabase
+        .from('user_profiles')
+        .update({
+          lessons_completed: 0,
+          total_study_time: 0,
+          words_learned: 0,
+          study_streak: 0,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+      
+      if (updateError) {
+        throw updateError;
+      }
+      
+      return true;
+    } catch (err) {
+      console.error('Error resetting user progress:', err);
+      setError(err instanceof Error ? err : new Error('Unknown error occurred'));
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { progress, loading, error, updateProgress, resetAllProgress };
 }

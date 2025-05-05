@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CreditCard, Check, X, Loader } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useSubscription } from '../../hooks/useSubscription';
-import { createCheckoutSession } from '../../services/stripeService';
+import { createCheckoutSession, createCustomerPortalSession } from '../../services/stripeService';
 import { STRIPE_PRODUCTS } from '../../stripe-config';
 
 interface SubscriptionTabProps {
@@ -39,6 +39,26 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
     } catch (err) {
       console.error('Error creating checkout session:', err);
       setError('Failed to process subscription. Please try again later.');
+      setIsLoading(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const returnUrl = `${window.location.origin}/settings?tab=subscription`;
+      const session = await createCustomerPortalSession(returnUrl);
+      
+      if (session?.url) {
+        window.location.href = session.url;
+      } else {
+        throw new Error('Failed to create customer portal session');
+      }
+    } catch (err) {
+      console.error('Error creating customer portal session:', err);
+      setError('Failed to access subscription management. Please try again later.');
       setIsLoading(false);
     }
   };
@@ -154,16 +174,24 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
                 </div>
               )}
               <div className="pt-4 mt-4 border-t border-gray-700">
-                <Link
-                  to="/pricing"
+                <button
+                  onClick={handleManageSubscription}
+                  disabled={isLoading}
                   className={`block w-full text-center py-2 rounded-md text-sm font-medium ${
-                    theme === 'dark'
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                    isLoading
+                      ? (theme === 'dark' ? 'bg-blue-700 text-gray-300 cursor-not-allowed' : 'bg-blue-300 text-gray-500 cursor-not-allowed')
+                      : (theme === 'dark' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-600 text-white hover:bg-blue-700')
                   }`}
                 >
-                  Manage Subscription
-                </Link>
+                  {isLoading ? (
+                    <>
+                      <Loader size={16} className="inline-block animate-spin mr-2" />
+                      Loading...
+                    </>
+                  ) : (
+                    'Manage Subscription'
+                  )}
+                </button>
               </div>
             </div>
           )}

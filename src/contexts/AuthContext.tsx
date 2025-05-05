@@ -150,6 +150,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           throw insertError;
         }
 
+        // Reset all progress for new users
+        await resetUserProgress(authUser.id);
+
         setUser({
           id: authUser.id,
           email: authUser.email || '',
@@ -169,6 +172,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: authUser.email || '',
         displayName: authUser.email?.split('@')[0] || 'User'
       });
+    }
+  };
+
+  // Reset user progress for new users
+  const resetUserProgress = async (userId: string) => {
+    try {
+      // Check if user has any progress records
+      const { data: existingProgress, error: checkError } = await supabase
+        .from('user_progress')
+        .select('id')
+        .eq('user_id', userId)
+        .limit(1);
+      
+      if (checkError) {
+        console.error('Error checking user progress:', checkError);
+        return;
+      }
+      
+      // If user already has progress records, don't reset
+      if (existingProgress && existingProgress.length > 0) {
+        console.log('User already has progress records, not resetting');
+        return;
+      }
+      
+      // Create initial progress records with 0% completion
+      const initialProgress = [
+        { user_id: userId, lesson_id: 'alphabet', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'basic-vocabulary', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'colors-shapes', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'numbers', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'months', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'food', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'body', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'animals', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'activities', completed: false, time_spent: 0 }
+      ];
+      
+      const { error: insertError } = await supabase
+        .from('user_progress')
+        .insert(initialProgress);
+      
+      if (insertError) {
+        console.error('Error initializing user progress:', insertError);
+      } else {
+        console.log('Successfully initialized progress for new user');
+      }
+    } catch (error) {
+      console.error('Error in resetUserProgress:', error);
     }
   };
 

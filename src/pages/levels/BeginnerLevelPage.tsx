@@ -3,17 +3,24 @@ import { Link } from 'react-router-dom';
 import { AlignJustify, ArrowRight, Book, Calendar, Palette, Brain, Utensils, Heart, Cat, Clock, Dices } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useUserProgress } from '../../hooks/useUserProgress';
 
 const BeginnerLevelPage: React.FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
-  const [progress, setProgress] = useState(0);
+  const { progress, loading } = useUserProgress();
+  const [overallProgress, setOverallProgress] = useState(0);
 
+  // Calculate progress based on completed lessons
   useEffect(() => {
-    if (user) {
-      setProgress(30);
+    if (user && progress && !loading) {
+      // Calculate the percentage of completed lessons
+      const completedLessons = progress.filter(p => p.completed).length;
+      const totalLessons = 9; // Total number of beginner lessons
+      const progressPercentage = Math.round((completedLessons / totalLessons) * 100);
+      setOverallProgress(progressPercentage);
     }
-  }, [user]);
+  }, [user, progress, loading]);
 
   const topics = [
     { 
@@ -23,7 +30,7 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <AlignJustify size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
       path: '/beginner/alphabet',
-      progress: 30
+      progress: progress?.find(p => p.lessonId === 'alphabet')?.completed ? 100 : 0
     },
     { 
       id: 'basic-vocabulary', 
@@ -32,7 +39,7 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Brain size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
       path: '/beginner/basic-vocabulary',
-      progress: 20
+      progress: progress?.find(p => p.lessonId === 'basic-vocabulary')?.completed ? 100 : 0
     },
     { 
       id: 'colors-shapes', 
@@ -41,7 +48,7 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Palette size={24} />,
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
       path: '/beginner/colors-and-shapes',
-      progress: 15
+      progress: progress?.find(p => p.lessonId === 'colors-shapes')?.completed ? 100 : 0
     },
     { 
       id: 'numbers', 
@@ -50,7 +57,7 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Book size={24} />,
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
       path: '/beginner/numbers',
-      progress: 0
+      progress: progress?.find(p => p.lessonId === 'numbers')?.completed ? 100 : 0
     },
     { 
       id: 'months', 
@@ -59,7 +66,7 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Calendar size={24} />,
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
       path: '/beginner/months-and-seasons',
-      progress: 0
+      progress: progress?.find(p => p.lessonId === 'months')?.completed ? 100 : 0
     },
     { 
       id: 'food', 
@@ -68,16 +75,16 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Utensils size={24} />,
       color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
       path: '/beginner/food-and-drinks',
-      progress: 10
+      progress: progress?.find(p => p.lessonId === 'food')?.completed ? 100 : 0
     },
     { 
-      id: 'human-body', 
+      id: 'body', 
       name: 'Human Body', 
       description: 'Body parts and health',
       icon: <Heart size={24} />,
       color: theme === 'dark' ? 'bg-pink-900 text-pink-200' : 'bg-pink-100 text-pink-800',
       path: '/beginner/human-body',
-      progress: 0
+      progress: progress?.find(p => p.lessonId === 'body')?.completed ? 100 : 0
     },
     { 
       id: 'animals', 
@@ -86,16 +93,16 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Cat size={24} />,
       color: theme === 'dark' ? 'bg-amber-900 text-amber-200' : 'bg-amber-100 text-amber-800',
       path: '/beginner/animals',
-      progress: 0
+      progress: progress?.find(p => p.lessonId === 'animals')?.completed ? 100 : 0
     },
     { 
-      id: 'daily-activities', 
+      id: 'activities', 
       name: 'Daily Activities', 
       description: 'Everyday routines',
       icon: <Clock size={24} />,
       color: theme === 'dark' ? 'bg-cyan-900 text-cyan-200' : 'bg-cyan-100 text-cyan-800',
       path: '/beginner/daily-activities',
-      progress: 0
+      progress: progress?.find(p => p.lessonId === 'activities')?.completed ? 100 : 0
     }
   ];
 
@@ -147,11 +154,11 @@ const BeginnerLevelPage: React.FC = () => {
                     className={`h-2 rounded-full transition-all duration-500 ${
                       theme === 'dark' ? 'bg-green-500' : 'bg-green-500'
                     }`}
-                    style={{ width: `${progress}%` }}
+                    style={{ width: `${overallProgress}%` }}
                   ></div>
                 </div>
                 <h2 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
-                  Your Progress: {progress}%
+                  Your Progress: {overallProgress}%
                 </h2>
                 <p className={`mb-4 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   Complete these beginner lessons to build a strong foundation in Georgian.
@@ -162,7 +169,7 @@ const BeginnerLevelPage: React.FC = () => {
                       Lessons Completed
                     </span>
                     <span className={`font-medium ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
-                      {Math.floor(progress / 20)}/5
+                      {progress?.filter(p => p.completed).length || 0}/{topics.length}
                     </span>
                   </div>
                 </div>

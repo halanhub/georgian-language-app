@@ -1,13 +1,13 @@
 // Stripe product configuration
 export const STRIPE_PRODUCTS = {
   premium: {
-    priceId: 'price_1RKLOQPJT7FVTkW5ZFAsbRrH',
+    priceId: 'price_1OvXYZLkdIwHu7xJQZjKl2Js',
     name: 'Premium',
     description: 'Access to all lessons (Beginner to Advanced), unlimited vocabulary practice, and all quizzes and exercises',
     mode: 'subscription' as const
   },
   annual: {
-    priceId: 'price_1RKLOqPJT7FVTkW5ZFAsbRrH',
+    priceId: 'price_1OvXZaLkdIwHu7xJRTjKl3Kt',
     name: 'Annual',
     description: 'Save 16% with annual billing - access to all premium features',
     mode: 'subscription' as const

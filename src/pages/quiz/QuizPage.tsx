@@ -469,7 +469,7 @@ const QuizPage: React.FC = () => {
       body: '/beginner/human-body',
       animals: '/beginner/animals',
       activities: '/beginner/daily-activities',
-      vocabulary: '/beginner/vocabulary'
+      vocabulary: '/beginner/basic-vocabulary'
     };
     
     return linkMap[topic || ''] || '/beginner';
@@ -646,7 +646,6 @@ const QuizPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-600' : 'bg-red-500')
                     }`}
                     style={{ width: `${(score / questions.length) * 100}%` }}
-                
                   ></div>
                 </div>
                 

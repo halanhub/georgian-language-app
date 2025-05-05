@@ -26,12 +26,34 @@ export const createCheckoutSession = async (
     });
 
     if (error) {
+      console.error('Error creating checkout session:', error);
       throw error;
     }
 
     return data;
   } catch (error) {
     console.error('Error creating checkout session:', error);
+    throw error;
+  }
+};
+
+/**
+ * Creates a customer portal session for managing subscriptions
+ */
+export const createCustomerPortalSession = async (returnUrl: string) => {
+  try {
+    const { data, error } = await supabase.functions.invoke('create-portal-session', {
+      body: { returnUrl }
+    });
+
+    if (error) {
+      console.error('Error creating portal session:', error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error creating portal session:', error);
     throw error;
   }
 };
@@ -47,6 +69,7 @@ export const getUserSubscription = async () => {
       .maybeSingle();
 
     if (error) {
+      console.error('Error fetching subscription:', error);
       throw error;
     }
 
@@ -68,6 +91,7 @@ export const getUserOrders = async () => {
       .order('order_date', { ascending: false });
 
     if (error) {
+      console.error('Error fetching orders:', error);
       throw error;
     }
 

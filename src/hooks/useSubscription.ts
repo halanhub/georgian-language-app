@@ -1,17 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-
-export interface SubscriptionDetails {
-  subscription_id: string | null;
-  subscription_status: string;
-  price_id: string | null;
-  current_period_start: number | null;
-  current_period_end: number | null;
-  cancel_at_period_end: boolean;
-  payment_method_brand: string | null;
-  payment_method_last4: string | null;
-}
+import type { SubscriptionDetails } from '../types/stripe';
 
 export function useSubscription() {
   const { user } = useAuth();
@@ -39,6 +29,7 @@ export function useSubscription() {
           .maybeSingle();
 
         if (fetchError) {
+          console.error('Error fetching subscription:', fetchError);
           throw fetchError;
         }
 
