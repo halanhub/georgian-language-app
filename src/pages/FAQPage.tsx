@@ -65,12 +65,12 @@ const FAQPage: React.FC = () => {
         {
           id: 'subscription',
           question: 'What do I get with a premium subscription?',
-          answer: 'A premium subscription unlocks the full Georgian language learning experience, including: access to all lessons from beginner to advanced levels, comprehensive grammar explanations, unlimited vocabulary practice, all quizzes and interactive exercises, advanced progress tracking, downloadable learning materials, and priority support. The premium subscription ensures you have all the tools needed to achieve fluency in Georgian.'
+          answer: 'A premium subscription unlocks the full Georgian language learning experience, including: access to all lessons from beginner to advanced levels, comprehensive grammar explanations, unlimited vocabulary practice, all quizzes and interactive exercises, and advanced progress tracking. The premium subscription ensures you have all the tools needed to achieve fluency in Georgian.'
         },
         {
           id: 'offline',
           question: 'Can I use the platform offline?',
-          answer: 'Currently, our platform requires an internet connection to access lessons and track progress. However, premium subscribers can download certain materials like vocabulary lists, grammar guides, and practice exercises for offline use. We\'re working on expanding offline capabilities in future updates to better accommodate learners with limited internet access.'
+          answer: 'Currently, our platform requires an internet connection to access lessons and track progress. We\'re working on expanding offline capabilities in future updates to better accommodate learners with limited internet access.'
         }
       ]
     },
