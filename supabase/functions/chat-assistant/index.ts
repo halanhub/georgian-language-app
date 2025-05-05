@@ -3,12 +3,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import OpenAI from "npm:openai@4.28.0";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-};
+import { corsHeaders, handleCorsPreflightRequest } from "../_shared/cors.ts";
 
 // Simple in-memory rate limiter
 // This will reset when the function is redeployed
@@ -75,10 +70,7 @@ const backoff = {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: corsHeaders,
-    });
+    return handleCorsPreflightRequest();
   }
 
   try {
@@ -221,7 +213,7 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in chat-assistant function:", error);
     
     // Check if the error is related to OpenAI API quota

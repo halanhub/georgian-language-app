@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "npm:stripe@13.9.0";
+import { corsHeaders, handleCorsPreflightRequest } from "../_shared/cors.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
   apiVersion: "2023-10-16",
@@ -8,19 +9,10 @@ const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-};
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: corsHeaders,
-    });
+    return handleCorsPreflightRequest();
   }
 
   try {
@@ -31,7 +23,7 @@ serve(async (req) => {
         JSON.stringify({ error: 'No signature header' }),
         { 
           status: 400,
-          headers: { "Content-Type": "application/json" }
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
         }
       );
     }
@@ -43,7 +35,7 @@ serve(async (req) => {
         JSON.stringify({ error: 'Webhook secret not configured' }),
         { 
           status: 500,
-          headers: { "Content-Type": "application/json" }
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
         }
       );
     }
@@ -60,7 +52,7 @@ serve(async (req) => {
         JSON.stringify({ error: `Webhook signature verification failed: ${err.message}` }),
         { 
           status: 400,
-          headers: { "Content-Type": "application/json" }
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
         }
       );
     }
@@ -222,7 +214,7 @@ serve(async (req) => {
       JSON.stringify({ received: true }),
       { 
         status: 200,
-        headers: { "Content-Type": "application/json" }
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       }
     );
   } catch (error) {
@@ -232,7 +224,7 @@ serve(async (req) => {
       JSON.stringify({ error: error.message }),
       { 
         status: 500,
-        headers: { "Content-Type": "application/json" }
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       }
     );
   }
