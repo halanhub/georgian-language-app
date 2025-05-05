@@ -4,8 +4,7 @@ import { ArrowLeft, Check, CreditCard, Loader, Shield, Star, Zap } from 'lucide-
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../hooks/useSubscription';
-import { createCheckoutSession } from '../services/stripeService';
-import { STRIPE_PRODUCTS } from '../stripe-config';
+import { supabase } from '../lib/supabase';
 
 const PricingPage: React.FC = () => {
   const { theme } = useTheme();
@@ -39,15 +38,31 @@ const PricingPage: React.FC = () => {
       const successUrl = `${window.location.origin}/settings?checkout=success`;
       const cancelUrl = `${window.location.origin}/pricing?checkout=canceled`;
       
-      const session = await createCheckoutSession(selectedPlan, successUrl, cancelUrl);
+      const priceId = selectedPlan === 'premium' 
+        ? 'price_1OvXYZLkdIwHu7xJQZjKl2Js' 
+        : 'price_1OvXZaLkdIwHu7xJRTjKl3Kt';
+      
+      const { data, error } = await supabase.functions.invoke('stripe-checkout', {
+        body: { 
+          price_id: priceId,
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+          mode: 'subscription'
+        }
+      });
+      
+      if (error) {
+        console.error('Error creating checkout session:', error);
+        throw error;
+      }
       
       // Redirect to Stripe checkout
-      if (session?.url) {
-        window.location.href = session.url;
+      if (data?.url) {
+        window.location.href = data.url;
       } else {
         throw new Error('Failed to create checkout session');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error creating checkout session:', err);
       setError('Failed to process subscription. Please try again later.');
       setLoading(false);

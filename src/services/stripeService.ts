@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { STRIPE_PRODUCTS } from '../stripe-config';
+import type { CheckoutSession, CustomerPortalSession, SubscriptionDetails } from '../types/stripe';
 
 /**
  * Creates a checkout session for a subscription
@@ -10,18 +10,24 @@ export const createCheckoutSession = async (
   cancelUrl: string
 ) => {
   try {
-    const product = STRIPE_PRODUCTS[productName];
+    // Map product names to price IDs
+    const priceIds = {
+      premium: 'price_1OvXYZLkdIwHu7xJQZjKl2Js',
+      annual: 'price_1OvXZaLkdIwHu7xJRTjKl3Kt'
+    };
     
-    if (!product) {
-      throw new Error(`Product ${productName} not found`);
+    const priceId = priceIds[productName];
+    
+    if (!priceId) {
+      throw new Error(`Invalid product name: ${productName}`);
     }
 
     const { data, error } = await supabase.functions.invoke('stripe-checkout', {
       body: {
-        price_id: product.priceId,
+        price_id: priceId,
         success_url: successUrl,
         cancel_url: cancelUrl,
-        mode: product.mode
+        mode: 'subscription'
       }
     });
 

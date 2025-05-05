@@ -1,7 +1,7 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import Stripe from 'npm:stripe@17.7.0';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.1';
-import { corsHeaders, withCors } from '../_shared/cors.ts';
+import { corsHeaders } from '../_shared/cors.ts';
 
 const supabase = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '');
 const stripeSecret = Deno.env.get('STRIPE_SECRET_KEY')!;
@@ -32,7 +32,7 @@ function corsResponse(body: string | object | null, status = 200) {
   });
 }
 
-const handler = async (req: Request) => {
+Deno.serve(async (req) => {
   try {
     if (req.method === 'OPTIONS') {
       return corsResponse({}, 204);
@@ -198,7 +198,7 @@ const handler = async (req: Request) => {
     console.error(`Checkout error: ${error.message}`);
     return corsResponse({ error: error.message }, 500);
   }
-};
+});
 
 type ExpectedType = 'string' | { values: string[] };
 type Expectations<T> = { [K in keyof T]: ExpectedType };
@@ -224,6 +224,3 @@ function validateParameters<T extends Record<string, any>>(values: T, expected: 
 
   return undefined;
 }
-
-// Wrap the handler with CORS support
-Deno.serve(withCors(handler));

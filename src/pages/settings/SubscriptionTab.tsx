@@ -3,8 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CreditCard, Check, X, Loader } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useSubscription } from '../../hooks/useSubscription';
-import { createCheckoutSession, createCustomerPortalSession } from '../../services/stripeService';
-import { STRIPE_PRODUCTS } from '../../stripe-config';
+import { supabase } from '../../lib/supabase';
 
 interface SubscriptionTabProps {
   showSuccessMessage?: boolean;
@@ -28,15 +27,31 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
       const successUrl = `${window.location.origin}/settings?checkout=success&tab=subscription`;
       const cancelUrl = `${window.location.origin}/pricing?checkout=canceled`;
       
-      const session = await createCheckoutSession(selectedPlan, successUrl, cancelUrl);
+      const priceId = selectedPlan === 'premium' 
+        ? 'price_1OvXYZLkdIwHu7xJQZjKl2Js' 
+        : 'price_1OvXZaLkdIwHu7xJRTjKl3Kt';
+      
+      const { data, error } = await supabase.functions.invoke('stripe-checkout', {
+        body: { 
+          price_id: priceId,
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+          mode: 'subscription'
+        }
+      });
+      
+      if (error) {
+        console.error('Error creating checkout session:', error);
+        throw error;
+      }
       
       // Redirect to Stripe checkout
-      if (session?.url) {
-        window.location.href = session.url;
+      if (data?.url) {
+        window.location.href = data.url;
       } else {
         throw new Error('Failed to create checkout session');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error creating checkout session:', err);
       setError('Failed to process subscription. Please try again later.');
       setIsLoading(false);
@@ -49,14 +64,22 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
     
     try {
       const returnUrl = `${window.location.origin}/settings?tab=subscription`;
-      const session = await createCustomerPortalSession(returnUrl);
       
-      if (session?.url) {
-        window.location.href = session.url;
+      const { data, error } = await supabase.functions.invoke('create-portal-session', {
+        body: { returnUrl }
+      });
+      
+      if (error) {
+        console.error('Error creating customer portal session:', error);
+        throw error;
+      }
+      
+      if (data?.url) {
+        window.location.href = data.url;
       } else {
         throw new Error('Failed to create customer portal session');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error creating customer portal session:', err);
       setError('Failed to access subscription management. Please try again later.');
       setIsLoading(false);
@@ -146,7 +169,7 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
               <div className="flex justify-between">
                 <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>Plan:</span>
                 <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  {subscriptionDetails.price_id === STRIPE_PRODUCTS.annual.priceId ? 'Annual' : 'Monthly'} Premium
+                  {subscriptionDetails.price_id?.includes('annual') ? 'Annual' : 'Monthly'} Premium
                 </span>
               </div>
               <div className="flex justify-between">
