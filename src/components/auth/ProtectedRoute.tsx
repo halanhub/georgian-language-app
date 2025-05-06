@@ -7,13 +7,15 @@ import SubscriptionBanner from '../SubscriptionBanner';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requiresSubscription?: boolean;
+  adminId?: string;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
-  requiresSubscription = false 
+  requiresSubscription = false,
+  adminId
 }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
   const { hasActiveSubscription, loading: subscriptionLoading } = useSubscription();
   const location = useLocation();
 
@@ -33,14 +35,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // If the route requires subscription and user doesn't have one, redirect to pricing
-  if (requiresSubscription && !hasActiveSubscription) {
+  // If the route requires subscription and user is not admin and doesn't have an active subscription, redirect to pricing
+  if (requiresSubscription && !isAdmin && !hasActiveSubscription) {
     console.log('Subscription required but not active, redirecting to pricing');
     return <Navigate to="/pricing" state={{ from: location }} replace />;
   }
 
-  // If the route requires subscription, show a banner at the top
-  if (requiresSubscription) {
+  // If the route requires subscription and user is not admin, show a banner at the top
+  if (requiresSubscription && !isAdmin) {
     return (
       <>
         <SubscriptionBanner type="full" />

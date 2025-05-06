@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import type { SubscriptionDetails } from '../types/stripe';
 
 export function useSubscription() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   const [subscriptionDetails, setSubscriptionDetails] = useState<SubscriptionDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -21,6 +21,14 @@ export function useSubscription() {
 
       try {
         setLoading(true);
+        
+        // If user is admin, they have access to everything
+        if (isAdmin) {
+          setHasActiveSubscription(true);
+          setSubscriptionDetails(null);
+          setLoading(false);
+          return;
+        }
         
         // Query the secure view that joins customers and subscriptions
         const { data, error: fetchError } = await supabase
@@ -61,7 +69,7 @@ export function useSubscription() {
     };
 
     fetchSubscription();
-  }, [user]);
+  }, [user, isAdmin]);
 
   return { hasActiveSubscription, subscriptionDetails, loading, error };
 }

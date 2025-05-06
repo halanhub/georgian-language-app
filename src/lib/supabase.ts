@@ -43,13 +43,48 @@ try {
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
-      storageKey: 'supabase.auth.token'
+      storage: {
+        getItem: (key) => {
+          try {
+            const value = localStorage.getItem(key);
+            return value ? JSON.parse(value) : null;
+          } catch (error) {
+            console.error('Error reading from localStorage:', error);
+            return null;
+          }
+        },
+        setItem: (key, value) => {
+          try {
+            localStorage.setItem(key, JSON.stringify(value));
+          } catch (error) {
+            console.error('Error writing to localStorage:', error);
+          }
+        },
+        removeItem: (key) => {
+          try {
+            localStorage.removeItem(key);
+          } catch (error) {
+            console.error('Error removing from localStorage:', error);
+          }
+        }
+      }
+    },
+    global: {
+      headers: {
+        'X-Client-Info': 'supabase-js-web'
+      }
     }
   });
   
-  // Test the connection
+  // Test the connection and session management
   supabaseClient.auth.onAuthStateChange((event, session) => {
-    console.log('Supabase auth state changed:', event);
+    if (event === 'SIGNED_IN') {
+      console.log('User signed in, session established');
+    } else if (event === 'SIGNED_OUT') {
+      console.log('User signed out, session cleared');
+    } else if (event === 'TOKEN_REFRESHED') {
+      console.log('Session token refreshed');
+    }
   });
   
 } catch (error) {

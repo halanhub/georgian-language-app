@@ -8,35 +8,40 @@ import { useUserProgress } from '../../hooks/useUserProgress';
 const BeginnerLevelPage: React.FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
-  const { progress, loading, updateProgress } = useUserProgress();
+  const { progress, loading: progressLoading, updateProgress } = useUserProgress();
   const [overallProgress, setOverallProgress] = useState(0);
 
   // Calculate progress based on completed lessons
   useEffect(() => {
-    if (user && progress && !loading) {
+    if (user && progress && !progressLoading) {
+      // Get beginner lessons
+      const beginnerLessons = progress.filter(p => 
+        ['alphabet', 'basic-vocabulary', 'colors-shapes', 'numbers', 'months', 'food', 'body', 'animals', 'activities'].includes(p.lessonId)
+      );
+      
       // Calculate the percentage of completed lessons
-      const completedLessons = progress.filter(p => p.completed).length;
-      const totalLessons = 9; // Total number of beginner lessons
+      const completedLessons = beginnerLessons.filter(p => p.completed).length;
+      const totalLessons = beginnerLessons.length || 9; // Default to 9 if no lessons found
       const progressPercentage = Math.round((completedLessons / totalLessons) * 100);
       setOverallProgress(progressPercentage);
       
-      console.log('Progress calculated:', {
+      console.log('Beginner progress calculated:', {
         completedLessons,
         totalLessons,
         progressPercentage,
-        progress
+        beginnerLessons
       });
     }
-  }, [user, progress, loading]);
+  }, [user, progress, progressLoading]);
 
   // Track page visit and update study time
   useEffect(() => {
-    if (user && !loading) {
+    if (user && !progressLoading) {
       // Record that the user visited this page
       const trackVisit = async () => {
         try {
-          // Add 5 minutes of study time to the user's profile
-          await updateProgress('beginner', { timeSpent: 5 });
+          // Add 1 minute of study time to the user's profile
+          await updateProgress('beginner', { timeSpent: 1 });
           console.log('Recorded visit to beginner level page');
         } catch (error) {
           console.error('Error tracking page visit:', error);
@@ -45,7 +50,7 @@ const BeginnerLevelPage: React.FC = () => {
       
       trackVisit();
     }
-  }, [user, loading, updateProgress]);
+  }, [user, progressLoading, updateProgress]);
 
   const topics = [
     { 
@@ -56,7 +61,8 @@ const BeginnerLevelPage: React.FC = () => {
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
       path: '/beginner/alphabet',
       progress: progress?.find(p => p.lessonId === 'alphabet')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'alphabet')?.timeSpent ? 30 : 0
+               progress?.find(p => p.lessonId === 'alphabet')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'alphabet')?.timeSpent || 0) * 5), 95) : 0
     },
     { 
       id: 'basic-vocabulary', 
@@ -66,7 +72,8 @@ const BeginnerLevelPage: React.FC = () => {
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
       path: '/beginner/basic-vocabulary',
       progress: progress?.find(p => p.lessonId === 'basic-vocabulary')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'basic-vocabulary')?.timeSpent ? 25 : 0
+               progress?.find(p => p.lessonId === 'basic-vocabulary')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'basic-vocabulary')?.timeSpent || 0) * 5), 95) : 0
     },
     { 
       id: 'colors-shapes', 
@@ -76,7 +83,8 @@ const BeginnerLevelPage: React.FC = () => {
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
       path: '/beginner/colors-and-shapes',
       progress: progress?.find(p => p.lessonId === 'colors-shapes')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'colors-shapes')?.timeSpent ? 20 : 0
+               progress?.find(p => p.lessonId === 'colors-shapes')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'colors-shapes')?.timeSpent || 0) * 5), 95) : 0
     },
     { 
       id: 'numbers', 
@@ -86,7 +94,8 @@ const BeginnerLevelPage: React.FC = () => {
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
       path: '/beginner/numbers',
       progress: progress?.find(p => p.lessonId === 'numbers')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'numbers')?.timeSpent ? 15 : 0
+               progress?.find(p => p.lessonId === 'numbers')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'numbers')?.timeSpent || 0) * 5), 95) : 0
     },
     { 
       id: 'months', 
@@ -96,7 +105,8 @@ const BeginnerLevelPage: React.FC = () => {
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
       path: '/beginner/months-and-seasons',
       progress: progress?.find(p => p.lessonId === 'months')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'months')?.timeSpent ? 10 : 0
+               progress?.find(p => p.lessonId === 'months')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'months')?.timeSpent || 0) * 5), 95) : 0
     },
     { 
       id: 'food', 
@@ -106,7 +116,8 @@ const BeginnerLevelPage: React.FC = () => {
       color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
       path: '/beginner/food-and-drinks',
       progress: progress?.find(p => p.lessonId === 'food')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'food')?.timeSpent ? 5 : 0
+               progress?.find(p => p.lessonId === 'food')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'food')?.timeSpent || 0) * 5), 95) : 0
     },
     { 
       id: 'body', 
@@ -116,7 +127,8 @@ const BeginnerLevelPage: React.FC = () => {
       color: theme === 'dark' ? 'bg-pink-900 text-pink-200' : 'bg-pink-100 text-pink-800',
       path: '/beginner/human-body',
       progress: progress?.find(p => p.lessonId === 'body')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'body')?.timeSpent ? 0 : 0
+               progress?.find(p => p.lessonId === 'body')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'body')?.timeSpent || 0) * 5), 95) : 0
     },
     { 
       id: 'animals', 
@@ -126,7 +138,8 @@ const BeginnerLevelPage: React.FC = () => {
       color: theme === 'dark' ? 'bg-amber-900 text-amber-200' : 'bg-amber-100 text-amber-800',
       path: '/beginner/animals',
       progress: progress?.find(p => p.lessonId === 'animals')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'animals')?.timeSpent ? 0 : 0
+               progress?.find(p => p.lessonId === 'animals')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'animals')?.timeSpent || 0) * 5), 95) : 0
     },
     { 
       id: 'activities', 
@@ -136,7 +149,8 @@ const BeginnerLevelPage: React.FC = () => {
       color: theme === 'dark' ? 'bg-cyan-900 text-cyan-200' : 'bg-cyan-100 text-cyan-800',
       path: '/beginner/daily-activities',
       progress: progress?.find(p => p.lessonId === 'activities')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'activities')?.timeSpent ? 0 : 0
+               progress?.find(p => p.lessonId === 'activities')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'activities')?.timeSpent || 0) * 5), 95) : 0
     }
   ];
 
@@ -146,18 +160,6 @@ const BeginnerLevelPage: React.FC = () => {
     { id: 'colors', name: 'Colors & Shapes Quiz', path: '/beginner/quiz/colors' },
     { id: 'numbers', name: 'Numbers Quiz', path: '/beginner/quiz/numbers' },
   ];
-
-  // Mark a lesson as completed when the user spends enough time on it
-  const markLessonCompleted = async (lessonId: string) => {
-    if (user && !loading) {
-      try {
-        await updateProgress(lessonId, { completed: true });
-        console.log(`Marked lesson ${lessonId} as completed`);
-      } catch (error) {
-        console.error(`Error marking lesson ${lessonId} as completed:`, error);
-      }
-    }
-  };
 
   return (
     <div className="pt-16 pb-16">
@@ -178,7 +180,6 @@ const BeginnerLevelPage: React.FC = () => {
                   className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
                     theme === 'dark' ? 'bg-red-700 text-white hover:bg-red-800' : 'bg-red-600 text-white hover:bg-red-700'
                   }`}
-                  onClick={() => updateProgress('alphabet', { timeSpent: 1 })}
                 >
                   Start with Alphabet
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -216,7 +217,7 @@ const BeginnerLevelPage: React.FC = () => {
                       Lessons Completed
                     </span>
                     <span className={`font-medium ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
-                      {progress?.filter(p => p.completed).length || 0}/{topics.length}
+                      {progress?.filter(p => p.completed && ['alphabet', 'basic-vocabulary', 'colors-shapes', 'numbers', 'months', 'food', 'body', 'animals', 'activities'].includes(p.lessonId)).length || 0}/{topics.length}
                     </span>
                   </div>
                 </div>
@@ -240,7 +241,6 @@ const BeginnerLevelPage: React.FC = () => {
                 className={`p-6 rounded-lg shadow-md transition-transform hover:scale-105 ${
                   theme === 'dark' ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
                 }`}
-                onClick={() => updateProgress(topic.id, { timeSpent: 1 })}
               >
                 <div className={`p-3 rounded-full inline-block mb-4 ${topic.color}`}>
                   {topic.icon}
@@ -298,7 +298,6 @@ const BeginnerLevelPage: React.FC = () => {
                     ? 'bg-gray-700 hover:bg-gray-650 border border-gray-600' 
                     : 'bg-white hover:bg-red-50 border border-gray-100'
                 }`}
-                onClick={() => updateProgress(`quiz-${quiz.id}`, { timeSpent: 1 })}
               >
                 <div className="flex items-center justify-between">
                   <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>

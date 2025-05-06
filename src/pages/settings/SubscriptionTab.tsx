@@ -16,7 +16,6 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<'premium' | 'annual'>('premium');
 
   const handleSubscribe = async () => {
     setIsLoading(true);
@@ -28,7 +27,7 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
       const cancelUrl = `${window.location.origin}/pricing?checkout=canceled`;
       
       const { url } = await createCheckoutSession(
-        selectedPlan,
+        'premium',
         successUrl,
         cancelUrl
       );
@@ -85,13 +84,6 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
     if (!product) return 'Premium';
     
     return product.name;
-  };
-
-  // Get subscription type (monthly/annual)
-  const getSubscriptionType = (priceId: string | null) => {
-    if (!priceId) return 'Monthly';
-    
-    return priceId === STRIPE_PRODUCTS.annual.priceId ? 'Annual' : 'Monthly';
   };
 
   if (loading) {
@@ -166,7 +158,7 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
               <div className="flex justify-between">
                 <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>Plan:</span>
                 <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  {getSubscriptionType(subscriptionDetails.price_id)} {getProductName(subscriptionDetails.price_id)}
+                  Premium
                 </span>
               </div>
               <div className="flex justify-between">
@@ -218,59 +210,6 @@ const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ showSuccessMessage = 
           
           {!hasActiveSubscription && (
             <div className="mt-4">
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <label className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Select a Plan:
-                  </label>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <button
-                    onClick={() => setSelectedPlan('premium')}
-                    className={`p-4 rounded-lg border-2 text-left ${
-                      selectedPlan === 'premium'
-                        ? (theme === 'dark' ? 'border-blue-500 bg-blue-900/30' : 'border-blue-500 bg-blue-50')
-                        : (theme === 'dark' ? 'border-gray-600 hover:border-gray-500' : 'border-gray-200 hover:border-gray-300')
-                    }`}
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      <h4 className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Monthly</h4>
-                      {selectedPlan === 'premium' && (
-                        <Check size={18} className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'} />
-                      )}
-                    </div>
-                    <p className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      $4.99<span className={`text-sm font-normal ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>/month</span>
-                    </p>
-                    <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Billed monthly
-                    </p>
-                  </button>
-                  
-                  <button
-                    onClick={() => setSelectedPlan('annual')}
-                    className={`p-4 rounded-lg border-2 text-left ${
-                      selectedPlan === 'annual'
-                        ? (theme === 'dark' ? 'border-green-500 bg-green-900/30' : 'border-green-500 bg-green-50')
-                        : (theme === 'dark' ? 'border-gray-600 hover:border-gray-500' : 'border-gray-200 hover:border-gray-300')
-                    }`}
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      <h4 className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Annual</h4>
-                      {selectedPlan === 'annual' && (
-                        <Check size={18} className={theme === 'dark' ? 'text-green-400' : 'text-green-600'} />
-                      )}
-                    </div>
-                    <p className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      $49.99<span className={`text-sm font-normal ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>/year</span>
-                    </p>
-                    <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
-                      Save 16% compared to monthly
-                    </p>
-                  </button>
-                </div>
-              </div>
-              
               <button
                 onClick={handleSubscribe}
                 disabled={isLoading}

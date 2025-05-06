@@ -4,6 +4,7 @@ import { Eye, EyeOff, LogIn, AlertCircle, Mail } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { supabase } from '../../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 type LocationState = {
   from?: {
@@ -26,6 +27,7 @@ const LoginPage: React.FC = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   
   const locationState = location.state as LocationState;
   const from = locationState?.from?.pathname || '/';
@@ -188,7 +190,7 @@ const LoginPage: React.FC = () => {
           <h2 className={`text-center text-3xl font-bold ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
-            ავტორიზაცია <span className="mx-2">|</span> Login
+            {t('common.login')}
           </h2>
           <p className={`mt-2 text-center text-sm ${
             theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
@@ -309,7 +311,7 @@ const LoginPage: React.FC = () => {
                     : (theme === 'dark' ? 'text-red-400 group-hover:text-red-300' : 'text-red-500 group-hover:text-red-400')
                 }`} />
               </span>
-              {isLoading ? 'Logging in...' : 'Login'}
+              {isLoading ? 'Logging in...' : t('common.login')}
             </button>
           </div>
         </form>
@@ -319,7 +321,7 @@ const LoginPage: React.FC = () => {
           <Link to="/signup" className={`font-medium hover:underline ${
             theme === 'dark' ? 'text-red-400' : 'text-red-600'
           }`}>
-            Sign up
+            {t('common.signup')}
           </Link>
         </div>
       </div>

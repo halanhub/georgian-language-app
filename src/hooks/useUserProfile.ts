@@ -41,7 +41,8 @@ export function useUserProfile() {
             lessonsCompleted: data.lessons_completed,
             totalStudyTime: data.total_study_time,
             wordsLearned: data.words_learned,
-            studyStreak: data.study_streak
+            studyStreak: data.study_streak,
+            isAdmin: user.isAdmin
           });
         }
       } catch (err) {
@@ -104,6 +105,51 @@ export function useUserProfile() {
       setLoading(false);
     }
   };
+
+  // Update study streak
+  const updateStudyStreak = async () => {
+    if (!user || !profile) return;
+    
+    try {
+      // Get the last login date from localStorage
+      const lastLoginDate = localStorage.getItem(`lastLogin_${user.id}`);
+      const today = new Date().toDateString();
+      
+      if (lastLoginDate !== today) {
+        // It's a new day, update the streak
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayString = yesterday.toDateString();
+        
+        if (lastLoginDate === yesterdayString) {
+          // Consecutive day, increment streak
+          const newStreak = (profile.studyStreak || 0) + 1;
+          await updateProfile({ studyStreak: newStreak });
+          console.log('Study streak updated:', newStreak);
+        } else if (lastLoginDate) {
+          // Streak broken, reset to 1
+          await updateProfile({ studyStreak: 1 });
+          console.log('Study streak reset to 1');
+        } else {
+          // First login, set streak to 1
+          await updateProfile({ studyStreak: 1 });
+          console.log('Study streak initialized to 1');
+        }
+        
+        // Update last login date
+        localStorage.setItem(`lastLogin_${user.id}`, today);
+      }
+    } catch (error) {
+      console.error('Error updating study streak:', error);
+    }
+  };
+
+  // Call updateStudyStreak when profile is loaded
+  useEffect(() => {
+    if (profile && !loading) {
+      updateStudyStreak();
+    }
+  }, [profile, loading]);
 
   return { profile, loading, error, updateProfile };
 }

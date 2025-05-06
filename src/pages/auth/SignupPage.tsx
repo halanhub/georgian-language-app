@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, UserPlus, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 const SignupPage: React.FC = () => {
   const [displayName, setDisplayName] = useState('');
@@ -19,6 +20,7 @@ const SignupPage: React.FC = () => {
   const { signup, user } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // If user is already logged in, redirect to home
   useEffect(() => {
@@ -90,7 +92,7 @@ const SignupPage: React.FC = () => {
           <h2 className={`text-center text-3xl font-bold ${
             theme === 'dark' ? 'text-white' : 'text-gray-900'
           }`}>
-            რეგისტრაცია <span className="mx-2">|</span> Sign Up
+            {t('common.signup')}
           </h2>
           <p className={`mt-2 text-center text-sm ${
             theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
@@ -293,7 +295,7 @@ const SignupPage: React.FC = () => {
                     : (theme === 'dark' ? 'text-red-400 group-hover:text-red-300' : 'text-red-500 group-hover:text-red-400')
                 }`} />
               </span>
-              {isLoading ? 'Creating Account...' : success ? 'Account Created!' : 'Sign Up'}
+              {isLoading ? 'Creating Account...' : success ? 'Account Created!' : t('common.signup')}
             </button>
           </div>
         </form>
@@ -303,7 +305,7 @@ const SignupPage: React.FC = () => {
           <Link to="/login" className={`font-medium hover:underline ${
             theme === 'dark' ? 'text-red-400' : 'text-red-600'
           }`}>
-            Login
+            {t('common.login')}
           </Link>
         </div>
       </div>

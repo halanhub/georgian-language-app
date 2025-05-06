@@ -81,9 +81,6 @@
       "forever": "/forever",
       "premium": "Premium",
       "month": "/month",
-      "annual": "Annual",
-      "year": "/year",
-      "save": "Save 16% compared to monthly",
       "features": {
         "free": [
           "Access to beginner lessons",
@@ -96,17 +93,10 @@
           "Unlimited vocabulary practice",
           "All quizzes and exercises",
           "Advanced progress tracking"
-        ],
-        "annual": [
-          "All Premium features",
-          "Priority support",
-          "Early access to new features",
-          "16% savings compared to monthly plan"
         ]
       },
       "get_started": "Get Started",
-      "subscribe_now": "Subscribe Now",
-      "subscribe_annually": "Subscribe Annually"
+      "subscribe_now": "Subscribe Now"
     },
     "cta": {
       "title": "Ready to Start Your Georgian Language Journey?",

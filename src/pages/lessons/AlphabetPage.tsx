@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Book, Brain, Check, Play, Volume2, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { useAuth } from '../../contexts/AuthContext';
 
 const AlphabetPage: React.FC = () => {
   const { theme } = useTheme();
+  const { user } = useAuth();
+  const { updateProgress } = useUserProgress();
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const [selectedLetter, setSelectedLetter] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,6 +18,8 @@ const AlphabetPage: React.FC = () => {
   const [writingInput, setWritingInput] = useState('');
   const [writingFeedback, setWritingFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [lastActivityTime, setLastActivityTime] = useState(Date.now());
 
   const georgianAlphabet = [
     { letter: 'ა', name: 'ანი', latin: 'a', pronunciation: 'ani', english: 'a as in father', example: 'ახალი (akhali) - new' },
@@ -85,7 +91,57 @@ const AlphabetPage: React.FC = () => {
     { prompt: "Write the Georgian letter for 'sh'", correct: 'შ' }
   ];
 
+  // Track time spent on the page
+  useEffect(() => {
+    // Set up interval to track time spent
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const timeDiff = now - lastActivityTime;
+      
+      // Only count time if user has been active in the last 5 minutes
+      if (timeDiff < 5 * 60 * 1000) {
+        setTimeSpent(prev => prev + 1);
+      }
+      
+      setLastActivityTime(now);
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, [lastActivityTime]);
+
+  // Update user activity time on interactions
+  const updateActivity = () => {
+    setLastActivityTime(Date.now());
+  };
+
+  // Save progress when user leaves the page
+  useEffect(() => {
+    // Track initial visit
+    if (user) {
+      updateProgress('alphabet', { timeSpent: 1 });
+    }
+    
+    // Save progress when component unmounts
+    return () => {
+      if (user && timeSpent > 0) {
+        // Calculate progress based on time spent and exercise completion
+        const exerciseCompletion = Object.keys(matchingAnswers).length + 
+                                  Object.keys(recognitionAnswers).length + 
+                                  (writingFeedback === 'correct' ? 1 : 0);
+        
+        // Mark as completed if user has spent significant time or completed exercises
+        const completed = timeSpent > 10 || exerciseCompletion >= 5;
+        
+        updateProgress('alphabet', { 
+          timeSpent, 
+          completed: completed
+        });
+      }
+    };
+  }, [user, timeSpent, matchingAnswers, recognitionAnswers, writingFeedback]);
+
   const playAudio = (letter: string) => {
+    updateActivity();
     if (isPlaying === letter) {
       setIsPlaying(null);
     } else {
@@ -96,6 +152,7 @@ const AlphabetPage: React.FC = () => {
   };
 
   const handleMatchingAnswer = (letter: string, answer: string) => {
+    updateActivity();
     setMatchingAnswers(prev => ({
       ...prev,
       [letter]: answer
@@ -103,6 +160,7 @@ const AlphabetPage: React.FC = () => {
   };
 
   const handleRecognitionAnswer = (question: string, answer: string) => {
+    updateActivity();
     setRecognitionAnswers(prev => ({
       ...prev,
       [question]: answer
@@ -110,6 +168,7 @@ const AlphabetPage: React.FC = () => {
   };
 
   const handleWritingSubmit = (correct: string) => {
+    updateActivity();
     if (writingInput.trim().toLowerCase() === correct.toLowerCase()) {
       setWritingFeedback('correct');
     } else {
@@ -118,6 +177,7 @@ const AlphabetPage: React.FC = () => {
   };
 
   const resetExercise = () => {
+    updateActivity();
     setMatchingAnswers({});
     setRecognitionAnswers({});
     setWritingInput('');
@@ -126,6 +186,7 @@ const AlphabetPage: React.FC = () => {
   };
 
   const nextExercise = () => {
+    updateActivity();
     if (exerciseMode === 'matching' && currentExerciseIndex < matchingExercises.length - 1) {
       setCurrentExerciseIndex(currentExerciseIndex + 1);
     } else if (exerciseMode === 'recognition' && currentExerciseIndex < recognitionExercises.length - 1) {
@@ -138,7 +199,7 @@ const AlphabetPage: React.FC = () => {
   };
 
   return (
-    <div className="pt-16 pb-16">
+    <div className="pt-16 pb-16" onClick={updateActivity}>
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">

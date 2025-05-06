@@ -299,7 +299,14 @@ export function useUserProgress(lessonId?: string) {
         { user_id: userId, lesson_id: 'food', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'body', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'animals', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'activities', completed: false, time_spent: 0 }
+        { user_id: userId, lesson_id: 'activities', completed: false, time_spent: 0 },
+        // Intermediate lessons
+        { user_id: userId, lesson_id: 'grammar', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'conversations', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'common-words', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'reading', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'writing', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'sentences', completed: false, time_spent: 0 }
       ];
       
       const { error } = await supabase
@@ -311,8 +318,35 @@ export function useUserProgress(lessonId?: string) {
       }
       
       console.log('Successfully initialized progress records');
+      
+      // Fetch the newly created records
+      const { data: newProgress, error: fetchError } = await supabase
+        .from('user_progress')
+        .select('*')
+        .eq('user_id', userId);
+        
+      if (fetchError) {
+        throw fetchError;
+      }
+      
+      // Update local state with the new records
+      if (newProgress) {
+        const formattedProgress: LessonProgress[] = newProgress.map(item => ({
+          id: item.id,
+          userId: item.user_id,
+          lessonId: item.lesson_id,
+          completed: item.completed,
+          score: item.score,
+          timeSpent: item.time_spent,
+          createdAt: item.created_at,
+          updatedAt: item.updated_at
+        }));
+        
+        setProgress(formattedProgress);
+      }
     } catch (error) {
       console.error('Error initializing progress records:', error);
+      throw error;
     }
   };
 
@@ -321,6 +355,7 @@ export function useUserProgress(lessonId?: string) {
     loading, 
     error, 
     updateProgress, 
-    resetAllProgress 
+    resetAllProgress,
+    initializeProgress
   };
 }

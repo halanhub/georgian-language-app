@@ -18,25 +18,112 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useSubscription } from '../../hooks/useSubscription';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { useUserProfile } from '../../hooks/useUserProfile';
+import { supabase } from '../../lib/supabase';
 
 const Sidebar: React.FC = () => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { theme } = useTheme();
   const { hasActiveSubscription } = useSubscription();
+  const { progress, loading: progressLoading, updateProgress } = useUserProgress();
+  const { profile, loading: profileLoading } = useUserProfile();
   const location = useLocation();
   const [isProfileExpanded, setIsProfileExpanded] = useState(false);
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // Mock progress data - in a real app, this would come from a database
-  const progressData = {
-    lessonsCompleted: 15,
-    totalLessons: 45,
-    quizScore: 75,
-    studyStreak: 5
+  // Calculate progress statistics
+  const calculateProgress = () => {
+    if (!progress || progressLoading) {
+      return {
+        lessonsCompleted: 0,
+        totalLessons: 45,
+        overallProgress: 0,
+        beginnerProgress: 0,
+        intermediateProgress: 0,
+        advancedProgress: 0
+      };
+    }
+
+    const completedLessons = progress.filter(p => p.completed).length;
+    const totalLessons = progress.length;
+    
+    // Calculate progress for each level
+    const beginnerLessons = progress.filter(p => 
+      ['alphabet', 'basic-vocabulary', 'colors-shapes', 'numbers', 'months', 'food', 'body', 'animals', 'activities'].includes(p.lessonId)
+    );
+    const intermediateLessons = progress.filter(p => 
+      ['grammar', 'conversations', 'common-words', 'reading', 'writing', 'sentences'].includes(p.lessonId)
+    );
+    const advancedLessons = progress.filter(p => 
+      p.lessonId.startsWith('advanced-')
+    );
+    
+    const beginnerCompleted = beginnerLessons.filter(p => p.completed).length;
+    const intermediateCompleted = intermediateLessons.filter(p => p.completed).length;
+    const advancedCompleted = advancedLessons.filter(p => p.completed).length;
+    
+    return {
+      lessonsCompleted: completedLessons,
+      totalLessons,
+      overallProgress: Math.round((completedLessons / totalLessons) * 100),
+      beginnerProgress: beginnerLessons.length > 0 ? Math.round((beginnerCompleted / beginnerLessons.length) * 100) : 0,
+      intermediateProgress: intermediateLessons.length > 0 ? Math.round((intermediateCompleted / intermediateLessons.length) * 100) : 0,
+      advancedProgress: advancedLessons.length > 0 ? Math.round((advancedCompleted / advancedLessons.length) * 100) : 0
+    };
   };
 
-  // Calculate overall progress percentage
-  const overallProgress = Math.round((progressData.lessonsCompleted / progressData.totalLessons) * 100);
+  const progressData = calculateProgress();
+
+  // Track page visits
+  useEffect(() => {
+    if (user && !progressLoading) {
+      // Record page visit based on current path
+      const trackPageVisit = async () => {
+        try {
+          const path = location.pathname.split('/')[1]; // Get the first part of the path
+          
+          if (['beginner', 'intermediate', 'advanced'].includes(path)) {
+            await updateProgress(path, { timeSpent: 1 });
+            console.log(`Tracked visit to ${path} page`);
+          }
+          
+          // Track specific lesson visits
+          const lessonPath = location.pathname.split('/')[2];
+          if (lessonPath && lessonPath !== 'quiz') {
+            // Map URL paths to lesson IDs
+            const lessonIdMap: Record<string, string> = {
+              'alphabet': 'alphabet',
+              'basic-vocabulary': 'basic-vocabulary',
+              'colors-and-shapes': 'colors-shapes',
+              'numbers': 'numbers',
+              'months-and-seasons': 'months',
+              'food-and-drinks': 'food',
+              'human-body': 'body',
+              'animals': 'animals',
+              'daily-activities': 'activities',
+              'grammar': 'grammar',
+              'conversations': 'conversations',
+              'common-words': 'common-words',
+              'reading': 'reading',
+              'writing': 'writing',
+              'sentences': 'sentences'
+            };
+            
+            const lessonId = lessonIdMap[lessonPath];
+            if (lessonId) {
+              await updateProgress(lessonId, { timeSpent: 1 });
+              console.log(`Tracked visit to ${lessonId} lesson`);
+            }
+          }
+        } catch (error) {
+          console.error('Error tracking page visit:', error);
+        }
+      };
+      
+      trackPageVisit();
+    }
+  }, [user, location.pathname]);
 
   if (!user) return null;
 
@@ -61,6 +148,9 @@ const Sidebar: React.FC = () => {
             </div>
             <div className="overflow-hidden">
               <p className="font-medium truncate">{user.displayName || 'Language Learner'}</p>
+              {isAdmin && (
+                <span className="text-xs px-2 py-0.5 bg-green-700 text-white rounded">Admin</span>
+              )}
             </div>
           </div>
 
@@ -71,19 +161,39 @@ const Sidebar: React.FC = () => {
                   <span className="text-sm">Learning Level:</span>
                   <span className={`px-2 py-1 rounded text-xs ${
                     theme === 'dark' ? 'bg-gray-600' : 'bg-red-100'
-                  }`}>Beginner</span>
+                  }`}>{profile?.level || 'Beginner'}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Overall Progress:</span>
-                  <span className="text-sm font-medium">{overallProgress}%</span>
+                  <span className="text-sm font-medium">{progressData.overallProgress}%</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Quiz Score:</span>
-                  <span className="text-sm font-medium">{progressData.quizScore}%</span>
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center text-xs">
+                    <span>Beginner:</span>
+                    <span>{progressData.beginnerProgress}%</span>
+                  </div>
+                  <div className={`w-full h-1 rounded-full ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'}`}>
+                    <div 
+                      className={`h-1 rounded-full ${theme === 'dark' ? 'bg-red-500' : 'bg-red-600'}`}
+                      style={{ width: `${progressData.beginnerProgress}%` }}
+                    ></div>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center text-xs">
+                    <span>Intermediate:</span>
+                    <span>{progressData.intermediateProgress}%</span>
+                  </div>
+                  <div className={`w-full h-1 rounded-full ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'}`}>
+                    <div 
+                      className={`h-1 rounded-full ${theme === 'dark' ? 'bg-blue-500' : 'bg-blue-600'}`}
+                      style={{ width: `${progressData.intermediateProgress}%` }}
+                    ></div>
+                  </div>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Study Streak:</span>
-                  <span className="text-sm font-medium">{progressData.studyStreak} days</span>
+                  <span className="text-sm font-medium">{profile?.studyStreak || 0} days</span>
                 </div>
                 <Link 
                   to="/settings" 
@@ -129,7 +239,15 @@ const Sidebar: React.FC = () => {
             }`}
           >
             <BookOpen size={18} />
-            <span>Beginner</span>
+            <div className="flex-1">
+              <span>Beginner</span>
+              <div className={`w-full h-1 mt-1 rounded-full ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'}`}>
+                <div 
+                  className={`h-1 rounded-full ${theme === 'dark' ? 'bg-red-500' : 'bg-red-600'}`}
+                  style={{ width: `${progressData.beginnerProgress}%` }}
+                ></div>
+              </div>
+            </div>
           </Link>
           
           <Link 
@@ -141,14 +259,22 @@ const Sidebar: React.FC = () => {
             }`}
           >
             <PenTool size={18} />
-            <span>
-              Intermediate
-              {!hasActiveSubscription && (
-                <span className="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-600 text-gray-200">
-                  Premium
-                </span>
-              )}
-            </span>
+            <div className="flex-1">
+              <div className="flex items-center">
+                <span>Intermediate</span>
+                {!hasActiveSubscription && !isAdmin && (
+                  <span className="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-600 text-gray-200">
+                    Premium
+                  </span>
+                )}
+              </div>
+              <div className={`w-full h-1 mt-1 rounded-full ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'}`}>
+                <div 
+                  className={`h-1 rounded-full ${theme === 'dark' ? 'bg-blue-500' : 'bg-blue-600'}`}
+                  style={{ width: `${progressData.intermediateProgress}%` }}
+                ></div>
+              </div>
+            </div>
           </Link>
           
           <Link 
@@ -160,14 +286,22 @@ const Sidebar: React.FC = () => {
             }`}
           >
             <GraduationCap size={18} />
-            <span>
-              Advanced
-              {!hasActiveSubscription && (
-                <span className="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-600 text-gray-200">
-                  Premium
-                </span>
-              )}
-            </span>
+            <div className="flex-1">
+              <div className="flex items-center">
+                <span>Advanced</span>
+                {!hasActiveSubscription && !isAdmin && (
+                  <span className="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-600 text-gray-200">
+                    Premium
+                  </span>
+                )}
+              </div>
+              <div className={`w-full h-1 mt-1 rounded-full ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'}`}>
+                <div 
+                  className={`h-1 rounded-full ${theme === 'dark' ? 'bg-purple-500' : 'bg-purple-600'}`}
+                  style={{ width: `${progressData.advancedProgress}%` }}
+                ></div>
+              </div>
+            </div>
           </Link>
           
           <div className="my-2 text-xs uppercase font-semibold opacity-70 px-3 pt-3">Learning Tools</div>
@@ -193,14 +327,14 @@ const Sidebar: React.FC = () => {
             }`}
           >
             <Brain size={18} />
-            <span>
-              Vocabulary
-              {!hasActiveSubscription && (
+            <div className="flex items-center">
+              <span>Vocabulary</span>
+              {!hasActiveSubscription && !isAdmin && (
                 <span className="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-600 text-gray-200">
                   Premium
                 </span>
               )}
-            </span>
+            </div>
           </Link>
           
           <Link 

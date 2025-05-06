@@ -42,6 +42,9 @@ import PrivacyPolicyPage from './pages/legal/PrivacyPolicyPage';
 import DatabaseTestPage from './pages/DatabaseTestPage';
 import FAQPage from './pages/FAQPage';
 
+// Admin user ID - replace with the actual ID of admin@georgianlanguage.online
+const ADMIN_USER_ID = "d4c7b2a1-f3e9-4b8d-a6c5-e9d8f7g6h5j4";
+
 function App() {
   return (
     <ThemeProvider>
@@ -117,53 +120,53 @@ function App() {
                 } />
                 
                 <Route path="intermediate" element={
-                  <ProtectedRoute requiresSubscription={true}>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <IntermediateLevelPage />
                   </ProtectedRoute>
                 } />
                 <Route path="intermediate/grammar" element={
-                  <ProtectedRoute requiresSubscription={true}>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <GrammarPage />
                   </ProtectedRoute>
                 } />
                 <Route path="intermediate/conversations" element={
-                  <ProtectedRoute requiresSubscription={true}>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <DailyConversationsPage />
                   </ProtectedRoute>
                 } />
                 <Route path="intermediate/common-words" element={
-                  <ProtectedRoute requiresSubscription={true}>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <CommonWordsPage />
                   </ProtectedRoute>
                 } />
                 <Route path="intermediate/reading" element={
-                  <ProtectedRoute requiresSubscription={true}>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <ReadingPracticePage />
                   </ProtectedRoute>
                 } />
                 <Route path="intermediate/writing" element={
-                  <ProtectedRoute requiresSubscription={true}>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <WritingExercisesPage />
                   </ProtectedRoute>
                 } />
                 <Route path="intermediate/sentences" element={
-                  <ProtectedRoute requiresSubscription={true}>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <SentenceConstructionPage />
                   </ProtectedRoute>
                 } />
                 <Route path="intermediate/quiz/:topic" element={
-                  <ProtectedRoute requiresSubscription={true}>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <QuizPage />
                   </ProtectedRoute>
                 } />
                 
                 <Route path="advanced" element={
-                  <ProtectedRoute requiresSubscription={true}>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <AdvancedLevelPage />
                   </ProtectedRoute>
                 } />
                 <Route path="advanced/quiz/:topic" element={
-                  <ProtectedRoute requiresSubscription={true}>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <QuizPage />
                   </ProtectedRoute>
                 } />
@@ -178,7 +181,7 @@ function App() {
                 <Route path="contact" element={<ContactPage />} />
                 
                 <Route path="vocabulary" element={
-                  <ProtectedRoute requiresSubscription={true}>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <VocabularyPage />
                   </ProtectedRoute>
                 } />

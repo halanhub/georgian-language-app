@@ -207,13 +207,13 @@ const HomePage: React.FC = () => {
                     {t('home.levels.continue_learning')}
                   </Link>
                 ) : (
-                  <Link 
-                    to="/pricing" 
+                  <Link
+                    to="/pricing"
                     className={`flex items-center justify-center w-full py-2 rounded-md font-medium ${
-                      theme === 'dark' ? 
-                      'bg-blue-700 text-white hover:bg-blue-800' : 
-                      'bg-blue-500 text-white hover:bg-blue-600'
-                    } transition-colors`}
+                      theme === 'dark' 
+                        ? 'bg-blue-700 text-white hover:bg-blue-800' 
+                        : 'bg-blue-500 text-white hover:bg-blue-600'
+                    }`}
                   >
                     <CreditCard size={16} className="mr-2" />
                     {t('home.levels.upgrade_to_access')}
@@ -251,13 +251,13 @@ const HomePage: React.FC = () => {
                     {t('home.levels.continue_learning')}
                   </Link>
                 ) : (
-                  <Link 
-                    to="/pricing" 
+                  <Link
+                    to="/pricing"
                     className={`flex items-center justify-center w-full py-2 rounded-md font-medium ${
-                      theme === 'dark' ? 
-                      'bg-purple-700 text-white hover:bg-purple-800' : 
-                      'bg-purple-500 text-white hover:bg-purple-600'
-                    } transition-colors`}
+                      theme === 'dark' 
+                        ? 'bg-purple-700 text-white hover:bg-purple-800' 
+                        : 'bg-purple-500 text-white hover:bg-purple-600'
+                    }`}
                   >
                     <CreditCard size={16} className="mr-2" />
                     {t('home.levels.upgrade_to_access')}
@@ -281,7 +281,7 @@ const HomePage: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Plan */}
             <div className={`rounded-lg overflow-hidden shadow-lg ${
               theme === 'dark' ? 'bg-gray-800' : 'bg-white'
@@ -320,9 +320,9 @@ const HomePage: React.FC = () => {
                 </Link>
               </div>
             </div>
-
+            
             {/* Premium Plan */}
-            <div className={`rounded-lg overflow-hidden shadow-lg transform scale-105 ${
+            <div className={`rounded-lg overflow-hidden shadow-lg ${
               theme === 'dark' ? 'bg-gray-800 ring-2 ring-blue-500' : 'bg-white ring-2 ring-blue-500'
             }`}>
               <div className={`p-1 text-center text-sm font-semibold ${
@@ -361,48 +361,6 @@ const HomePage: React.FC = () => {
                   } transition-colors`}
                 >
                   {t('home.pricing.subscribe_now')}
-                </Link>
-              </div>
-            </div>
-
-            {/* Annual Plan */}
-            <div className={`rounded-lg overflow-hidden shadow-lg ${
-              theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-            }`}>
-              <div className={`p-6 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
-                <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  {t('home.pricing.annual')}
-                </h3>
-                <div className="mt-4 flex items-baseline">
-                  <span className={`text-4xl font-extrabold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    $49.99
-                  </span>
-                  <span className={`ml-1 text-xl font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>
-                    {t('home.pricing.year')}
-                  </span>
-                </div>
-                <p className={`mt-1 text-sm ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
-                  {t('home.pricing.save')}
-                </p>
-              </div>
-              <div className="p-6">
-                <ul className={`space-y-4 mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {t('home.pricing.features.annual', { returnObjects: true }).map((feature: string, index: number) => (
-                    <li key={index} className="flex items-start">
-                      <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                      <span className="ml-2">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link 
-                  to="/pricing" 
-                  className={`block w-full text-center py-2 rounded-md font-medium ${
-                    theme === 'dark' ? 
-                    'bg-green-700 text-white hover:bg-green-800' : 
-                    'bg-green-600 text-white hover:bg-green-700'
-                  } transition-colors`}
-                >
-                  {t('home.pricing.subscribe_annually')}
                 </Link>
               </div>
             </div>

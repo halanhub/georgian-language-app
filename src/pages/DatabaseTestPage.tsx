@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Database, Check, X, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Database, Check, X, RefreshCw, User, Shield } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 const DatabaseTestPage: React.FC = () => {
   const { theme } = useTheme();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState<'success' | 'error' | null>(null);
   const [authStatus, setAuthStatus] = useState<'success' | 'error' | null>(null);
@@ -74,6 +74,10 @@ const DatabaseTestPage: React.FC = () => {
           
           setAuthStatus('success');
           results.auth = `Authentication successful. User profile ${data ? 'found' : 'not found but can be created'}.`;
+          
+          if (isAdmin) {
+            results.auth += ' User has admin privileges.';
+          }
         } catch (error) {
           console.error('Auth test failed:', error);
           setAuthStatus('error');
@@ -320,7 +324,16 @@ const DatabaseTestPage: React.FC = () => {
                 <div className={`p-3 rounded-md font-mono text-sm ${
                   theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-800'
                 }`}>
-                  {user ? `Authenticated as: ${user.email}` : 'Not authenticated'}
+                  {user ? (
+                    <div className="flex items-center">
+                      <span>Authenticated as: {user.email}</span>
+                      {isAdmin && (
+                        <span className="ml-2 px-2 py-1 text-xs rounded bg-green-700 text-white flex items-center">
+                          <Shield size={12} className="mr-1" /> Admin
+                        </span>
+                      )}
+                    </div>
+                  ) : 'Not authenticated'}
                 </div>
               </div>
               

@@ -15,6 +15,7 @@ export type UserProfile = {
   totalStudyTime?: number;
   wordsLearned?: number;
   studyStreak?: number;
+  isAdmin?: boolean;
 };
 
 // Define auth context type
@@ -27,6 +28,7 @@ type AuthContextType = {
   logout: () => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
   uploadAvatar: (file: File) => Promise<string>;
+  isAdmin: boolean;
 };
 
 // Create context with a default value
@@ -41,11 +43,15 @@ export const useAuth = () => {
   return context;
 };
 
+// List of admin emails
+const ADMIN_EMAILS = ['admin@georgianlanguage.online'];
+
 // Provider component
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   // Check if the user is already logged in
@@ -85,6 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           await fetchUserProfile(newSession.user);
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
+          setIsAdmin(false);
         } else if (event === 'USER_UPDATED') {
           if (newSession?.user) {
             await fetchUserProfile(newSession.user);
@@ -116,6 +123,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw error;
       }
 
+      // Check if user is an admin
+      const userIsAdmin = ADMIN_EMAILS.includes(authUser.email || '');
+      setIsAdmin(userIsAdmin);
+      console.log('User admin status:', userIsAdmin);
+
       if (profile) {
         // Profile exists, use it
         console.log('User profile found:', profile);
@@ -128,7 +140,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           lessonsCompleted: profile.lessons_completed,
           totalStudyTime: profile.total_study_time,
           wordsLearned: profile.words_learned,
-          studyStreak: profile.study_streak
+          studyStreak: profile.study_streak,
+          isAdmin: userIsAdmin
         });
       } else {
         // Profile doesn't exist, create it
@@ -163,7 +176,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           lessonsCompleted: newProfile.lessons_completed,
           totalStudyTime: newProfile.total_study_time,
           wordsLearned: newProfile.words_learned,
-          studyStreak: newProfile.study_streak
+          studyStreak: newProfile.study_streak,
+          isAdmin: userIsAdmin
         });
       }
     } catch (error) {
@@ -172,7 +186,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser({
         id: authUser.id,
         email: authUser.email || '',
-        displayName: authUser.email?.split('@')[0] || 'User'
+        displayName: authUser.email?.split('@')[0] || 'User',
+        isAdmin: ADMIN_EMAILS.includes(authUser.email || '')
       });
     }
   };
@@ -208,7 +223,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         { user_id: userId, lesson_id: 'food', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'body', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'animals', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'activities', completed: false, time_spent: 0 }
+        { user_id: userId, lesson_id: 'activities', completed: false, time_spent: 0 },
+        // Intermediate lessons
+        { user_id: userId, lesson_id: 'grammar', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'conversations', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'common-words', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'reading', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'writing', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'sentences', completed: false, time_spent: 0 }
       ];
       
       const { error: insertError } = await supabase
@@ -295,6 +317,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       setUser(null);
       setSession(null);
+      setIsAdmin(false);
       console.log('Logout successful');
     } catch (error) {
       console.error('Logout error:', error);
@@ -401,7 +424,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signup,
     logout,
     updateProfile,
-    uploadAvatar
+    uploadAvatar,
+    isAdmin
   };
 
   return (

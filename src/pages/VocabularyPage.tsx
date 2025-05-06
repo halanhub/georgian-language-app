@@ -5,6 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { Card } from '@/components/ui/card';
 import { useSubscription } from '../hooks/useSubscription';
 import SubscriptionBanner from '../components/SubscriptionBanner';
+import { useTranslation } from 'react-i18next';
 
 interface VocabularyItem {
   georgian: string;
@@ -26,6 +27,7 @@ const VocabularyPage: React.FC = () => {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const { t } = useTranslation();
 
   // If user doesn't have a subscription, redirect to pricing page
   if (!hasActiveSubscription) {
@@ -227,7 +229,7 @@ const VocabularyPage: React.FC = () => {
                   }`}
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to Home
+                  {t('common.back')}
                 </Link>
               </div>
             </div>
