@@ -5,6 +5,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useSubscription } from '../../hooks/useSubscription';
+import { supabase } from '../../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 const BeginnerLevelPage: React.FC = () => {
   const { user, isAdmin } = useAuth();
@@ -12,6 +14,7 @@ const BeginnerLevelPage: React.FC = () => {
   const { progress, loading: progressLoading, updateProgress } = useUserProgress();
   const { hasActiveSubscription, loading: subscriptionLoading } = useSubscription();
   const [overallProgress, setOverallProgress] = useState(0);
+  const { t } = useTranslation();
 
   // Calculate progress based on completed lessons
   useEffect(() => {
@@ -62,8 +65,8 @@ const BeginnerLevelPage: React.FC = () => {
   const topics = [
     { 
       id: 'alphabet', 
-      name: 'Georgian Alphabet', 
-      description: 'Learn the 33 unique letters',
+      name: t('beginner.topics.alphabet.name'), 
+      description: t('beginner.topics.alphabet.description'),
       icon: <AlignJustify size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
       path: '/beginner/alphabet',
@@ -74,8 +77,8 @@ const BeginnerLevelPage: React.FC = () => {
     },
     { 
       id: 'basic-vocabulary', 
-      name: 'Basic Vocabulary', 
-      description: 'Essential words and phrases',
+      name: t('beginner.topics.vocabulary.name'), 
+      description: t('beginner.topics.vocabulary.description'),
       icon: <Brain size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
       path: '/beginner/basic-vocabulary',
@@ -86,8 +89,8 @@ const BeginnerLevelPage: React.FC = () => {
     },
     { 
       id: 'colors-shapes', 
-      name: 'Colors & Shapes', 
-      description: 'Learn colors and shapes',
+      name: t('beginner.topics.colors.name'), 
+      description: t('beginner.topics.colors.description'),
       icon: <Palette size={24} />,
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
       path: '/beginner/colors-and-shapes',
@@ -98,8 +101,8 @@ const BeginnerLevelPage: React.FC = () => {
     },
     { 
       id: 'numbers', 
-      name: 'Numbers', 
-      description: 'Count from 1 to 100',
+      name: t('beginner.topics.numbers.name'), 
+      description: t('beginner.topics.numbers.description'),
       icon: <Book size={24} />,
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
       path: '/beginner/numbers',
@@ -110,8 +113,8 @@ const BeginnerLevelPage: React.FC = () => {
     },
     { 
       id: 'months', 
-      name: 'Months & Seasons', 
-      description: 'Time expressions',
+      name: t('beginner.topics.months.name'), 
+      description: t('beginner.topics.months.description'),
       icon: <Calendar size={24} />,
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
       path: '/beginner/months-and-seasons',
@@ -122,8 +125,8 @@ const BeginnerLevelPage: React.FC = () => {
     },
     { 
       id: 'food', 
-      name: 'Food & Drinks', 
-      description: 'Georgian cuisine basics',
+      name: t('beginner.topics.food.name'), 
+      description: t('beginner.topics.food.description'),
       icon: <Utensils size={24} />,
       color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
       path: '/beginner/food-and-drinks',
@@ -134,8 +137,8 @@ const BeginnerLevelPage: React.FC = () => {
     },
     { 
       id: 'body', 
-      name: 'Human Body', 
-      description: 'Body parts and health',
+      name: t('beginner.topics.body.name'), 
+      description: t('beginner.topics.body.description'),
       icon: <Heart size={24} />,
       color: theme === 'dark' ? 'bg-pink-900 text-pink-200' : 'bg-pink-100 text-pink-800',
       path: '/beginner/human-body',
@@ -146,8 +149,8 @@ const BeginnerLevelPage: React.FC = () => {
     },
     { 
       id: 'animals', 
-      name: 'Animals', 
-      description: 'Common animal names',
+      name: t('beginner.topics.animals.name'), 
+      description: t('beginner.topics.animals.description'),
       icon: <Cat size={24} />,
       color: theme === 'dark' ? 'bg-amber-900 text-amber-200' : 'bg-amber-100 text-amber-800',
       path: '/beginner/animals',
@@ -158,8 +161,8 @@ const BeginnerLevelPage: React.FC = () => {
     },
     { 
       id: 'activities', 
-      name: 'Daily Activities', 
-      description: 'Everyday routines',
+      name: t('beginner.topics.activities.name'), 
+      description: t('beginner.topics.activities.description'),
       icon: <Clock size={24} />,
       color: theme === 'dark' ? 'bg-cyan-900 text-cyan-200' : 'bg-cyan-100 text-cyan-800',
       path: '/beginner/daily-activities',
@@ -212,10 +215,10 @@ const BeginnerLevelPage: React.FC = () => {
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>Beginner Level</span> - დამწყები
+                <span className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>{t('beginner.title')}</span> - დამწყები
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Start your Georgian language journey by learning the alphabet, basic vocabulary, and essential phrases for everyday situations.
+                {t('beginner.subtitle')}
               </p>
               <div className="flex flex-wrap gap-2">
                 <Link
@@ -224,7 +227,7 @@ const BeginnerLevelPage: React.FC = () => {
                     theme === 'dark' ? 'bg-red-700 text-white hover:bg-red-800' : 'bg-red-600 text-white hover:bg-red-700'
                   }`}
                 >
-                  Start with Alphabet
+                  {t('beginner.start_alphabet')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
                 <Link
@@ -233,7 +236,7 @@ const BeginnerLevelPage: React.FC = () => {
                     theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-gray-800 hover:bg-gray-100'
                   }`}
                 >
-                  Take a Quiz
+                  {t('beginner.take_quiz')}
                   <Dices className="ml-2 h-4 w-4" />
                 </Link>
               </div>
@@ -249,15 +252,15 @@ const BeginnerLevelPage: React.FC = () => {
                   ></div>
                 </div>
                 <h2 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
-                  Your Progress: {overallProgress}%
+                  {t('beginner.progress')}: {overallProgress}%
                 </h2>
                 <p className={`mb-4 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  Complete these beginner lessons to build a strong foundation in Georgian.
+                  {t('beginner.complete')}
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                      Lessons Completed
+                      {t('beginner.lessons_completed')}
                     </span>
                     <span className={`font-medium ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
                       {progress?.filter(p => p.completed && ['alphabet', 'basic-vocabulary', 'colors-shapes', 'numbers', 'months', 'food', 'body', 'animals', 'activities'].includes(p.lessonId)).length || 0}/{topics.length}
@@ -274,7 +277,7 @@ const BeginnerLevelPage: React.FC = () => {
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className={`text-2xl font-bold mb-8 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Learning Topics
+            {t('beginner.topics.title')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topicsWithCorrectPaths.map((topic) => (
@@ -317,7 +320,7 @@ const BeginnerLevelPage: React.FC = () => {
                   </p>
                 </div>
                 <div className={`flex items-center text-sm font-medium ${
-                  theme === 'dark' ? 'text-red-400' : 'text-red-600'
+                  theme === 'dark' ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700'
                 }`}>
                   {topic.premium && !(hasActiveSubscription || isAdmin) ? 'Upgrade to Access' : (topic.progress > 0 ? 'Continue Learning' : 'Start Learning')}
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -333,10 +336,10 @@ const BeginnerLevelPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between mb-8">
             <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Test Your Knowledge
+              {t('beginner.quizzes.title')}
             </h2>
             <p className={`mt-2 md:mt-0 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-              Take these quizzes to reinforce what you've learned
+              {t('beginner.quizzes.description')}
             </p>
           </div>
           

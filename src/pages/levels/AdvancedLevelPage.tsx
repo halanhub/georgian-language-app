@@ -7,6 +7,7 @@ import { useSubscription } from '../../hooks/useSubscription';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import SubscriptionBanner from '../../components/SubscriptionBanner';
 import { supabase } from '../../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 const AdvancedLevelPage: React.FC = () => {
   const { theme } = useTheme();
@@ -14,6 +15,7 @@ const AdvancedLevelPage: React.FC = () => {
   const { hasActiveSubscription } = useSubscription();
   const { progress, loading: progressLoading, updateProgress } = useUserProgress();
   const [overallProgress, setOverallProgress] = useState(0);
+  const { t } = useTranslation();
 
   // Calculate progress based on completed lessons
   useEffect(() => {
@@ -64,8 +66,8 @@ const AdvancedLevelPage: React.FC = () => {
   const topics = [
     { 
       id: 'advanced-grammar', 
-      name: 'Complex Grammar', 
-      description: 'Master advanced Georgian grammar patterns',
+      name: t('advanced.topics.grammar.name'), 
+      description: t('advanced.topics.grammar.description'),
       icon: <BookOpen size={24} />,
       color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
       path: hasActiveSubscription || isAdmin ? '/advanced/grammar' : '/pricing',
@@ -76,8 +78,8 @@ const AdvancedLevelPage: React.FC = () => {
     },
     { 
       id: 'advanced-culture', 
-      name: 'Cultural Nuances', 
-      description: 'Understand Georgian cultural context in language',
+      name: t('advanced.topics.culture.name'), 
+      description: t('advanced.topics.culture.description'),
       icon: <GraduationCap size={24} />,
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
       path: hasActiveSubscription || isAdmin ? '/advanced/culture' : '/pricing',
@@ -88,8 +90,8 @@ const AdvancedLevelPage: React.FC = () => {
     },
     { 
       id: 'advanced-literature', 
-      name: 'Literature & Poetry', 
-      description: 'Explore classic and modern Georgian literature',
+      name: t('advanced.topics.literature.name'), 
+      description: t('advanced.topics.literature.description'),
       icon: <Brain size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
       path: hasActiveSubscription || isAdmin ? '/advanced/literature' : '/pricing',
@@ -100,8 +102,8 @@ const AdvancedLevelPage: React.FC = () => {
     },
     { 
       id: 'advanced-idioms', 
-      name: 'Idiomatic Expressions', 
-      description: 'Learn Georgian idioms and colloquial phrases',
+      name: t('advanced.topics.idioms.name'), 
+      description: t('advanced.topics.idioms.description'),
       icon: <MessageCircle size={24} />,
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
       path: hasActiveSubscription || isAdmin ? '/advanced/idioms' : '/pricing',
@@ -112,8 +114,8 @@ const AdvancedLevelPage: React.FC = () => {
     },
     { 
       id: 'advanced-writing', 
-      name: 'Advanced Writing', 
-      description: 'Develop sophisticated writing skills in Georgian',
+      name: t('advanced.topics.writing.name'), 
+      description: t('advanced.topics.writing.description'),
       icon: <Pencil size={24} />,
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
       path: hasActiveSubscription || isAdmin ? '/advanced/writing' : '/pricing',
@@ -124,8 +126,8 @@ const AdvancedLevelPage: React.FC = () => {
     },
     { 
       id: 'advanced-listening', 
-      name: 'Advanced Listening', 
-      description: 'Comprehend native speakers at natural speeds',
+      name: t('advanced.topics.listening.name'), 
+      description: t('advanced.topics.listening.description'),
       icon: <Edit size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
       path: hasActiveSubscription || isAdmin ? '/advanced/listening' : '/pricing',
@@ -173,7 +175,7 @@ const AdvancedLevelPage: React.FC = () => {
       
       initializeAdvancedProgress();
     }
-  }, [user, progress, progressLoading]);
+  }, [user, progress, progressLoading, topics]);
 
   return (
     <div className="pt-16 pb-16">
@@ -185,10 +187,10 @@ const AdvancedLevelPage: React.FC = () => {
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}>Advanced Level</span> - მოწინავე
+                <span className={theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}>{t('advanced.title')}</span> - მოწინავე
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Achieve fluency in Georgian with advanced grammar, cultural nuances, literature, and sophisticated conversation skills.
+                {t('advanced.subtitle')}
               </p>
               <div className="flex flex-wrap gap-2">
                 {hasActiveSubscription || isAdmin ? (
@@ -197,7 +199,7 @@ const AdvancedLevelPage: React.FC = () => {
                       theme === 'dark' ? 'bg-gray-700 text-white cursor-not-allowed' : 'bg-white text-gray-400 cursor-not-allowed'
                     }`}
                   >
-                    Complete Intermediate Level to Unlock
+                    {t('advanced.complete_intermediate')}
                   </span>
                 ) : (
                   <Link
@@ -206,7 +208,7 @@ const AdvancedLevelPage: React.FC = () => {
                       theme === 'dark' ? 'bg-purple-700 text-white hover:bg-purple-800' : 'bg-purple-600 text-white hover:bg-purple-700'
                     }`}
                   >
-                    Upgrade to Access
+                    {t('advanced.upgrade_to_access')}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 )}
@@ -221,15 +223,15 @@ const AdvancedLevelPage: React.FC = () => {
                   ></div>
                 </div>
                 <h2 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
-                  Advanced Progress: {overallProgress}%
+                  {t('advanced.progress')}: {overallProgress}%
                 </h2>
                 <p className={`mb-4 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  Complete intermediate level to unlock all advanced lessons.
+                  {t('advanced.complete_intermediate')}
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                      Lessons Completed
+                      {t('advanced.lessons_completed')}
                     </span>
                     <span className={`font-medium ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}`}>
                       {progress?.filter(p => p.completed && p.lessonId.startsWith('advanced-')).length || 0}/{topics.length}
@@ -246,7 +248,7 @@ const AdvancedLevelPage: React.FC = () => {
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className={`text-2xl font-bold mb-8 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Advanced Learning Topics
+            {t('advanced.topics.title')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topics.map((topic) => (
@@ -293,7 +295,7 @@ const AdvancedLevelPage: React.FC = () => {
                     theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'
                   }`}
                 >
-                  {topic.premium && !hasActiveSubscription && !isAdmin ? 'Upgrade to Access' : 'Complete Intermediate Level to Unlock'}
+                  {topic.premium && !hasActiveSubscription && !isAdmin ? t('advanced.upgrade_to_access') : t('advanced.complete_intermediate')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </div>
@@ -318,10 +320,10 @@ const AdvancedLevelPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className={`p-8 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-xl`}>
             <h2 className={`text-2xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Advanced Content Coming Soon
+              {t('advanced.coming_soon.title')}
             </h2>
             <p className={`max-w-2xl mx-auto ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-              Master the beginner and intermediate levels to prepare for our advanced Georgian language content. We're developing comprehensive materials to help you achieve fluency.
+              {t('advanced.coming_soon.description')}
             </p>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Book, Brain, Check, ChevronDown, ChevronUp, Play
 import { useTheme } from '../../contexts/ThemeContext';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface VocabularyItem {
   georgian: string;
@@ -23,6 +24,7 @@ const BasicVocabularyPage: React.FC = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
   const { updateProgress } = useUserProgress();
+  const { t } = useTranslation();
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -43,8 +45,8 @@ const BasicVocabularyPage: React.FC = () => {
   const categories: VocabularyCategory[] = [
     {
       id: 'greetings',
-      title: 'Greetings & Politeness',
-      description: 'Essential phrases for polite conversation',
+      title: t('beginner.topics.vocabulary.categories.greetings.title'),
+      description: t('beginner.topics.vocabulary.categories.greetings.description'),
       words: [
         { georgian: 'გამარჯობა', latin: 'gamarjoba', english: 'hello', example: 'გამარჯობა! (gamarjoba!) - Hello!' },
         { georgian: 'ნახვამდის', latin: 'nakhvamdis', english: 'goodbye', example: 'ნახვამდის! (nakhvamdis!) - Goodbye!' },
@@ -58,8 +60,8 @@ const BasicVocabularyPage: React.FC = () => {
     },
     {
       id: 'people',
-      title: 'People & Family',
-      description: 'Words for people and family members',
+      title: t('beginner.topics.vocabulary.categories.people.title'),
+      description: t('beginner.topics.vocabulary.categories.people.description'),
       words: [
         { georgian: 'კაცი', latin: 'katsi', english: 'man', example: 'ეს კაცი (es katsi) - This man' },
         { georgian: 'ქალი', latin: 'kali', english: 'woman', example: 'ეს ქალი (es kali) - This woman' },
@@ -73,8 +75,8 @@ const BasicVocabularyPage: React.FC = () => {
     },
     {
       id: 'common-objects',
-      title: 'Common Objects',
-      description: 'Everyday items and objects',
+      title: t('beginner.topics.vocabulary.categories.objects.title'),
+      description: t('beginner.topics.vocabulary.categories.objects.description'),
       words: [
         { georgian: 'მაგიდა', latin: 'magida', english: 'table', example: 'დიდი მაგიდა (didi magida) - Big table' },
         { georgian: 'სკამი', latin: 'skami', english: 'chair', example: 'ახალი სკამი (akhali skami) - New chair' },
@@ -88,8 +90,8 @@ const BasicVocabularyPage: React.FC = () => {
     },
     {
       id: 'actions',
-      title: 'Common Actions',
-      description: 'Basic verbs and actions',
+      title: t('beginner.topics.vocabulary.categories.actions.title'),
+      description: t('beginner.topics.vocabulary.categories.actions.description'),
       words: [
         { georgian: 'კეთება', latin: 'keteba', english: 'to do', example: 'რას აკეთებ? (ras aketeb?) - What are you doing?' },
         { georgian: 'სწავლა', latin: 'stsavla', english: 'to learn', example: 'ქართულს ვსწავლობ (kartuls vstsavlob) - I am learning Georgian' },
@@ -103,8 +105,8 @@ const BasicVocabularyPage: React.FC = () => {
     },
     {
       id: 'adjectives',
-      title: 'Common Adjectives',
-      description: 'Basic descriptive words',
+      title: t('beginner.topics.vocabulary.categories.adjectives.title'),
+      description: t('beginner.topics.vocabulary.categories.adjectives.description'),
       words: [
         { georgian: 'დიდი', latin: 'didi', english: 'big', example: 'დიდი სახლი (didi sakhli) - Big house' },
         { georgian: 'პატარა', latin: 'patara', english: 'small', example: 'პატარა ბავშვი (patara bavshvi) - Small child' },
@@ -215,7 +217,7 @@ const BasicVocabularyPage: React.FC = () => {
         });
       }
     };
-  }, [user, timeSpent, blankFeedback]);
+  }, [user, timeSpent, blankFeedback, updateProgress]);
 
   const playAudio = (word: string) => {
     updateActivity();
@@ -298,10 +300,10 @@ const BasicVocabularyPage: React.FC = () => {
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>Basic Vocabulary</span> - ძირითადი ლექსიკა (dziritadi leksika)
+                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>{t('beginner.topics.vocabulary.name')}</span> - ძირითადი ლექსიკა (dziritadi leksika)
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Learn essential Georgian words and phrases organized by categories.
+                {t('beginner.topics.vocabulary.description')}
               </p>
               <div className="flex flex-wrap gap-2">
                 <Link
@@ -313,7 +315,7 @@ const BasicVocabularyPage: React.FC = () => {
                   }`}
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to Beginner Level
+                  {t('common.back')} {t('nav.beginner')}
                 </Link>
                 <Link
                   to="/beginner/quiz/vocabulary"
@@ -321,7 +323,7 @@ const BasicVocabularyPage: React.FC = () => {
                     theme === 'dark' ? 'bg-blue-700 text-white hover:bg-blue-800' : 'bg-blue-600 text-white hover:bg-blue-700'
                   }`}
                 >
-                  Take Quiz
+                  {t('beginner.take_quiz')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </div>
@@ -330,13 +332,13 @@ const BasicVocabularyPage: React.FC = () => {
               <div className={`p-6 rounded-lg shadow-xl ${theme === 'dark' ? 'bg-gray-700' : 'bg-white bg-opacity-50 backdrop-blur-lg'}`}>
                 <Brain className={`w-12 h-12 mb-4 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Learning Tips
+                  {t('learning_tips.title')}
                 </h3>
                 <ul className={`space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  <li>• Practice pronunciation with audio</li>
-                  <li>• Create flashcards for review</li>
-                  <li>• Use words in simple sentences</li>
-                  <li>• Learn related words together</li>
+                  <li>• {t('vocabulary.learning_tips.practice_pronunciation')}</li>
+                  <li>• {t('vocabulary.learning_tips.create_flashcards')}</li>
+                  <li>• {t('vocabulary.learning_tips.use_sentences')}</li>
+                  <li>• {t('vocabulary.learning_tips.focus_category')}</li>
                 </ul>
               </div>
             </div>
@@ -426,7 +428,7 @@ const BasicVocabularyPage: React.FC = () => {
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Practice Exercises
+            {t('beginner.topics.vocabulary.practice_exercises')}
           </h2>
           
           {!exerciseMode ? (
@@ -438,10 +440,10 @@ const BasicVocabularyPage: React.FC = () => {
                 } shadow-lg`}
               >
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Word Matching
+                  {t('beginner.topics.vocabulary.word_matching')}
                 </h3>
                 <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                  Match Georgian words with their English meanings
+                  {t('beginner.topics.vocabulary.match_words')}
                 </p>
               </button>
               
@@ -452,10 +454,10 @@ const BasicVocabularyPage: React.FC = () => {
                 } shadow-lg`}
               >
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Translation Practice
+                  {t('beginner.topics.vocabulary.translation_practice')}
                 </h3>
                 <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                  Translate English words to Georgian
+                  {t('beginner.topics.vocabulary.translate_words')}
                 </p>
               </button>
               
@@ -466,10 +468,10 @@ const BasicVocabularyPage: React.FC = () => {
                 } shadow-lg`}
               >
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Fill in the Blank
+                  {t('beginner.topics.vocabulary.fill_blank')}
                 </h3>
                 <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                  Complete sentences with the correct Georgian words
+                  {t('beginner.topics.vocabulary.complete_sentences')}
                 </p>
               </button>
             </div>
@@ -477,8 +479,8 @@ const BasicVocabularyPage: React.FC = () => {
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}>
               <div className="flex justify-between items-center mb-6">
                 <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  {exerciseMode === 'matching' ? 'Word Matching' : 
-                   exerciseMode === 'translation' ? 'Translation Practice' : 'Fill in the Blank'}
+                  {exerciseMode === 'matching' ? t('beginner.topics.vocabulary.word_matching') : 
+                   exerciseMode === 'translation' ? t('beginner.topics.vocabulary.translation_practice') : t('beginner.topics.vocabulary.fill_blank')}
                 </h3>
                 <button
                   onClick={() => setExerciseMode(null)}
@@ -486,14 +488,14 @@ const BasicVocabularyPage: React.FC = () => {
                     theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500' : 'bg-gray-200 hover:bg-gray-300'
                   }`}
                 >
-                  Back to Exercises
+                  {t('common.back')}
                 </button>
               </div>
               
               {exerciseMode === 'matching' && (
                 <div>
                   <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Match the Georgian word with its English meaning:
+                    {t('beginner.topics.vocabulary.match_instruction')}
                   </p>
                   
                   <div className="mb-6">
@@ -530,8 +532,8 @@ const BasicVocabularyPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
                       }`}>
                         {isCorrectAnswer()
-                          ? 'Correct! Well done.'
-                          : `Incorrect. The correct answer is "${matchingExercises[currentExerciseIndex].correct}".`}
+                          ? t('beginner.topics.vocabulary.correct_answer')
+                          : t('beginner.topics.vocabulary.incorrect_answer', { correct: matchingExercises[currentExerciseIndex].correct })}
                       </div>
                     )}
                   </div>
@@ -543,7 +545,7 @@ const BasicVocabularyPage: React.FC = () => {
                         theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                       }`}
                     >
-                      Reset
+                      {t('common.reset')}
                     </button>
                     
                     {currentExerciseIndex < matchingExercises.length - 1 && (
@@ -556,7 +558,7 @@ const BasicVocabularyPage: React.FC = () => {
                             : (theme === 'dark' ? 'bg-blue-700 hover:bg-blue-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')
                         }`}
                       >
-                        Next
+                        {t('common.next')}
                       </button>
                     )}
                   </div>
@@ -566,7 +568,7 @@ const BasicVocabularyPage: React.FC = () => {
               {exerciseMode === 'translation' && (
                 <div>
                   <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Select the Georgian translation for: <span className="font-bold">{translationExercises[currentExerciseIndex].english}</span>
+                    {t('beginner.topics.vocabulary.select_translation', { word: translationExercises[currentExerciseIndex].english })}
                   </p>
                   
                   <div className="mb-6">
@@ -595,8 +597,8 @@ const BasicVocabularyPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
                       }`}>
                         {isCorrectAnswer()
-                          ? 'Correct! Well done.'
-                          : `Incorrect. The correct answer is "${translationExercises[currentExerciseIndex].correct}".`}
+                          ? t('beginner.topics.vocabulary.correct_answer')
+                          : t('beginner.topics.vocabulary.incorrect_answer', { correct: translationExercises[currentExerciseIndex].correct })}
                       </div>
                     )}
                   </div>
@@ -608,7 +610,7 @@ const BasicVocabularyPage: React.FC = () => {
                         theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                       }`}
                     >
-                      Reset
+                      {t('common.reset')}
                     </button>
                     
                     {currentExerciseIndex < translationExercises.length - 1 && (
@@ -621,7 +623,7 @@ const BasicVocabularyPage: React.FC = () => {
                             : (theme === 'dark' ? 'bg-blue-700 hover:bg-blue-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')
                         }`}
                       >
-                        Next
+                        {t('common.next')}
                       </button>
                     )}
                   </div>
@@ -631,7 +633,7 @@ const BasicVocabularyPage: React.FC = () => {
               {exerciseMode === 'fill-in-blank' && (
                 <div>
                   <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Fill in the blank with the correct Georgian word:
+                    {t('beginner.topics.vocabulary.fill_blank_instruction')}
                   </p>
                   
                   <div className="mb-6">
@@ -640,7 +642,7 @@ const BasicVocabularyPage: React.FC = () => {
                         {fillInBlankExercises[currentExerciseIndex].sentence}
                       </p>
                       <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Translation: {fillInBlankExercises[currentExerciseIndex].translation}
+                        {t('beginner.topics.vocabulary.translation')}: {fillInBlankExercises[currentExerciseIndex].translation}
                       </p>
                       
                       <input
@@ -652,7 +654,7 @@ const BasicVocabularyPage: React.FC = () => {
                             ? 'bg-gray-600 border-gray-500 text-white'
                             : 'bg-white border-gray-300 text-gray-900'
                         } border focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                        placeholder="Type the missing Georgian word"
+                        placeholder={t('beginner.topics.vocabulary.type_missing_word')}
                       />
                       
                       <div className="mt-4 flex justify-center">
@@ -664,7 +666,7 @@ const BasicVocabularyPage: React.FC = () => {
                               : 'bg-blue-600 hover:bg-blue-700 text-white'
                           }`}
                         >
-                          Check
+                          {t('common.check')}
                         </button>
                       </div>
                     </div>
@@ -676,10 +678,10 @@ const BasicVocabularyPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
                       }`}>
                         {blankFeedback === 'correct'
-                          ? 'Correct! Well done.'
+                          ? t('beginner.topics.vocabulary.correct_answer')
                           : <>
-                              <p>Incorrect. The correct answer is "{fillInBlankExercises[currentExerciseIndex].blank}".</p>
-                              <p className="mt-2 text-sm">Hint: {fillInBlankExercises[currentExerciseIndex].hint}</p>
+                              <p>{t('beginner.topics.vocabulary.incorrect_answer', { correct: fillInBlankExercises[currentExerciseIndex].blank })}</p>
+                              <p className="mt-2 text-sm">{t('beginner.topics.vocabulary.hint')}: {fillInBlankExercises[currentExerciseIndex].hint}</p>
                             </>
                         }
                       </div>
@@ -693,7 +695,7 @@ const BasicVocabularyPage: React.FC = () => {
                         theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                       }`}
                     >
-                      Reset
+                      {t('common.reset')}
                     </button>
                     
                     {currentExerciseIndex < fillInBlankExercises.length - 1 && (
@@ -706,7 +708,7 @@ const BasicVocabularyPage: React.FC = () => {
                             : (theme === 'dark' ? 'bg-blue-700 hover:bg-blue-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')
                         }`}
                       >
-                        Next
+                        {t('common.next')}
                       </button>
                     )}
                   </div>

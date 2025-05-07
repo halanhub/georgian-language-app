@@ -23,7 +23,7 @@ const HomePage: React.FC = () => {
             <div className="md:w-1/2">
               <h1 className={`text-4xl md:text-5xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 <span className={`${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
-                  ისწავლე
+                  {t('home.title')}
                 </span> ქართული ენა
               </h1>
               <p className={`text-lg md:text-xl mb-8 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -79,7 +79,7 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className={`text-3xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Learn Georgian the <span className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>Smart Way</span>
+              {t('home.smart_way')}
             </h2>
             <p className={`max-w-2xl mx-auto text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
               {t('home.platform_description')}
@@ -274,7 +274,7 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className={`text-3xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Choose Your <span className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>Learning Plan</span>
+              {t('home.pricing.title')}
             </h2>
             <p className={`max-w-2xl mx-auto text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
               {t('home.pricing.description')}
@@ -300,9 +300,9 @@ const HomePage: React.FC = () => {
                 </div>
               </div>
               <div className="p-6">
-                <ul className={`space-y-4 mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                <ul className="space-y-4">
                   {t('home.pricing.features.free', { returnObjects: true }).map((feature: string, index: number) => (
-                    <li key={index} className="flex items-start">
+                    <li key={index} className="flex">
                       <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
                       <span className="ml-2">{feature}</span>
                     </li>
@@ -344,9 +344,9 @@ const HomePage: React.FC = () => {
                 </div>
               </div>
               <div className="p-6">
-                <ul className={`space-y-4 mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                <ul className="space-y-4">
                   {t('home.pricing.features.premium', { returnObjects: true }).map((feature: string, index: number) => (
-                    <li key={index} className="flex items-start">
+                    <li key={index} className="flex">
                       <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
                       <span className="ml-2">{feature}</span>
                     </li>
@@ -398,6 +398,58 @@ const HomePage: React.FC = () => {
                 {t('home.cta.continue_journey')}
               </Link>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* SEO Content Section (Hidden visually but available for search engines) */}
+      <section className={`py-12 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            {t('faq.seo.title')}
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 className={`text-xl font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {t('faq.seo.why_learn.title')}
+              </h3>
+              <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                {t('faq.seo.why_learn.content')}
+              </p>
+              
+              <h3 className={`text-xl font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {t('faq.seo.approach.title')}
+              </h3>
+              <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                {t('faq.seo.approach.content')}
+              </p>
+            </div>
+            
+            <div>
+              <h3 className={`text-xl font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {t('faq.seo.alphabet.title')}
+              </h3>
+              <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                {t('faq.seo.alphabet.content')}
+              </p>
+              
+              <h3 className={`text-xl font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {t('faq.seo.grammar.title')}
+              </h3>
+              <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                {t('faq.seo.grammar.content')}
+              </p>
+            </div>
+          </div>
+          
+          <div className="mt-8">
+            <h3 className={`text-xl font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {t('faq.seo.start.title')}
+            </h3>
+            <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+              {t('faq.seo.start.content')}
+            </p>
           </div>
         </div>
       </section>

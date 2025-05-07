@@ -14,7 +14,14 @@
     "loading": "Loading...",
     "search": "Search",
     "language": "Language",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "support": "Support",
+    "about_us": "About Us",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "resources": "Resources",
+    "check": "Check",
+    "reset": "Reset"
   },
   "nav": {
     "beginner": "Beginner",
@@ -107,7 +114,7 @@
   },
   "beginner": {
     "title": "Beginner Level",
-    "subtitle": "Start your Georgian language journey with essential vocabulary and basic phrases.",
+    "subtitle": "Start your Georgian language journey by learning the alphabet, basic vocabulary, and essential phrases for everyday situations.",
     "start_alphabet": "Start with Alphabet",
     "take_quiz": "Take a Quiz",
     "progress": "Your Progress",
@@ -117,11 +124,68 @@
       "title": "Learning Topics",
       "alphabet": {
         "name": "Georgian Alphabet",
-        "description": "Learn the 33 unique letters"
+        "description": "Learn the 33 unique letters",
+        "georgian_letters": "Georgian Letters",
+        "example": "Example",
+        "practice_exercises": "Practice Exercises",
+        "letter_matching": "Letter Matching",
+        "match_letters": "Match Georgian letters with their Latin equivalents",
+        "letter_recognition": "Letter Recognition",
+        "identify_letters": "Identify Georgian letters by their names",
+        "letter_writing": "Letter Writing",
+        "practice_writing": "Practice writing Georgian letters",
+        "match_instruction": "Match the Georgian letter with its Latin equivalent:",
+        "correct_answer": "Correct! Well done.",
+        "incorrect_answer": "Incorrect. The correct answer is \"{correct}\".",
+        "type_letter": "Type Georgian letter here",
+        "tips_title": "Tips for Learning the Georgian Alphabet",
+        "practice_writing_tip": "Practice Writing",
+        "practice_writing_desc": "Write each letter repeatedly to build muscle memory and improve recognition. Pay attention to the unique curves and shapes.",
+        "learn_groups_tip": "Learn in Groups",
+        "learn_groups_desc": "Study 5-7 letters at a time rather than trying to memorize all 33 at once. Master each group before moving to the next.",
+        "mnemonics_tip": "Use Mnemonics",
+        "mnemonics_desc": "Create visual associations or stories to help remember the shapes of unfamiliar letters. Connect the letter shape to something familiar."
       },
       "vocabulary": {
         "name": "Basic Vocabulary",
-        "description": "Essential words and phrases"
+        "description": "Essential words and phrases",
+        "categories": {
+          "greetings": {
+            "title": "Greetings & Politeness",
+            "description": "Essential phrases for polite conversation"
+          },
+          "people": {
+            "title": "People & Family",
+            "description": "Words for people and family members"
+          },
+          "objects": {
+            "title": "Common Objects",
+            "description": "Everyday items and objects"
+          },
+          "actions": {
+            "title": "Common Actions",
+            "description": "Basic verbs and actions"
+          },
+          "adjectives": {
+            "title": "Common Adjectives",
+            "description": "Basic descriptive words"
+          }
+        },
+        "practice_exercises": "Practice Exercises",
+        "word_matching": "Word Matching",
+        "match_words": "Match Georgian words with their English meanings",
+        "match_instruction": "Match the Georgian word with its English meaning:",
+        "translation_practice": "Translation Practice",
+        "translate_words": "Translate English words to Georgian",
+        "select_translation": "Select the Georgian translation for: {word}",
+        "fill_blank": "Fill in the Blank",
+        "complete_sentences": "Complete sentences with the correct Georgian words",
+        "fill_blank_instruction": "Fill in the blank with the correct Georgian word:",
+        "translation": "Translation",
+        "type_missing_word": "Type the missing Georgian word",
+        "hint": "Hint",
+        "correct_answer": "Correct! Well done.",
+        "incorrect_answer": "Incorrect. The correct answer is \"{correct}\"."
       },
       "colors": {
         "name": "Colors & Shapes",
@@ -217,5 +281,423 @@
     "title": "Email Verification Required",
     "subtitle": "Your account has been created successfully! Please verify your email address to activate your account and start learning Georgian.",
     "login": "Back to Login"
+  },
+  "intermediate": {
+    "title": "Intermediate Level",
+    "subtitle": "Take your Georgian language skills to the next level with comprehensive grammar, advanced vocabulary, and practical conversation practice.",
+    "start_grammar": "Start with Grammar",
+    "need_help": "Need Help?",
+    "progress": "Intermediate Progress",
+    "subscribe": "Subscribe to access intermediate content.",
+    "lessons_completed": "Lessons Completed",
+    "topics": {
+      "title": "Intermediate Learning Topics",
+      "grammar": {
+        "name": "Grammar Fundamentals",
+        "description": "Master essential Georgian grammar rules"
+      },
+      "sentences": {
+        "name": "Sentence Construction",
+        "description": "Learn to build proper Georgian sentences"
+      },
+      "common_words": {
+        "name": "Top 100 Common Words",
+        "description": "Master the most frequently used Georgian words"
+      },
+      "conversations": {
+        "name": "Daily Conversations",
+        "description": "Practice real-world dialogues and improve speaking skills"
+      },
+      "reading": {
+        "name": "Reading Practice",
+        "description": "Read and comprehend Georgian texts with confidence"
+      },
+      "writing": {
+        "name": "Writing Exercises",
+        "description": "Develop your written Georgian skills through guided practice"
+      }
+    },
+    "tips": {
+      "title": "Tips for Intermediate Learners",
+      "regular_practice": {
+        "title": "Regular Practice",
+        "description": "Dedicate at least 30 minutes daily to studying Georgian. Consistency is key to mastering intermediate concepts."
+      },
+      "immerse_yourself": {
+        "title": "Immerse Yourself",
+        "description": "Watch Georgian movies, listen to music, and try to read simple texts to improve comprehension."
+      },
+      "practice_speaking": {
+        "title": "Practice Speaking",
+        "description": "Find language exchange partners to practice conversations and improve your speaking confidence."
+      }
+    }
+  },
+  "advanced": {
+    "title": "Advanced Level",
+    "subtitle": "Achieve fluency in Georgian with advanced grammar, cultural nuances, literature, and sophisticated conversation skills.",
+    "complete_intermediate": "Complete Intermediate Level to Unlock",
+    "upgrade_to_access": "Upgrade to Access",
+    "progress": "Advanced Progress",
+    "lessons_completed": "Lessons Completed",
+    "topics": {
+      "title": "Advanced Learning Topics",
+      "grammar": {
+        "name": "Complex Grammar",
+        "description": "Master advanced Georgian grammar patterns"
+      },
+      "culture": {
+        "name": "Cultural Nuances",
+        "description": "Understand Georgian cultural context in language"
+      },
+      "literature": {
+        "name": "Literature & Poetry",
+        "description": "Explore classic and modern Georgian literature"
+      },
+      "idioms": {
+        "name": "Idiomatic Expressions",
+        "description": "Learn Georgian idioms and colloquial phrases"
+      },
+      "writing": {
+        "name": "Advanced Writing",
+        "description": "Develop sophisticated writing skills in Georgian"
+      },
+      "listening": {
+        "name": "Advanced Listening",
+        "description": "Comprehend native speakers at natural speeds"
+      }
+    },
+    "coming_soon": {
+      "title": "Advanced Content Coming Soon",
+      "description": "Master the beginner and intermediate levels to prepare for our advanced Georgian language content. We're developing comprehensive materials to help you achieve fluency."
+    }
+  },
+  "pricing": {
+    "title": "Premium Plans",
+    "subtitle": "Unlock the full Georgian language learning experience with our premium plans.",
+    "checkout_canceled": "The checkout process was canceled. Please try again if you want to subscribe.",
+    "subscription_activated": "Your subscription has been activated successfully!",
+    "choose_plan": "Choose Your Plan",
+    "select_best_plan": "Select the plan that best fits your learning needs",
+    "free": {
+      "title": "Free",
+      "price": "$0",
+      "period": "/forever",
+      "features": [
+        "Access to beginner lessons",
+        "Basic vocabulary practice",
+        "Limited quizzes",
+        "Basic progress tracking"
+      ],
+      "current_plan": "Current Plan"
+    },
+    "premium": {
+      "title": "Premium",
+      "recommended": "Recommended",
+      "price": "$4.99",
+      "period": "/month",
+      "features": [
+        "Access to all lessons (Beginner to Advanced)",
+        "Unlimited vocabulary practice",
+        "All quizzes and exercises",
+        "Advanced progress tracking"
+      ],
+      "subscribe_now": "Subscribe Now",
+      "manage_subscription": "Manage Subscription"
+    },
+    "why_premium": {
+      "title": "Why Choose Premium?",
+      "complete_path": {
+        "title": "Complete Learning Path",
+        "description": "Access all levels from beginner to advanced, with a structured curriculum designed for optimal learning."
+      },
+      "premium_content": {
+        "title": "Premium Content",
+        "description": "Enjoy exclusive lessons, exercises, and learning materials created by language experts."
+      },
+      "advanced_features": {
+        "title": "Advanced Features",
+        "description": "Track your progress in detail, access personalized learning recommendations."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "cancel_anytime": {
+        "question": "Can I cancel my subscription anytime?",
+        "answer": "Yes, you can cancel your subscription at any time. You'll continue to have access to premium features until the end of your billing period."
+      },
+      "payment_methods": {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept all major credit and debit cards, including Visa, Mastercard, American Express, and Discover."
+      },
+      "free_trial": {
+        "question": "Is there a free trial?",
+        "answer": "We don't offer a free trial, but our free plan gives you access to beginner lessons so you can experience our platform before upgrading."
+      },
+      "change_plan": {
+        "question": "How do I change my plan?",
+        "answer": "You can manage your subscription at any time from your account settings. Changes will take effect at the start of your next billing cycle."
+      }
+    }
+  },
+  "settings": {
+    "title": "Profile Settings",
+    "profile_updated": "Your profile has been updated successfully!",
+    "update_error": "There was an error updating your profile. Please try again.",
+    "avatar_error": "Failed to upload avatar. Please try again.",
+    "tabs": {
+      "profile": "Profile Settings",
+      "tracking": "Learning Tracking",
+      "subscription": "Subscription"
+    },
+    "profile": {
+      "personal_info": "Personal Information",
+      "display_name": "Display Name",
+      "email": "Email Address",
+      "email_note": "Email cannot be changed. Contact support if you need to update your email.",
+      "preferences": "Preferences",
+      "interface_language": "Interface Language",
+      "notifications": "Notification Settings",
+      "email_notifications": {
+        "title": "Email Notifications",
+        "description": "Receive updates via email"
+      },
+      "progress_updates": {
+        "title": "Progress Updates",
+        "description": "Get notified about your learning progress"
+      },
+      "daily_reminders": {
+        "title": "Daily Reminders",
+        "description": "Get daily reminders to practice"
+      },
+      "news_updates": {
+        "title": "News & Updates",
+        "description": "Receive news about new features and content"
+      },
+      "remove_photo": "Remove photo",
+      "support": "Support",
+      "contact_support": "Contact Support"
+    },
+    "tracking": {
+      "learning_overview": "Learning Overview",
+      "learning_level": "Learning Level",
+      "lessons_completed": "Lessons Completed",
+      "quiz_performance": "Quiz Performance",
+      "quizzes_taken": "Quizzes taken",
+      "study_streak": "Study Streak",
+      "days": "days",
+      "total_study_time": "Total Study Time",
+      "hrs": "hrs",
+      "achievements": "Achievements",
+      "view_all": "View All",
+      "earned": "Earned",
+      "alphabet_master": "Alphabet Master",
+      "day_streak": "-Day Streak",
+      "next": "Next: 10 Quizzes",
+      "recent_progress": "Recent Progress",
+      "completed": "Completed",
+      "in_progress": "In progress",
+      "score": "Score",
+      "view_all_progress": "View All Progress"
+    },
+    "subscription": {
+      "status": "Subscription Status",
+      "free_plan": "Free Plan",
+      "premium_subscription": "Premium Subscription",
+      "access_premium": "You have access to all premium features and content",
+      "upgrade_access": "Upgrade to access all features and content",
+      "status_active": "Active",
+      "plan": "Plan",
+      "renewal_date": "Renewal Date",
+      "cancels_at_period_end": "Cancels at period end",
+      "payment_method": "Payment Method",
+      "manage_subscription": "Manage Subscription",
+      "subscribe_now": "Subscribe Now",
+      "plan_comparison": "Plan Comparison",
+      "feature": "Feature",
+      "beginner_lessons": "Beginner Lessons",
+      "intermediate_lessons": "Intermediate Lessons",
+      "advanced_lessons": "Advanced Lessons",
+      "all_quizzes": "All Quizzes",
+      "advanced_tracking": "Advanced Progress Tracking",
+      "upgrade_premium": "Upgrade to Premium"
+    }
+  },
+  "support": {
+    "title": "Support Center",
+    "contact_support": "Contact Support",
+    "message_sent": "Thank you for your message! We'll get back to you within 24 hours.",
+    "send_error": "There was an error sending your message.",
+    "try_again": "Please try again or email us directly.",
+    "form": {
+      "your_name": "Your Name",
+      "email_address": "Email Address",
+      "subject": "Subject",
+      "message": "Message",
+      "sending": "Sending...",
+      "send_message": "Send Message"
+    },
+    "contact_info": "Contact Information",
+    "quick_links": "Quick Links",
+    "account_settings": "Account Settings",
+    "learning_resources": "Learning Resources",
+    "ai_chat": "AI Chat Assistant",
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "reset_password": {
+        "question": "How do I reset my password?",
+        "answer": "To reset your password, click on the \"Forgot password?\" link on the login page. Enter your email address, and we'll send you instructions to reset your password."
+      },
+      "change_level": {
+        "question": "Can I change my learning level?",
+        "answer": "Yes, you can change your learning level at any time from your profile settings. However, we recommend completing each level before moving to the next one."
+      },
+      "track_progress": {
+        "question": "How do I track my progress?",
+        "answer": "Your progress is automatically tracked as you complete lessons and quizzes. You can view your progress on your profile page and at the beginning of each level."
+      },
+      "offline_lessons": {
+        "question": "Are the lessons available offline?",
+        "answer": "Currently, our lessons require an internet connection. However, we're working on adding offline support for basic lessons and vocabulary practice."
+      },
+      "new_content": {
+        "question": "How often is new content added?",
+        "answer": "We regularly update our content with new lessons, exercises, and cultural materials. Follow our news section to stay updated on new additions."
+      }
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "message_sent": "Thank you for your message! We'll get back to you within 24 hours.",
+    "send_error": "There was an error sending your message.",
+    "try_again": "Please try again or email us directly.",
+    "form": {
+      "your_name": "Your Name",
+      "email_address": "Email Address",
+      "subject": "Subject",
+      "message": "Message",
+      "sending": "Sending...",
+      "send_message": "Send Message"
+    },
+    "get_in_touch": "Get in Touch",
+    "contact_info": "Contact Information",
+    "email": "Email",
+    "quick_links": "Quick Links",
+    "support_center": "Support Center",
+    "learning_resources": "Learning Resources",
+    "ai_chat": "AI Chat Assistant"
+  },
+  "vocabulary": {
+    "title": "Vocabulary",
+    "subtitle": "Explore Georgian vocabulary by categories to expand your language skills.",
+    "premium_feature": "Premium Feature",
+    "premium_description": "The vocabulary section is available exclusively to premium subscribers.",
+    "upgrade_premium": "Upgrade to Premium",
+    "categories": {
+      "weather": {
+        "title": "Weather & Climate",
+        "description": "Weather conditions and climate vocabulary"
+      },
+      "travel": {
+        "title": "Travel & Transportation",
+        "description": "Vocabulary for travel and getting around"
+      },
+      "nature": {
+        "title": "Nature & Environment",
+        "description": "Natural world and environmental terms"
+      },
+      "emotions": {
+        "title": "Emotions & Feelings",
+        "description": "Words to express emotions and feelings"
+      },
+      "professions": {
+        "title": "Professions & Occupations",
+        "description": "Common jobs and career vocabulary"
+      },
+      "technology": {
+        "title": "Technology & Devices",
+        "description": "Modern technology vocabulary"
+      },
+      "shopping": {
+        "title": "Shopping & Commerce",
+        "description": "Vocabulary for shopping and business"
+      },
+      "health": {
+        "title": "Health & Wellness",
+        "description": "Health-related vocabulary"
+      }
+    },
+    "learning_tips": {
+      "title": "Learning Tips",
+      "focus_category": "Focus on one category at a time",
+      "practice_pronunciation": "Practice pronunciation with audio",
+      "create_flashcards": "Create flashcards for review",
+      "use_sentences": "Use words in simple sentences"
+    }
+  },
+  "quizzes": {
+    "title": "Quiz Hub",
+    "subtitle": "Test your Georgian language knowledge with our comprehensive collection of quizzes across all learning levels.",
+    "benefits": {
+      "title": "Quiz Benefits",
+      "reinforce": "Reinforce your learning",
+      "identify_gaps": "Identify knowledge gaps",
+      "track_progress": "Track your progress",
+      "build_confidence": "Build confidence"
+    },
+    "beginner_quizzes": "Beginner Quizzes",
+    "intermediate_quizzes": "Intermediate Quizzes",
+    "advanced_quizzes": "Advanced Quizzes",
+    "search_placeholder": "Search quizzes...",
+    "no_quizzes_found": "No quizzes found matching your search. Try a different search term.",
+    "take_quiz": "Take Quiz",
+    "upgrade_to_access": "Upgrade to Access",
+    "quiz_tips": {
+      "title": "Quiz Taking Tips",
+      "review_first": {
+        "title": "Review First",
+        "description": "Before taking a quiz, review the corresponding lesson material to refresh your memory and improve your score."
+      },
+      "read_carefully": {
+        "title": "Read Carefully",
+        "description": "Take your time to read each question carefully. Georgian words can look similar, so pay attention to details."
+      },
+      "learn_from_mistakes": {
+        "title": "Learn from Mistakes",
+        "description": "Don't worry about getting everything right the first time. Read the explanations for incorrect answers to learn and improve."
+      }
+    }
+  },
+  "achievements": {
+    "title": "Achievements",
+    "subtitle": "Track your progress and celebrate your Georgian language learning milestones.",
+    "your_progress": "Your Progress",
+    "earned": "Earned",
+    "not_earned": "Not yet earned",
+    "next_milestone": "Next Milestone",
+    "complete_beginner": "Complete all beginner lessons",
+    "skill_progress": "Skill Progress",
+    "keep_learning": "Keep Learning, Keep Achieving!",
+    "set_goals": "Set Daily Goals",
+    "review_regularly": "Review Regularly",
+    "challenge_yourself": "Challenge Yourself"
+  },
+  "learning_tips": {
+    "title": "Learning Tips",
+    "subtitle": "Discover effective strategies and techniques to enhance your Georgian language learning experience.",
+    "why_matter": "Why Learning Tips Matter",
+    "why_matter_description": "Effective learning strategies can significantly accelerate your progress and make your Georgian language journey more enjoyable and productive.",
+    "categories": {
+      "all": "All Levels",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "search_placeholder": "Search tips...",
+    "no_tips_found": "No tips found matching your criteria. Try adjusting your filters or search query.",
+    "practice_writing": "Practice writing each letter",
+    "listen_pronunciation": "Listen to pronunciation",
+    "learn_groups": "Learn letters in groups",
+    "use_examples": "Use example words"
   }
 }

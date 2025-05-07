@@ -21,6 +21,7 @@ import { useSubscription } from '../../hooks/useSubscription';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { supabase } from '../../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 const Sidebar: React.FC = () => {
   const { user, isAdmin } = useAuth();
@@ -31,6 +32,7 @@ const Sidebar: React.FC = () => {
   const location = useLocation();
   const [isProfileExpanded, setIsProfileExpanded] = useState(false);
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const { t } = useTranslation();
 
   // Calculate progress statistics
   const calculateProgress = () => {
@@ -158,18 +160,18 @@ const Sidebar: React.FC = () => {
             <div className="mt-4 pt-4 border-t border-gray-600">
               <div className={`space-y-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm">Learning Level:</span>
+                  <span className="text-sm">{t('settings.tracking.learning_level')}:</span>
                   <span className={`px-2 py-1 rounded text-xs ${
                     theme === 'dark' ? 'bg-gray-600' : 'bg-red-100'
                   }`}>{profile?.level || 'Beginner'}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm">Overall Progress:</span>
+                  <span className="text-sm">{t('achievements.your_progress')}:</span>
                   <span className="text-sm font-medium">{progressData.overallProgress}%</span>
                 </div>
                 <div className="space-y-1">
                   <div className="flex justify-between items-center text-xs">
-                    <span>Beginner:</span>
+                    <span>{t('nav.beginner')}:</span>
                     <span>{progressData.beginnerProgress}%</span>
                   </div>
                   <div className={`w-full h-1 rounded-full ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'}`}>
@@ -181,7 +183,7 @@ const Sidebar: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <div className="flex justify-between items-center text-xs">
-                    <span>Intermediate:</span>
+                    <span>{t('nav.intermediate')}:</span>
                     <span>{progressData.intermediateProgress}%</span>
                   </div>
                   <div className={`w-full h-1 rounded-full ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'}`}>
@@ -192,8 +194,8 @@ const Sidebar: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm">Study Streak:</span>
-                  <span className="text-sm font-medium">{profile?.studyStreak || 0} days</span>
+                  <span className="text-sm">{t('settings.tracking.study_streak')}:</span>
+                  <span className="text-sm font-medium">{profile?.studyStreak || 0} {t('settings.tracking.days')}</span>
                 </div>
                 <Link 
                   to="/settings" 
@@ -202,7 +204,7 @@ const Sidebar: React.FC = () => {
                   }`}
                 >
                   <Settings size={16} />
-                  <span>Profile Settings</span>
+                  <span>{t('settings.tabs.profile')}</span>
                 </Link>
                 <Link 
                   to="/pricing" 
@@ -211,7 +213,7 @@ const Sidebar: React.FC = () => {
                   }`}
                 >
                   <CreditCard size={16} />
-                  <span>Subscription</span>
+                  <span>{t('common.subscription')}</span>
                 </Link>
                 <Link 
                   to="/contact" 
@@ -220,7 +222,7 @@ const Sidebar: React.FC = () => {
                   }`}
                 >
                   <Mail size={16} />
-                  <span>Contact Support</span>
+                  <span>{t('common.contact')}</span>
                 </Link>
               </div>
             </div>
@@ -228,7 +230,7 @@ const Sidebar: React.FC = () => {
         </div>
 
         <nav className="space-y-1">
-          <div className="mb-2 text-xs uppercase font-semibold opacity-70 px-3">Learning Levels</div>
+          <div className="mb-2 text-xs uppercase font-semibold opacity-70 px-3">{t('home.levels.title')}</div>
           
           <Link 
             to="/beginner" 
@@ -240,7 +242,7 @@ const Sidebar: React.FC = () => {
           >
             <BookOpen size={18} />
             <div className="flex-1">
-              <span>Beginner</span>
+              <span>{t('nav.beginner')}</span>
               <div className={`w-full h-1 mt-1 rounded-full ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'}`}>
                 <div 
                   className={`h-1 rounded-full ${theme === 'dark' ? 'bg-red-500' : 'bg-red-600'}`}
@@ -261,7 +263,7 @@ const Sidebar: React.FC = () => {
             <PenTool size={18} />
             <div className="flex-1">
               <div className="flex items-center">
-                <span>Intermediate</span>
+                <span>{t('nav.intermediate')}</span>
                 {!hasActiveSubscription && !isAdmin && (
                   <span className="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-600 text-gray-200">
                     Premium
@@ -288,7 +290,7 @@ const Sidebar: React.FC = () => {
             <GraduationCap size={18} />
             <div className="flex-1">
               <div className="flex items-center">
-                <span>Advanced</span>
+                <span>{t('nav.advanced')}</span>
                 {!hasActiveSubscription && !isAdmin && (
                   <span className="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-600 text-gray-200">
                     Premium
@@ -304,7 +306,7 @@ const Sidebar: React.FC = () => {
             </div>
           </Link>
           
-          <div className="my-2 text-xs uppercase font-semibold opacity-70 px-3 pt-3">Learning Tools</div>
+          <div className="my-2 text-xs uppercase font-semibold opacity-70 px-3 pt-3">{t('nav.quizzes')}</div>
           
           <Link 
             to="/beginner/alphabet" 
@@ -315,7 +317,7 @@ const Sidebar: React.FC = () => {
             }`}
           >
             <AlignJustify size={18} />
-            <span>Georgian Alphabet</span>
+            <span>{t('nav.alphabet')}</span>
           </Link>
           
           <Link 
@@ -328,7 +330,7 @@ const Sidebar: React.FC = () => {
           >
             <Brain size={18} />
             <div className="flex items-center">
-              <span>Vocabulary</span>
+              <span>{t('nav.vocabulary')}</span>
               {!hasActiveSubscription && !isAdmin && (
                 <span className="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-600 text-gray-200">
                   Premium
@@ -346,10 +348,10 @@ const Sidebar: React.FC = () => {
             }`}
           >
             <Dices size={18} />
-            <span>Quizzes</span>
+            <span>{t('nav.quizzes')}</span>
           </Link>
           
-          <div className="my-2 text-xs uppercase font-semibold opacity-70 px-3 pt-3">Progress</div>
+          <div className="my-2 text-xs uppercase font-semibold opacity-70 px-3 pt-3">{t('achievements.title')}</div>
           
           <Link 
             to="/achievements" 
@@ -360,7 +362,7 @@ const Sidebar: React.FC = () => {
             }`}
           >
             <Trophy size={18} />
-            <span>Achievements</span>
+            <span>{t('nav.achievements')}</span>
           </Link>
           
           <Link 
@@ -372,7 +374,7 @@ const Sidebar: React.FC = () => {
             }`}
           >
             <Lightbulb size={18} />
-            <span>Learning Tips</span>
+            <span>{t('nav.learning_tips')}</span>
           </Link>
         </nav>
       </div>

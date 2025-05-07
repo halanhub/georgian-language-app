@@ -208,7 +208,7 @@ const SentenceConstructionQuiz: React.FC = () => {
         });
       }
     };
-  }, [user, timeSpent, showScore, score, questions.length]);
+  }, [user, timeSpent, showScore, score, questions.length, updateProgress]);
 
   useEffect(() => {
     if (showScore || isChecking) return;

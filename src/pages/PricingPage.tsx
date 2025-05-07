@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../hooks/useSubscription';
 import { createCheckoutSession } from '../lib/stripe';
 import { STRIPE_PRODUCTS } from '../stripe-config';
+import { useTranslation } from 'react-i18next';
 
 const PricingPage: React.FC = () => {
   const { theme } = useTheme();
@@ -13,6 +14,7 @@ const PricingPage: React.FC = () => {
   const { hasActiveSubscription } = useSubscription();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,10 +71,10 @@ const PricingPage: React.FC = () => {
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-2/3">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>Premium Plans</span> - პრემიუმ გეგმები
+                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>{t('pricing.title')}</span> - პრემიუმ გეგმები
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Unlock the full Georgian language learning experience with our premium plans.
+                {t('pricing.subtitle')}
               </p>
               <div className="flex flex-wrap gap-2">
                 <Link
@@ -84,7 +86,7 @@ const PricingPage: React.FC = () => {
                   }`}
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to Home
+                  {t('common.back')}
                 </Link>
               </div>
             </div>
@@ -98,7 +100,7 @@ const PricingPage: React.FC = () => {
             <div className={`mb-8 p-4 rounded-md ${
               theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800'
             }`}>
-              <p>The checkout process was canceled. Please try again if you want to subscribe.</p>
+              <p>{t('pricing.checkout_canceled')}</p>
             </div>
           )}
           
@@ -106,7 +108,7 @@ const PricingPage: React.FC = () => {
             <div className={`mb-8 p-4 rounded-md ${
               theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800'
             }`}>
-              <p>Your subscription has been activated successfully!</p>
+              <p>{t('pricing.subscription_activated')}</p>
             </div>
           )}
           
@@ -120,10 +122,10 @@ const PricingPage: React.FC = () => {
           
           <div className="text-center mb-8">
             <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Choose Your Plan
+              {t('pricing.choose_plan')}
             </h2>
             <p className={`mt-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-              Select the plan that best fits your learning needs
+              {t('pricing.select_best_plan')}
             </p>
           </div>
           
@@ -134,43 +136,27 @@ const PricingPage: React.FC = () => {
             }`}>
               <div className={`p-6 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
                 <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Free
+                  {t('pricing.free.title')}
                 </h3>
                 <div className="mt-4 flex items-baseline">
                   <span className={`text-4xl font-extrabold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     $0
                   </span>
                   <span className={`ml-1 text-xl font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>
-                    /forever
+                    {t('pricing.free.period')}
                   </span>
                 </div>
               </div>
               <div className="p-6">
                 <ul className="space-y-4">
-                  <li className="flex">
-                    <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Access to beginner lessons
-                    </span>
-                  </li>
-                  <li className="flex">
-                    <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Basic vocabulary practice
-                    </span>
-                  </li>
-                  <li className="flex">
-                    <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Limited quizzes
-                    </span>
-                  </li>
-                  <li className="flex">
-                    <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Basic progress tracking
-                    </span>
-                  </li>
+                  {t('pricing.features.free', { returnObjects: true }).map((feature: string, index: number) => (
+                    <li key={index} className="flex">
+                      <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                      <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
                 </ul>
                 
                 <button
@@ -181,7 +167,7 @@ const PricingPage: React.FC = () => {
                       : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   }`}
                 >
-                  Current Plan
+                  {t('pricing.free.current_plan')}
                 </button>
               </div>
             </div>
@@ -193,47 +179,31 @@ const PricingPage: React.FC = () => {
               <div className={`p-1 text-center text-sm font-semibold ${
                 theme === 'dark' ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'
               }`}>
-                Recommended
+                {t('pricing.premium.recommended')}
               </div>
               <div className={`p-6 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
                 <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Premium
+                  {t('pricing.premium.title')}
                 </h3>
                 <div className="mt-4 flex items-baseline">
                   <span className={`text-4xl font-extrabold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     $4.99
                   </span>
                   <span className={`ml-1 text-xl font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>
-                    /month
+                    {t('pricing.premium.period')}
                   </span>
                 </div>
               </div>
               <div className="p-6 space-y-6">
                 <ul className="space-y-4">
-                  <li className="flex">
-                    <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Access to all lessons (Beginner to Advanced)
-                    </span>
-                  </li>
-                  <li className="flex">
-                    <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Unlimited vocabulary practice
-                    </span>
-                  </li>
-                  <li className="flex">
-                    <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      All quizzes and exercises
-                    </span>
-                  </li>
-                  <li className="flex">
-                    <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                    <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Advanced progress tracking
-                    </span>
-                  </li>
+                  {t('pricing.features.premium', { returnObjects: true }).map((feature: string, index: number) => (
+                    <li key={index} className="flex">
+                      <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                      <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
                 </ul>
                 
                 {hasActiveSubscription ? (
@@ -249,12 +219,12 @@ const PricingPage: React.FC = () => {
                     {loading ? (
                       <>
                         <Loader size={16} className="animate-spin mr-2" />
-                        Processing...
+                        {t('common.loading')}
                       </>
                     ) : (
                       <>
                         <CreditCard size={16} className="mr-2" />
-                        Manage Subscription
+                        {t('pricing.premium.manage_subscription')}
                       </>
                     )}
                   </button>
@@ -271,12 +241,12 @@ const PricingPage: React.FC = () => {
                     {loading ? (
                       <>
                         <Loader size={16} className="animate-spin mr-2" />
-                        Processing...
+                        {t('common.loading')}
                       </>
                     ) : (
                       <>
                         <CreditCard size={16} className="mr-2" />
-                        Subscribe Now
+                        {t('pricing.premium.subscribe_now')}
                       </>
                     )}
                   </button>
@@ -291,7 +261,7 @@ const PricingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Why Choose Premium?
+              {t('pricing.why_premium.title')}
             </h2>
           </div>
           
@@ -301,10 +271,10 @@ const PricingPage: React.FC = () => {
                 <Zap size={24} className="text-blue-600" />
               </div>
               <h3 className={`text-lg font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Complete Learning Path
+                {t('pricing.why_premium.complete_path.title')}
               </h3>
               <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                Access all levels from beginner to advanced, with a structured curriculum designed for optimal learning.
+                {t('pricing.why_premium.complete_path.description')}
               </p>
             </div>
             
@@ -313,10 +283,10 @@ const PricingPage: React.FC = () => {
                 <Star size={24} className="text-green-600" />
               </div>
               <h3 className={`text-lg font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Premium Content
+                {t('pricing.why_premium.premium_content.title')}
               </h3>
               <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                Enjoy exclusive lessons, exercises, and learning materials created by language experts.
+                {t('pricing.why_premium.premium_content.description')}
               </p>
             </div>
             
@@ -325,10 +295,10 @@ const PricingPage: React.FC = () => {
                 <Shield size={24} className="text-purple-600" />
               </div>
               <h3 className={`text-lg font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Advanced Features
+                {t('pricing.why_premium.advanced_features.title')}
               </h3>
               <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                Track your progress in detail, access personalized learning recommendations.
+                {t('pricing.why_premium.advanced_features.description')}
               </p>
             </div>
           </div>
@@ -339,44 +309,44 @@ const PricingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Frequently Asked Questions
+              {t('pricing.faq.title')}
             </h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
               <h3 className={`text-lg font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Can I cancel my subscription anytime?
+                {t('pricing.faq.cancel_anytime.question')}
               </h3>
               <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                Yes, you can cancel your subscription at any time. You'll continue to have access to premium features until the end of your billing period.
+                {t('pricing.faq.cancel_anytime.answer')}
               </p>
             </div>
             
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
               <h3 className={`text-lg font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                What payment methods do you accept?
+                {t('pricing.faq.payment_methods.question')}
               </h3>
               <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                We accept all major credit and debit cards, including Visa, Mastercard, American Express, and Discover.
+                {t('pricing.faq.payment_methods.answer')}
               </p>
             </div>
             
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
               <h3 className={`text-lg font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Is there a free trial?
+                {t('pricing.faq.free_trial.question')}
               </h3>
               <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                We don't offer a free trial, but our free plan gives you access to beginner lessons so you can experience our platform before upgrading.
+                {t('pricing.faq.free_trial.answer')}
               </p>
             </div>
             
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
               <h3 className={`text-lg font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                How do I change my plan?
+                {t('pricing.faq.change_plan.question')}
               </h3>
               <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                You can manage your subscription at any time from your account settings. Changes will take effect at the start of your next billing cycle.
+                {t('pricing.faq.change_plan.answer')}
               </p>
             </div>
           </div>

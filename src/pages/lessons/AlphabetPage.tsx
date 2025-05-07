@@ -4,11 +4,13 @@ import { ArrowLeft, ArrowRight, Book, Brain, Check, ChevronDown, ChevronUp, Play
 import { useTheme } from '../../contexts/ThemeContext';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const AlphabetPage: React.FC = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
   const { updateProgress } = useUserProgress();
+  const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const [selectedLetter, setSelectedLetter] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,6 +22,11 @@ const AlphabetPage: React.FC = () => {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [timeSpent, setTimeSpent] = useState(0);
   const [lastActivityTime, setLastActivityTime] = useState(Date.now());
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const georgianAlphabet = [
     { letter: 'ა', name: 'ანი', latin: 'a', pronunciation: 'ani', english: 'a as in father', example: 'ახალი (akhali) - new' },
@@ -91,11 +98,6 @@ const AlphabetPage: React.FC = () => {
     { prompt: "Write the Georgian letter for 'sh'", correct: 'შ' }
   ];
 
-  // Scroll to top when component mounts
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   // Track time spent on the page
   useEffect(() => {
     // Set up interval to track time spent
@@ -143,7 +145,7 @@ const AlphabetPage: React.FC = () => {
         });
       }
     };
-  }, [user, timeSpent, matchingAnswers, recognitionAnswers, writingFeedback]);
+  }, [user, timeSpent, matchingAnswers, recognitionAnswers, writingFeedback, updateProgress]);
 
   const playAudio = (letter: string) => {
     updateActivity();
@@ -210,10 +212,10 @@ const AlphabetPage: React.FC = () => {
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>Georgian Alphabet</span> - ქართული ანბანი
+                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>{t('beginner.topics.alphabet.name')}</span> - ქართული ანბანი
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Master the 33 unique letters of the Georgian alphabet with pronunciation guides and examples.
+                {t('beginner.topics.alphabet.description')}
               </p>
               <div className="flex flex-wrap gap-2">
                 <Link
@@ -225,7 +227,7 @@ const AlphabetPage: React.FC = () => {
                   }`}
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to Beginner Level
+                  {t('common.back')} {t('nav.beginner')}
                 </Link>
                 <Link
                   to="/beginner/quiz/alphabet"
@@ -233,7 +235,7 @@ const AlphabetPage: React.FC = () => {
                     theme === 'dark' ? 'bg-blue-700 text-white hover:bg-blue-800' : 'bg-blue-600 text-white hover:bg-blue-700'
                   }`}
                 >
-                  Take Quiz
+                  {t('beginner.take_quiz')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </div>
@@ -242,13 +244,13 @@ const AlphabetPage: React.FC = () => {
               <div className={`p-6 rounded-lg shadow-xl ${theme === 'dark' ? 'bg-gray-700' : 'bg-white bg-opacity-50 backdrop-blur-lg'}`}>
                 <Brain className={`w-12 h-12 mb-4 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Learning Tips
+                  {t('learning_tips.title')}
                 </h3>
                 <ul className={`space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  <li>• Practice writing each letter</li>
-                  <li>• Listen to pronunciation</li>
-                  <li>• Learn letters in groups</li>
-                  <li>• Use example words</li>
+                  <li>• {t('learning_tips.practice_writing')}</li>
+                  <li>• {t('learning_tips.listen_pronunciation')}</li>
+                  <li>• {t('learning_tips.learn_groups')}</li>
+                  <li>• {t('learning_tips.use_examples')}</li>
                 </ul>
               </div>
             </div>
@@ -261,13 +263,13 @@ const AlphabetPage: React.FC = () => {
           <div className="mb-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
               <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                33 Georgian Letters
+                33 {t('beginner.topics.alphabet.georgian_letters')}
               </h2>
               
               <div className="mt-4 md:mt-0">
                 <input
                   type="text"
-                  placeholder="Search letters..."
+                  placeholder={t('common.search')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className={`px-4 py-2 rounded-md w-full md:w-auto ${
@@ -325,7 +327,7 @@ const AlphabetPage: React.FC = () => {
                     <div className={`mt-4 p-4 rounded-lg ${
                       theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'
                     }`}>
-                      <p className="font-medium mb-2">Example:</p>
+                      <p className="font-medium mb-2">{t('beginner.topics.alphabet.example')}:</p>
                       <p>{letter.example}</p>
                     </div>
                   )}
@@ -340,7 +342,7 @@ const AlphabetPage: React.FC = () => {
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Practice Exercises
+            {t('beginner.topics.alphabet.practice_exercises')}
           </h2>
           
           {!exerciseMode ? (
@@ -352,10 +354,10 @@ const AlphabetPage: React.FC = () => {
                 } shadow-lg`}
               >
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Letter Matching
+                  {t('beginner.topics.alphabet.letter_matching')}
                 </h3>
                 <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                  Match Georgian letters with their Latin equivalents
+                  {t('beginner.topics.alphabet.match_letters')}
                 </p>
               </button>
               
@@ -366,10 +368,10 @@ const AlphabetPage: React.FC = () => {
                 } shadow-lg`}
               >
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Letter Recognition
+                  {t('beginner.topics.alphabet.letter_recognition')}
                 </h3>
                 <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                  Identify Georgian letters by their names
+                  {t('beginner.topics.alphabet.identify_letters')}
                 </p>
               </button>
               
@@ -380,10 +382,10 @@ const AlphabetPage: React.FC = () => {
                 } shadow-lg`}
               >
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Letter Writing
+                  {t('beginner.topics.alphabet.letter_writing')}
                 </h3>
                 <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                  Practice writing Georgian letters
+                  {t('beginner.topics.alphabet.practice_writing')}
                 </p>
               </button>
             </div>
@@ -391,8 +393,8 @@ const AlphabetPage: React.FC = () => {
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}>
               <div className="flex justify-between items-center mb-6">
                 <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  {exerciseMode === 'matching' ? 'Letter Matching' : 
-                   exerciseMode === 'recognition' ? 'Letter Recognition' : 'Letter Writing'}
+                  {exerciseMode === 'matching' ? t('beginner.topics.alphabet.letter_matching') : 
+                   exerciseMode === 'recognition' ? t('beginner.topics.alphabet.letter_recognition') : t('beginner.topics.alphabet.letter_writing')}
                 </h3>
                 <button
                   onClick={() => setExerciseMode(null)}
@@ -400,14 +402,14 @@ const AlphabetPage: React.FC = () => {
                     theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500' : 'bg-gray-200 hover:bg-gray-300'
                   }`}
                 >
-                  Back to Exercises
+                  {t('common.back')}
                 </button>
               </div>
               
               {exerciseMode === 'matching' && (
                 <div>
                   <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Match the Georgian letter with its Latin equivalent:
+                    {t('beginner.topics.alphabet.match_instruction')}
                   </p>
                   
                   <div className="mb-6">
@@ -444,8 +446,8 @@ const AlphabetPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
                       }`}>
                         {matchingAnswers[matchingExercises[currentExerciseIndex].letter] === matchingExercises[currentExerciseIndex].correct
-                          ? 'Correct! Well done.'
-                          : `Incorrect. The correct answer is "${matchingExercises[currentExerciseIndex].correct}".`}
+                          ? t('beginner.topics.alphabet.correct_answer')
+                          : t('beginner.topics.alphabet.incorrect_answer', { correct: matchingExercises[currentExerciseIndex].correct })}
                       </div>
                     )}
                   </div>
@@ -457,7 +459,7 @@ const AlphabetPage: React.FC = () => {
                         theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                       }`}
                     >
-                      Reset
+                      {t('common.reset')}
                     </button>
                     
                     {currentExerciseIndex < matchingExercises.length - 1 && (
@@ -470,7 +472,7 @@ const AlphabetPage: React.FC = () => {
                             : (theme === 'dark' ? 'bg-blue-700 hover:bg-blue-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')
                         }`}
                       >
-                        Next
+                        {t('common.next')}
                       </button>
                     )}
                   </div>
@@ -509,8 +511,8 @@ const AlphabetPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
                       }`}>
                         {recognitionAnswers[recognitionExercises[currentExerciseIndex].question] === recognitionExercises[currentExerciseIndex].correct
-                          ? 'Correct! Well done.'
-                          : `Incorrect. The correct answer is "${recognitionExercises[currentExerciseIndex].correct}".`}
+                          ? t('beginner.topics.alphabet.correct_answer')
+                          : t('beginner.topics.alphabet.incorrect_answer', { correct: recognitionExercises[currentExerciseIndex].correct })}
                       </div>
                     )}
                   </div>
@@ -522,7 +524,7 @@ const AlphabetPage: React.FC = () => {
                         theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                       }`}
                     >
-                      Reset
+                      {t('common.reset')}
                     </button>
                     
                     {currentExerciseIndex < recognitionExercises.length - 1 && (
@@ -535,7 +537,7 @@ const AlphabetPage: React.FC = () => {
                             : (theme === 'dark' ? 'bg-blue-700 hover:bg-blue-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')
                         }`}
                       >
-                        Next
+                        {t('common.next')}
                       </button>
                     )}
                   </div>
@@ -558,7 +560,7 @@ const AlphabetPage: React.FC = () => {
                           ? 'bg-gray-600 border-gray-500 text-white'
                           : 'bg-white border-gray-300 text-gray-900'
                       } border focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                      placeholder="Type Georgian letter here"
+                      placeholder={t('beginner.topics.alphabet.type_letter')}
                     />
                     
                     <div className="mt-4 flex justify-center">
@@ -570,7 +572,7 @@ const AlphabetPage: React.FC = () => {
                             : 'bg-blue-600 hover:bg-blue-700 text-white'
                         }`}
                       >
-                        Check
+                        {t('common.check')}
                       </button>
                     </div>
                     
@@ -581,8 +583,8 @@ const AlphabetPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
                       }`}>
                         {writingFeedback === 'correct'
-                          ? 'Correct! Well done.'
-                          : `Incorrect. The correct answer is "${writingExercises[currentExerciseIndex].correct}".`}
+                          ? t('beginner.topics.alphabet.correct_answer')
+                          : t('beginner.topics.alphabet.incorrect_answer', { correct: writingExercises[currentExerciseIndex].correct })}
                       </div>
                     )}
                   </div>
@@ -594,7 +596,7 @@ const AlphabetPage: React.FC = () => {
                         theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                       }`}
                     >
-                      Reset
+                      {t('common.reset')}
                     </button>
                     
                     {currentExerciseIndex < writingExercises.length - 1 && (
@@ -607,7 +609,7 @@ const AlphabetPage: React.FC = () => {
                             : (theme === 'dark' ? 'bg-blue-700 hover:bg-blue-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white')
                         }`}
                       >
-                        Next
+                        {t('common.next')}
                       </button>
                     )}
                   </div>
@@ -622,34 +624,34 @@ const AlphabetPage: React.FC = () => {
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Tips for Learning the Georgian Alphabet
+            {t('beginner.topics.alphabet.tips_title')}
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
               <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Practice Writing
+                {t('beginner.topics.alphabet.practice_writing_tip')}
               </h3>
               <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                Write each letter repeatedly to build muscle memory and improve recognition. Pay attention to the unique curves and shapes.
+                {t('beginner.topics.alphabet.practice_writing_desc')}
               </p>
             </div>
             
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
               <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Learn in Groups
+                {t('beginner.topics.alphabet.learn_groups_tip')}
               </h3>
               <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                Study 5-7 letters at a time rather than trying to memorize all 33 at once. Master each group before moving to the next.
+                {t('beginner.topics.alphabet.learn_groups_desc')}
               </p>
             </div>
             
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
               <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Use Mnemonics
+                {t('beginner.topics.alphabet.mnemonics_tip')}
               </h3>
               <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                Create visual associations or stories to help remember the shapes of unfamiliar letters. Connect the letter shape to something familiar.
+                {t('beginner.topics.alphabet.mnemonics_desc')}
               </p>
             </div>
           </div>

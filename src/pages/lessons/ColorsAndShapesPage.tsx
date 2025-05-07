@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Book, Check, Palette, Play, Volume2, X } from 'l
 import { useTheme } from '../../contexts/ThemeContext';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface ColorOrShape {
   georgian: string;
@@ -16,6 +17,7 @@ const ColorsAndShapesPage: React.FC = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
   const { updateProgress } = useUserProgress();
+  const { t } = useTranslation();
   const [expandedSection, setExpandedSection] = useState<'colors' | 'shapes' | null>(null);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -131,7 +133,7 @@ const ColorsAndShapesPage: React.FC = () => {
         });
       }
     };
-  }, [user, timeSpent, showFeedback]);
+  }, [user, timeSpent, showFeedback, updateProgress]);
 
   const toggleSection = (section: 'colors' | 'shapes') => {
     updateActivity();
@@ -209,10 +211,10 @@ const ColorsAndShapesPage: React.FC = () => {
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}>Colors & Shapes</span> - ფერები და ფორმები (perebi da pormebi)
+                <span className={theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}>{t('beginner.topics.colors.name')}</span> - ფერები და ფორმები (perebi da pormebi)
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Learn Georgian colors and geometric shapes with pronunciation and examples.
+                {t('beginner.topics.colors.description')}
               </p>
               <div className="flex flex-wrap gap-2">
                 <Link
@@ -224,7 +226,7 @@ const ColorsAndShapesPage: React.FC = () => {
                   }`}
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to Beginner Level
+                  {t('common.back')} {t('nav.beginner')}
                 </Link>
                 <Link
                   to="/beginner/quiz/colors"
@@ -232,7 +234,7 @@ const ColorsAndShapesPage: React.FC = () => {
                     theme === 'dark' ? 'bg-purple-700 text-white hover:bg-purple-800' : 'bg-purple-600 text-white hover:bg-purple-700'
                   }`}
                 >
-                  Take Quiz
+                  {t('beginner.take_quiz')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </div>
@@ -241,13 +243,13 @@ const ColorsAndShapesPage: React.FC = () => {
               <div className={`p-6 rounded-lg shadow-xl ${theme === 'dark' ? 'bg-gray-700' : 'bg-white bg-opacity-50 backdrop-blur-lg'}`}>
                 <Palette className={`w-12 h-12 mb-4 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}`} />
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Learning Tips
+                  {t('learning_tips.title')}
                 </h3>
                 <ul className={`space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  <li>• Practice pronunciation with audio</li>
-                  <li>• Learn colors with common objects</li>
-                  <li>• Study shapes in everyday items</li>
-                  <li>• Use the example sentences</li>
+                  <li>• {t('learning_tips.practice_writing')}</li>
+                  <li>• {t('learning_tips.listen_pronunciation')}</li>
+                  <li>• {t('learning_tips.learn_groups')}</li>
+                  <li>• {t('learning_tips.use_examples')}</li>
                 </ul>
               </div>
             </div>
@@ -274,7 +276,7 @@ const ColorsAndShapesPage: React.FC = () => {
                     Colors - ფერები (perebi)
                   </h2>
                   <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                    Learn common colors in Georgian
+                    {t('beginner.topics.colors.description')}
                   </p>
                 </div>
                 {expandedSection === 'colors' ? (
@@ -344,7 +346,7 @@ const ColorsAndShapesPage: React.FC = () => {
                     Shapes - ფორმები (pormebi)
                   </h2>
                   <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                    Learn geometric shapes in Georgian
+                    {t('beginner.topics.colors.description')}
                   </p>
                 </div>
                 {expandedSection === 'shapes' ? (
@@ -404,7 +406,7 @@ const ColorsAndShapesPage: React.FC = () => {
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-purple-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Practice Exercises
+            {t('beginner.topics.vocabulary.practice_exercises')}
           </h2>
           
           {!exerciseMode ? (
@@ -416,10 +418,10 @@ const ColorsAndShapesPage: React.FC = () => {
                 } shadow-lg`}
               >
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Word Matching
+                  {t('beginner.topics.vocabulary.word_matching')}
                 </h3>
                 <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                  Match Georgian words with their English meanings
+                  {t('beginner.topics.vocabulary.match_words')}
                 </p>
               </button>
               
@@ -430,10 +432,10 @@ const ColorsAndShapesPage: React.FC = () => {
                 } shadow-lg`}
               >
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Translation Practice
+                  {t('beginner.topics.vocabulary.translation_practice')}
                 </h3>
                 <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                  Translate English words to Georgian
+                  {t('beginner.topics.vocabulary.translate_words')}
                 </p>
               </button>
               
@@ -455,8 +457,8 @@ const ColorsAndShapesPage: React.FC = () => {
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}>
               <div className="flex justify-between items-center mb-6">
                 <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  {exerciseMode === 'matching' ? 'Word Matching' : 
-                   exerciseMode === 'translation' ? 'Translation Practice' : 'Word Identification'}
+                  {exerciseMode === 'matching' ? t('beginner.topics.vocabulary.word_matching') : 
+                   exerciseMode === 'translation' ? t('beginner.topics.vocabulary.translation_practice') : 'Word Identification'}
                 </h3>
                 <button
                   onClick={() => setExerciseMode(null)}
@@ -464,14 +466,14 @@ const ColorsAndShapesPage: React.FC = () => {
                     theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500' : 'bg-gray-200 hover:bg-gray-300'
                   }`}
                 >
-                  Back to Exercises
+                  {t('common.back')}
                 </button>
               </div>
               
               {exerciseMode === 'matching' && (
                 <div>
                   <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Match the Georgian word with its English meaning:
+                    {t('beginner.topics.vocabulary.match_instruction')}
                   </p>
                   
                   <div className="mb-6">
@@ -508,8 +510,8 @@ const ColorsAndShapesPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
                       }`}>
                         {isCorrectAnswer()
-                          ? 'Correct! Well done.'
-                          : `Incorrect. The correct answer is "${matchingExercises[currentExerciseIndex].correct}".`}
+                          ? t('beginner.topics.vocabulary.correct_answer')
+                          : t('beginner.topics.vocabulary.incorrect_answer', { correct: matchingExercises[currentExerciseIndex].correct })}
                       </div>
                     )}
                   </div>
@@ -521,7 +523,7 @@ const ColorsAndShapesPage: React.FC = () => {
                         theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                       }`}
                     >
-                      Reset
+                      {t('common.reset')}
                     </button>
                     
                     {currentExerciseIndex < matchingExercises.length - 1 && (
@@ -534,7 +536,7 @@ const ColorsAndShapesPage: React.FC = () => {
                             : (theme === 'dark' ? 'bg-purple-700 hover:bg-purple-600 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white')
                         }`}
                       >
-                        Next
+                        {t('common.next')}
                       </button>
                     )}
                   </div>
@@ -544,7 +546,7 @@ const ColorsAndShapesPage: React.FC = () => {
               {exerciseMode === 'translation' && (
                 <div>
                   <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Select the Georgian translation for: <span className="font-bold">{translationExercises[currentExerciseIndex].english}</span>
+                    {t('beginner.topics.vocabulary.select_translation', { word: translationExercises[currentExerciseIndex].english })}
                   </p>
                   
                   <div className="mb-6">
@@ -573,8 +575,8 @@ const ColorsAndShapesPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
                       }`}>
                         {isCorrectAnswer()
-                          ? 'Correct! Well done.'
-                          : `Incorrect. The correct answer is "${translationExercises[currentExerciseIndex].correct}".`}
+                          ? t('beginner.topics.vocabulary.correct_answer')
+                          : t('beginner.topics.vocabulary.incorrect_answer', { correct: translationExercises[currentExerciseIndex].correct })}
                       </div>
                     )}
                   </div>
@@ -586,7 +588,7 @@ const ColorsAndShapesPage: React.FC = () => {
                         theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                       }`}
                     >
-                      Reset
+                      {t('common.reset')}
                     </button>
                     
                     {currentExerciseIndex < translationExercises.length - 1 && (
@@ -599,7 +601,7 @@ const ColorsAndShapesPage: React.FC = () => {
                             : (theme === 'dark' ? 'bg-purple-700 hover:bg-purple-600 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white')
                         }`}
                       >
-                        Next
+                        {t('common.next')}
                       </button>
                     )}
                   </div>
@@ -638,8 +640,8 @@ const ColorsAndShapesPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
                       }`}>
                         {isCorrectAnswer()
-                          ? 'Correct! Well done.'
-                          : `Incorrect. The correct answer is "${identificationExercises[currentExerciseIndex].correct}".`}
+                          ? t('beginner.topics.vocabulary.correct_answer')
+                          : t('beginner.topics.vocabulary.incorrect_answer', { correct: identificationExercises[currentExerciseIndex].correct })}
                       </div>
                     )}
                   </div>
@@ -651,7 +653,7 @@ const ColorsAndShapesPage: React.FC = () => {
                         theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                       }`}
                     >
-                      Reset
+                      {t('common.reset')}
                     </button>
                     
                     {currentExerciseIndex < identificationExercises.length - 1 && (
@@ -664,7 +666,7 @@ const ColorsAndShapesPage: React.FC = () => {
                             : (theme === 'dark' ? 'bg-purple-700 hover:bg-purple-600 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white')
                         }`}
                       >
-                        Next
+                        {t('common.next')}
                       </button>
                     )}
                   </div>

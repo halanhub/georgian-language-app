@@ -5,18 +5,25 @@ import type { Database } from '../types/supabase';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Enhanced validation for Supabase credentials
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error(
     'Missing Supabase credentials. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file.'
   );
 }
 
-// Validate URL format
+// Validate URL format and protocol
 try {
-  new URL(supabaseUrl);
+  if (supabaseUrl) {
+    const url = new URL(supabaseUrl);
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      throw new Error('Invalid protocol');
+    }
+  }
 } catch (error) {
   throw new Error(
-    'Invalid Supabase URL format. Please check your VITE_SUPABASE_URL in your .env file.'
+    'Invalid Supabase URL format. Please check your VITE_SUPABASE_URL in your .env file. ' +
+    'The URL should start with http:// or https://'
   );
 }
 
@@ -73,6 +80,24 @@ try {
       headers: {
         'X-Client-Info': 'supabase-js-web'
       }
+    },
+    fetch: (url, options = {}) => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
+      const fetchPromise = fetch(url, {
+        ...options,
+        signal: controller.signal,
+        headers: {
+          ...options.headers,
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      return fetchPromise.finally(() => {
+        clearTimeout(timeoutId);
+      });
     }
   });
   

@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Book, Check, ChevronDown, ChevronUp, Play, Volume2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Book, Brain, Check, ChevronDown, ChevronUp, Play, Volume2, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface NumberGroup {
   id: string;
@@ -21,6 +22,7 @@ const NumbersPage: React.FC = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
   const { updateProgress } = useUserProgress();
+  const { t } = useTranslation();
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const groupRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -323,7 +325,7 @@ const NumbersPage: React.FC = () => {
         });
       }
     };
-  }, [user, timeSpent, countingFeedback]);
+  }, [user, timeSpent, countingFeedback, updateProgress]);
 
   const toggleGroup = (groupId: string) => {
     updateActivity();
@@ -417,10 +419,10 @@ const NumbersPage: React.FC = () => {
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}>Numbers</span> - რიცხვები (ritskhvebi)
+                <span className={theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}>{t('beginner.topics.numbers.name')}</span> - რიცხვები (ritskhvebi)
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Learn to count in Georgian from 1 to 100 with pronunciation and examples.
+                {t('beginner.topics.numbers.description')}
               </p>
               <div className="flex flex-wrap gap-2">
                 <Link
@@ -432,7 +434,7 @@ const NumbersPage: React.FC = () => {
                   }`}
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to Beginner Level
+                  {t('common.back')} {t('nav.beginner')}
                 </Link>
                 <Link
                   to="/beginner/quiz/numbers"
@@ -440,7 +442,7 @@ const NumbersPage: React.FC = () => {
                     theme === 'dark' ? 'bg-yellow-700 text-white hover:bg-yellow-800' : 'bg-yellow-600 text-white hover:bg-yellow-700'
                   }`}
                 >
-                  Take Quiz
+                  {t('beginner.take_quiz')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </div>
@@ -449,13 +451,13 @@ const NumbersPage: React.FC = () => {
               <div className={`p-6 rounded-lg shadow-xl ${theme === 'dark' ? 'bg-gray-700' : 'bg-white bg-opacity-50 backdrop-blur-lg'}`}>
                 <Book className={`w-12 h-12 mb-4 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}`} />
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Learning Tips
+                  {t('learning_tips.title')}
                 </h3>
                 <ul className={`space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  <li>• Learn numbers in groups of ten</li>
-                  <li>• Practice counting out loud</li>
-                  <li>• Use numbers in simple sentences</li>
-                  <li>• Focus on pronunciation patterns</li>
+                  <li>• {t('learning_tips.learn_groups')}</li>
+                  <li>• {t('learning_tips.practice_writing')}</li>
+                  <li>• {t('learning_tips.listen_pronunciation')}</li>
+                  <li>• {t('learning_tips.use_examples')}</li>
                 </ul>
               </div>
             </div>
@@ -601,7 +603,7 @@ const NumbersPage: React.FC = () => {
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-yellow-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Practice Exercises
+            {t('beginner.topics.vocabulary.practice_exercises')}
           </h2>
           
           {!exerciseMode ? (
@@ -613,10 +615,10 @@ const NumbersPage: React.FC = () => {
                 } shadow-lg`}
               >
                 <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Number Translation
+                  {t('beginner.topics.vocabulary.translation_practice')}
                 </h3>
                 <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
-                  Match numbers with their Georgian words
+                  {t('beginner.topics.vocabulary.translate_words')}
                 </p>
               </button>
               
@@ -652,7 +654,7 @@ const NumbersPage: React.FC = () => {
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}>
               <div className="flex justify-between items-center mb-6">
                 <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  {exerciseMode === 'translation' ? 'Number Translation' : 
+                  {exerciseMode === 'translation' ? t('beginner.topics.vocabulary.translation_practice') : 
                    exerciseMode === 'sequence' ? 'Number Sequences' : 'Counting Practice'}
                 </h3>
                 <button
@@ -661,14 +663,14 @@ const NumbersPage: React.FC = () => {
                     theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500' : 'bg-gray-200 hover:bg-gray-300'
                   }`}
                 >
-                  Back to Exercises
+                  {t('common.back')}
                 </button>
               </div>
               
               {exerciseMode === 'translation' && (
                 <div>
                   <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    Select the Georgian word for the number: <span className="font-bold">{translationExercises[currentExerciseIndex].number}</span>
+                    {t('beginner.topics.vocabulary.select_translation', { word: translationExercises[currentExerciseIndex].number.toString() })}
                   </p>
                   
                   <div className="mb-6">
@@ -697,8 +699,8 @@ const NumbersPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
                       }`}>
                         {isCorrectAnswer()
-                          ? 'Correct! Well done.'
-                          : `Incorrect. The correct answer is "${translationExercises[currentExerciseIndex].correct}".`}
+                          ? t('beginner.topics.vocabulary.correct_answer')
+                          : t('beginner.topics.vocabulary.incorrect_answer', { correct: translationExercises[currentExerciseIndex].correct })}
                       </div>
                     )}
                   </div>
@@ -710,7 +712,7 @@ const NumbersPage: React.FC = () => {
                         theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                       }`}
                     >
-                      Reset
+                      {t('common.reset')}
                     </button>
                     
                     {currentExerciseIndex < translationExercises.length - 1 && (
@@ -723,7 +725,7 @@ const NumbersPage: React.FC = () => {
                             : (theme === 'dark' ? 'bg-yellow-700 hover:bg-yellow-600 text-white' : 'bg-yellow-600 hover:bg-yellow-700 text-white')
                         }`}
                       >
-                        Next
+                        {t('common.next')}
                       </button>
                     )}
                   </div>
@@ -762,8 +764,8 @@ const NumbersPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
                       }`}>
                         {isCorrectAnswer()
-                          ? 'Correct! Well done.'
-                          : `Incorrect. The correct answer is "${sequenceExercises[currentExerciseIndex].correct}".`}
+                          ? t('beginner.topics.vocabulary.correct_answer')
+                          : t('beginner.topics.vocabulary.incorrect_answer', { correct: sequenceExercises[currentExerciseIndex].correct })}
                       </div>
                     )}
                   </div>
@@ -775,7 +777,7 @@ const NumbersPage: React.FC = () => {
                         theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                       }`}
                     >
-                      Reset
+                      {t('common.reset')}
                     </button>
                     
                     {currentExerciseIndex < sequenceExercises.length - 1 && (
@@ -788,7 +790,7 @@ const NumbersPage: React.FC = () => {
                             : (theme === 'dark' ? 'bg-yellow-700 hover:bg-yellow-600 text-white' : 'bg-yellow-600 hover:bg-yellow-700 text-white')
                         }`}
                       >
-                        Next
+                        {t('common.next')}
                       </button>
                     )}
                   </div>
@@ -823,7 +825,7 @@ const NumbersPage: React.FC = () => {
                             : 'bg-yellow-600 hover:bg-yellow-700 text-white'
                         }`}
                       >
-                        Check
+                        {t('common.check')}
                       </button>
                     </div>
                     
@@ -834,12 +836,11 @@ const NumbersPage: React.FC = () => {
                           : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
                       }`}>
                         {countingFeedback === 'correct'
-                          ? 'Correct! Well done.'
+                          ? t('beginner.topics.vocabulary.correct_answer')
                           : (
                             <>
-                              <p>Incorrect. The correct answer is:</p>
-                              <p className="mt-2 font-medium">{countingExercises[currentExerciseIndex].correct}</p>
-                              <p className="mt-2">Hint: {countingExercises[currentExerciseIndex].hint}</p>
+                              <p>{t('beginner.topics.vocabulary.incorrect_answer', { correct: countingExercises[currentExerciseIndex].correct })}</p>
+                              <p className="mt-2">{t('beginner.topics.vocabulary.hint')}: {countingExercises[currentExerciseIndex].hint}</p>
                             </>
                           )}
                       </div>
@@ -853,7 +854,7 @@ const NumbersPage: React.FC = () => {
                         theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                       }`}
                     >
-                      Reset
+                      {t('common.reset')}
                     </button>
                     
                     {currentExerciseIndex < countingExercises.length - 1 && (
@@ -866,7 +867,7 @@ const NumbersPage: React.FC = () => {
                             : (theme === 'dark' ? 'bg-yellow-700 hover:bg-yellow-600 text-white' : 'bg-yellow-600 hover:bg-yellow-700 text-white')
                         }`}
                       >
-                        Next
+                        {t('common.next')}
                       </button>
                     )}
                   </div>

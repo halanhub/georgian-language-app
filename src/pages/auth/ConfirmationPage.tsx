@@ -164,6 +164,7 @@ const ConfirmationPage: React.FC = () => {
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  required
                   className={`mt-1 block w-full rounded-md shadow-sm ${
                     theme === 'dark'
                       ? 'bg-gray-600 border-gray-500 text-white focus:border-blue-500 focus:ring-blue-500'

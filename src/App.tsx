@@ -29,6 +29,12 @@ import WritingExercisesPage from './pages/lessons/WritingExercisesPage';
 import SentenceConstructionPage from './pages/lessons/SentenceConstructionPage';
 import QuizPage from './pages/quiz/QuizPage';
 import QuizHubPage from './pages/quiz/QuizHubPage';
+import GrammarQuiz from './pages/quiz/GrammarQuiz';
+import SentenceConstructionQuiz from './pages/quiz/SentenceConstructionQuiz';
+import CommonWordsQuiz from './pages/quiz/CommonWordsQuiz';
+import ConversationsQuiz from './pages/quiz/ConversationsQuiz';
+import ReadingQuiz from './pages/quiz/ReadingQuiz';
+import WritingQuiz from './pages/quiz/WritingQuiz';
 import ProfileSettingsPage from './pages/settings/ProfileSettingsPage';
 import SupportPage from './pages/SupportPage';
 import ContactPage from './pages/ContactPage';
@@ -154,6 +160,36 @@ function App() {
                     <SentenceConstructionPage />
                   </ProtectedRoute>
                 } />
+                <Route path="intermediate/quiz/grammar" element={
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                    <GrammarQuiz />
+                  </ProtectedRoute>
+                } />
+                <Route path="intermediate/quiz/sentences" element={
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                    <SentenceConstructionQuiz />
+                  </ProtectedRoute>
+                } />
+                <Route path="intermediate/quiz/common-words" element={
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                    <CommonWordsQuiz />
+                  </ProtectedRoute>
+                } />
+                <Route path="intermediate/quiz/conversations" element={
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                    <ConversationsQuiz />
+                  </ProtectedRoute>
+                } />
+                <Route path="intermediate/quiz/reading" element={
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                    <ReadingQuiz />
+                  </ProtectedRoute>
+                } />
+                <Route path="intermediate/quiz/writing" element={
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                    <WritingQuiz />
+                  </ProtectedRoute>
+                } />
                 <Route path="intermediate/quiz/:topic" element={
                   <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <QuizPage />
@@ -163,6 +199,36 @@ function App() {
                 <Route path="advanced" element={
                   <ProtectedRoute>
                     <AdvancedLevelPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="advanced/grammar" element={
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                    <NotFoundPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="advanced/culture" element={
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                    <NotFoundPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="advanced/literature" element={
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                    <NotFoundPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="advanced/idioms" element={
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                    <NotFoundPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="advanced/writing" element={
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                    <NotFoundPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="advanced/listening" element={
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                    <NotFoundPage />
                   </ProtectedRoute>
                 } />
                 <Route path="advanced/quiz/:topic" element={

@@ -29,16 +29,24 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   ];
 
   useEffect(() => {
-    // Initialize language from i18n
-    const currentLang = i18n.language.split('-')[0];
-    if (currentLang === 'en' || currentLang === 'ru') {
-      setLanguage(currentLang as Language);
+    // Initialize language from localStorage or browser preference
+    const savedLang = localStorage.getItem('i18nextLng');
+    if (savedLang) {
+      const langCode = savedLang.split('-')[0];
+      if (langCode === 'en' || langCode === 'ru') {
+        setLanguage(langCode as Language);
+      }
     }
-  }, [i18n.language]);
+  }, []);
+
+  useEffect(() => {
+    // Sync with i18n when language changes
+    i18n.changeLanguage(language);
+  }, [language, i18n]);
 
   const changeLanguage = (lang: Language) => {
-    i18n.changeLanguage(lang);
     setLanguage(lang);
+    i18n.changeLanguage(lang);
     // Save to localStorage
     localStorage.setItem('i18nextLng', lang);
   };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, UserPlus, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, UserPlus, AlertCircle, Wifi, WifiOff, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -16,11 +16,43 @@ const SignupPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'unknown'>('unknown');
+  const [retryCount, setRetryCount] = useState(0);
   
   const { signup, user } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  // Check network status
+  useEffect(() => {
+    const checkNetworkStatus = () => {
+      if (navigator.onLine) {
+        setNetworkStatus('online');
+      } else {
+        setNetworkStatus('offline');
+      }
+    };
+
+    // Initial check
+    checkNetworkStatus();
+
+    // Add event listeners for network status changes
+    window.addEventListener('online', () => {
+      setNetworkStatus('online');
+      setError('');
+    });
+    window.addEventListener('offline', () => {
+      setNetworkStatus('offline');
+      setError('You are currently offline. Please check your internet connection and try again.');
+    });
+
+    // Clean up event listeners
+    return () => {
+      window.removeEventListener('online', () => setNetworkStatus('online'));
+      window.removeEventListener('offline', () => setNetworkStatus('offline'));
+    };
+  }, []);
 
   // If user is already logged in, redirect to home
   useEffect(() => {
@@ -33,6 +65,12 @@ const SignupPage: React.FC = () => {
     e.preventDefault();
     setError('');
     setSuccess(false);
+    
+    // Check if offline
+    if (networkStatus === 'offline') {
+      setError('You are currently offline. Please check your internet connection and try again.');
+      return;
+    }
     
     // Validate inputs
     if (password !== confirmPassword) {
@@ -55,7 +93,7 @@ const SignupPage: React.FC = () => {
       
       await signup(email, password, displayName);
       setSuccess(true);
-      // Navigate to confirmation page after successful signup
+      // Navigate to confirmation page after signup
       navigate('/confirmation');
     } catch (err: any) {
       console.error('Signup error:', err);
@@ -64,6 +102,12 @@ const SignupPage: React.FC = () => {
       if (err.message) {
         if (err.message.includes('already registered')) {
           setError('This email is already registered. Please log in instead.');
+        } else if (err.message.includes('Failed to fetch') || 
+                  err.message.includes('NetworkError') || 
+                  err.message.includes('network') ||
+                  err.message.includes('timed out')) {
+          setError('Network connection error. Please check your internet connection and try again.');
+          setNetworkStatus('offline');
         } else {
           setError(err.message);
         }
@@ -83,6 +127,25 @@ const SignupPage: React.FC = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
+  // Retry signup button
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+    setNetworkStatus('unknown'); // Reset network status
+    setError('');
+    
+    // Check network status again
+    if (navigator.onLine) {
+      setNetworkStatus('online');
+    } else {
+      setNetworkStatus('offline');
+      setError('You are still offline. Please check your internet connection and try again.');
+      return;
+    }
+    
+    // Attempt signup again
+    handleSubmit(new Event('submit') as any);
+  };
+
   return (
     <div className="min-h-screen pt-16 flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className={`max-w-md w-full space-y-8 p-8 rounded-lg shadow-lg ${
@@ -100,6 +163,24 @@ const SignupPage: React.FC = () => {
             Start your Georgian language learning journey
           </p>
         </div>
+        
+        {/* Network status indicator */}
+        {networkStatus !== 'unknown' && (
+          <div className={`flex items-center p-2 rounded ${
+            networkStatus === 'online' 
+              ? theme === 'dark' ? 'bg-green-900/30 text-green-200' : 'bg-green-50 text-green-700'
+              : theme === 'dark' ? 'bg-red-900/30 text-red-200' : 'bg-red-50 text-red-700'
+          }`}>
+            {networkStatus === 'online' 
+              ? <Wifi className="h-4 w-4 mr-2" /> 
+              : <WifiOff className="h-4 w-4 mr-2" />}
+            <span className="text-sm">
+              {networkStatus === 'online' 
+                ? 'You are online' 
+                : 'You are offline. Please check your internet connection.'}
+            </span>
+          </div>
+        )}
         
         {error && (
           <div className={`p-3 rounded-md flex items-start ${
@@ -279,9 +360,9 @@ const SignupPage: React.FC = () => {
           <div>
             <button
               type="submit"
-              disabled={isLoading || success}
+              disabled={isLoading || success || networkStatus === 'offline'}
               className={`group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-md text-sm font-medium text-white ${
-                isLoading || success
+                isLoading || success || networkStatus === 'offline'
                   ? (theme === 'dark' ? 'bg-gray-700' : 'bg-gray-400')
                   : (theme === 'dark' ? 'bg-red-700 hover:bg-red-800' : 'bg-red-600 hover:bg-red-700')
               } focus:outline-none focus:ring-2 focus:ring-offset-2 ${
@@ -290,7 +371,7 @@ const SignupPage: React.FC = () => {
             >
               <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                 <UserPlus className={`h-5 w-5 ${
-                  isLoading || success
+                  isLoading || success || networkStatus === 'offline'
                     ? (theme === 'dark' ? 'text-gray-500' : 'text-gray-300') 
                     : (theme === 'dark' ? 'text-red-400 group-hover:text-red-300' : 'text-red-500 group-hover:text-red-400')
                 }`} />
@@ -299,6 +380,26 @@ const SignupPage: React.FC = () => {
             </button>
           </div>
         </form>
+
+        {/* Retry button for network errors */}
+        {(error.includes('network') || error.includes('timed out') || error.includes('Failed to fetch')) && (
+          <div className="mt-4 text-center">
+            <button
+              onClick={handleRetry}
+              className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-medium ${
+                theme === 'dark' 
+                  ? 'bg-blue-700 text-white hover:bg-blue-800' 
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
+            >
+              <RefreshCw size={16} className="mr-2" />
+              Retry Connection
+            </button>
+            <p className={`mt-2 text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+              Attempt {retryCount + 1} of 3
+            </p>
+          </div>
+        )}
 
         <div className={`text-center text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
           Already have an account?{' '}

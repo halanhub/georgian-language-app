@@ -46,6 +46,14 @@ export const useAuth = () => {
 // List of admin emails
 const ADMIN_EMAILS = ['admin@georgianlanguage.online'];
 
+// Retry configuration
+const RETRY_ATTEMPTS = 2;
+const INITIAL_TIMEOUT = 10000; // 10 seconds
+const MAX_TIMEOUT = 30000; // 30 seconds
+
+// Helper function for exponential backoff
+const wait = (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
+
 // Provider component
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -58,6 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const fetchSession = async () => {
       try {
+        setLoading(true);
         // Get session from Supabase
         const { data: { session }, error } = await supabase.auth.getSession();
         
@@ -258,29 +267,67 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Login function
+  // Login function with retry mechanism
   const login = async (email: string, password: string) => {
-    try {
-      setLoading(true);
-      
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      if (error) {
-        console.error('Login error:', error);
-        throw error;
+    let lastError: Error | null = null;
+    let currentTimeout = INITIAL_TIMEOUT;
+
+    for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt++) {
+      try {
+        setLoading(true);
+        console.log(`Login attempt ${attempt} of ${RETRY_ATTEMPTS}`);
+
+        const loginPromise = supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => {
+            reject(new Error(`Login request timed out. Please check your internet connection and try again.`));
+          }, currentTimeout);
+        });
+
+        const { data, error } = await Promise.race([
+          loginPromise,
+          timeoutPromise
+        ]) as any;
+
+        if (error) {
+          throw error;
+        }
+
+        console.log('Login successful');
+        return;
+      } catch (error: any) {
+        lastError = error;
+        console.warn(`Login attempt ${attempt} failed:`, error.message);
+
+        // Don't retry for certain errors
+        if (error.message?.includes('Invalid login credentials') ||
+            error.message?.includes('Email not confirmed')) {
+          throw error;
+        }
+
+        // If this wasn't the last attempt, wait before retrying
+        if (attempt < RETRY_ATTEMPTS) {
+          const backoffTime = Math.min(currentTimeout * 2, MAX_TIMEOUT);
+          console.log(`Waiting ${backoffTime / 1000} seconds before next attempt...`);
+          await wait(backoffTime);
+          currentTimeout = backoffTime;
+        }
+      } finally {
+        if (attempt === RETRY_ATTEMPTS || lastError?.message?.includes('Invalid login credentials') || lastError?.message?.includes('Email not confirmed')) {
+          setLoading(false);
+        }
       }
-      
-      console.log('Login successful');
-      // User profile will be fetched by the auth state change listener
-    } catch (error) {
-      console.error('Login error:', error);
-      throw error;
-    } finally {
-      setLoading(false);
     }
+
+    // If we've exhausted all retries, throw the last error
+    setLoading(false);
+    throw new Error(
+      `Network connection error. Please check your internet connection and try again.`
+    );
   };
 
   // Signup function
@@ -305,11 +352,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       console.log('Signup successful, confirmation email sent');
+      // Store email in localStorage for the confirmation page
+      localStorage.setItem('signupEmail', email);
+      
       // Redirect to confirmation page after signup
       navigate('/confirmation');
-    } catch (error) {
-      console.error('Signup error:', error);
-      throw error;
+    } catch (err: any) {
+      console.error('Signup error:', err);
+      throw err;
     } finally {
       setLoading(false);
     }

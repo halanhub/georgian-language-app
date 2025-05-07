@@ -104,11 +104,11 @@ const ConversationsQuiz: React.FC = () => {
       options: [
         'გმადლობთ (gmadlobt - thank you)',
         'კარგად (kargad - well)',
-        'არაფრის (arapris - you're welcome)',
+        'არაფრის (arapris - you&apos;re welcome)',
         'დიახ (diakh - yes)'
       ],
-      correctAnswer: 'არაფრის (arapris - you're welcome)',
-      explanation: "The appropriate response to 'გმადლობთ (thank you)' is 'არაფრის (arapris)' which means 'you're welcome'.",
+      correctAnswer: 'არაფრის (arapris - you&apos;re welcome)',
+      explanation: "The appropriate response to 'გმადლობთ (thank you)' is 'არაფრის (arapris)' which means 'you&apos;re welcome'.",
       type: 'response'
     },
     {
@@ -208,7 +208,7 @@ const ConversationsQuiz: React.FC = () => {
         });
       }
     };
-  }, [user, timeSpent, showScore, score, questions.length]);
+  }, [user, timeSpent, showScore, score, questions.length, updateProgress]);
 
   useEffect(() => {
     if (showScore || isChecking) return;

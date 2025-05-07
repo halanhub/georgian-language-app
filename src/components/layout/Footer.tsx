@@ -1,7 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Heart, Mail, Github as GitHub, HelpCircle } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../LanguageSwitcher';
 
@@ -37,7 +37,7 @@ const Footer: React.FC = () => {
               aria-label="FAQ"
             >
               <HelpCircle size={18} className="inline mr-1" />
-              FAQ
+              {t('footer.faq')}
             </Link>
 
             <div className="flex items-center">
@@ -45,6 +45,89 @@ const Footer: React.FC = () => {
               <Heart size={16} className={`mx-1 ${theme === 'dark' ? 'text-red-400' : 'text-red-500'}`} />
               <span className="text-sm">{t('footer.for_learners')}</span>
             </div>
+          </div>
+        </div>
+        
+        {/* SEO Footer Links */}
+        <div className="mt-6 pt-6 border-t border-gray-700 grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div>
+            <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {t('nav.beginner')}
+            </h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/beginner/alphabet" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('nav.alphabet')}</Link>
+              </li>
+              <li>
+                <Link to="/beginner/basic-vocabulary" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('beginner.topics.vocabulary.name')}</Link>
+              </li>
+              <li>
+                <Link to="/beginner/numbers" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('beginner.topics.numbers.name')}</Link>
+              </li>
+              <li>
+                <Link to="/beginner/colors-and-shapes" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('beginner.topics.colors.name')}</Link>
+              </li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {t('home.levels.title')}
+            </h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/beginner" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('nav.beginner')}</Link>
+              </li>
+              <li>
+                <Link to="/intermediate" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('nav.intermediate')}</Link>
+              </li>
+              <li>
+                <Link to="/advanced" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('nav.advanced')}</Link>
+              </li>
+              <li>
+                <Link to="/quizzes" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('nav.quizzes')}</Link>
+              </li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {t('common.resources')}
+            </h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/learning-tips" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('nav.learning_tips')}</Link>
+              </li>
+              <li>
+                <Link to="/vocabulary" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('nav.vocabulary')}</Link>
+              </li>
+              <li>
+                <Link to="/intermediate/grammar" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('intermediate.topics.grammar.name')}</Link>
+              </li>
+              <li>
+                <Link to="/faq" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('common.faq')}</Link>
+              </li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {t('common.about_us')}
+            </h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/contact" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('footer.contact')}</Link>
+              </li>
+              <li>
+                <Link to="/support" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('common.support')}</Link>
+              </li>
+              <li>
+                <Link to="/terms-of-service" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('common.terms')}</Link>
+              </li>
+              <li>
+                <Link to="/privacy-policy" className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'}`}>{t('common.privacy')}</Link>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
