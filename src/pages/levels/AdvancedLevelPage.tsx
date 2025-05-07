@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Book, FileText, GraduationCap, Headphones, MessageSquare, Pencil } from 'lucide-react';
+import { ArrowRight, BookOpen, Brain, Edit, GraduationCap, MessageCircle, Pencil, Lock } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSubscription } from '../../hooks/useSubscription';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import SubscriptionBanner from '../../components/SubscriptionBanner';
+import { supabase } from '../../lib/supabase';
 
 const AdvancedLevelPage: React.FC = () => {
   const { theme } = useTheme();
@@ -55,17 +56,23 @@ const AdvancedLevelPage: React.FC = () => {
     }
   }, [user, progressLoading, updateProgress]);
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const topics = [
     { 
       id: 'advanced-grammar', 
       name: 'Complex Grammar', 
       description: 'Master advanced Georgian grammar patterns',
-      icon: <Book size={24} />,
+      icon: <BookOpen size={24} />,
       color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
-      path: '/advanced/grammar',
-      unlocked: hasActiveSubscription || isAdmin,
+      path: hasActiveSubscription || isAdmin ? '/advanced/grammar' : '/pricing',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'advanced-grammar')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'advanced-grammar')?.timeSpent ? 10 : 0
+               progress?.find(p => p.lessonId === 'advanced-grammar')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'advanced-grammar')?.timeSpent || 0) * 2), 95) : 0
     },
     { 
       id: 'advanced-culture', 
@@ -73,32 +80,35 @@ const AdvancedLevelPage: React.FC = () => {
       description: 'Understand Georgian cultural context in language',
       icon: <GraduationCap size={24} />,
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
-      path: '/advanced/culture',
-      unlocked: hasActiveSubscription || isAdmin,
+      path: hasActiveSubscription || isAdmin ? '/advanced/culture' : '/pricing',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'advanced-culture')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'advanced-culture')?.timeSpent ? 5 : 0
+               progress?.find(p => p.lessonId === 'advanced-culture')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'advanced-culture')?.timeSpent || 0) * 2), 95) : 0
     },
     { 
       id: 'advanced-literature', 
       name: 'Literature & Poetry', 
       description: 'Explore classic and modern Georgian literature',
-      icon: <FileText size={24} />,
+      icon: <Brain size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
-      path: '/advanced/literature',
-      unlocked: hasActiveSubscription || isAdmin,
+      path: hasActiveSubscription || isAdmin ? '/advanced/literature' : '/pricing',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'advanced-literature')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'advanced-literature')?.timeSpent ? 0 : 0
+               progress?.find(p => p.lessonId === 'advanced-literature')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'advanced-literature')?.timeSpent || 0) * 2), 95) : 0
     },
     { 
       id: 'advanced-idioms', 
       name: 'Idiomatic Expressions', 
       description: 'Learn Georgian idioms and colloquial phrases',
-      icon: <MessageSquare size={24} />,
+      icon: <MessageCircle size={24} />,
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
-      path: '/advanced/idioms',
-      unlocked: hasActiveSubscription || isAdmin,
+      path: hasActiveSubscription || isAdmin ? '/advanced/idioms' : '/pricing',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'advanced-idioms')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'advanced-idioms')?.timeSpent ? 0 : 0
+               progress?.find(p => p.lessonId === 'advanced-idioms')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'advanced-idioms')?.timeSpent || 0) * 2), 95) : 0
     },
     { 
       id: 'advanced-writing', 
@@ -106,21 +116,23 @@ const AdvancedLevelPage: React.FC = () => {
       description: 'Develop sophisticated writing skills in Georgian',
       icon: <Pencil size={24} />,
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
-      path: '/advanced/writing',
-      unlocked: hasActiveSubscription || isAdmin,
+      path: hasActiveSubscription || isAdmin ? '/advanced/writing' : '/pricing',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'advanced-writing')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'advanced-writing')?.timeSpent ? 0 : 0
+               progress?.find(p => p.lessonId === 'advanced-writing')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'advanced-writing')?.timeSpent || 0) * 2), 95) : 0
     },
     { 
       id: 'advanced-listening', 
       name: 'Advanced Listening', 
       description: 'Comprehend native speakers at natural speeds',
-      icon: <Headphones size={24} />,
+      icon: <Edit size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
-      path: '/advanced/listening',
-      unlocked: hasActiveSubscription || isAdmin,
+      path: hasActiveSubscription || isAdmin ? '/advanced/listening' : '/pricing',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'advanced-listening')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'advanced-listening')?.timeSpent ? 0 : 0
+               progress?.find(p => p.lessonId === 'advanced-listening')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'advanced-listening')?.timeSpent || 0) * 2), 95) : 0
     },
   ];
 
@@ -241,11 +253,18 @@ const AdvancedLevelPage: React.FC = () => {
               <div
                 key={topic.id}
                 className={`p-6 rounded-lg shadow-md ${
-                  topic.unlocked
-                    ? (theme === 'dark' ? 'bg-gray-800 opacity-50' : 'bg-white opacity-50')
-                    : (theme === 'dark' ? 'bg-gray-800 opacity-50' : 'bg-white opacity-50')
-                }`}
+                  theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+                } ${topic.premium && !hasActiveSubscription && !isAdmin ? 'relative' : ''}`}
               >
+                {topic.premium && !hasActiveSubscription && !isAdmin && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center z-10">
+                    <div className="text-center p-4">
+                      <Lock className="mx-auto h-8 w-8 text-white mb-2" />
+                      <p className="text-white font-medium">Premium Content</p>
+                      <p className="text-white text-sm mt-1">Upgrade to access</p>
+                    </div>
+                  </div>
+                )}
                 <div className={`p-3 rounded-full inline-block mb-4 ${topic.color}`}>
                   {topic.icon}
                 </div>
@@ -268,24 +287,15 @@ const AdvancedLevelPage: React.FC = () => {
                     {topic.progress}% Complete
                   </p>
                 </div>
-                {topic.unlocked ? (
-                  <div className={`flex items-center text-sm font-medium ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-400'
-                  }`}>
-                    Complete Intermediate Level to Unlock
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </div>
-                ) : (
-                  <Link
-                    to="/pricing"
-                    className={`flex items-center text-sm font-medium ${
-                      theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'
-                    }`}
-                  >
-                    Upgrade to Access
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                )}
+                <Link
+                  to={topic.path}
+                  className={`flex items-center text-sm font-medium ${
+                    theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'
+                  }`}
+                >
+                  {topic.premium && !hasActiveSubscription && !isAdmin ? 'Upgrade to Access' : 'Complete Intermediate Level to Unlock'}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </div>
             ))}
           </div>

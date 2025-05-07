@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Book, Check, ChevronRight, Pencil, Play, Volume2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Book, Brain, Check, ChevronRight, Pencil, Play, Volume2 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface Example {
   georgian: string;
@@ -12,8 +14,73 @@ interface Example {
 
 const SentenceConstructionPage: React.FC = () => {
   const { theme } = useTheme();
+  const { user } = useAuth();
+  const { updateProgress } = useUserProgress();
   const [selectedExample, setSelectedExample] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [lastActivityTime, setLastActivityTime] = useState(Date.now());
+  const [exerciseMode, setExerciseMode] = useState<'arrange' | 'complete' | 'transform' | null>(null);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [arrangedWords, setArrangedWords] = useState<string[]>([]);
+  const [availableWords, setAvailableWords] = useState<string[]>([]);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [transformInput, setTransformInput] = useState('');
+  const [showFeedback, setShowFeedback] = useState(false);
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Track time spent on the page
+  useEffect(() => {
+    // Set up interval to track time spent
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const timeDiff = now - lastActivityTime;
+      
+      // Only count time if user has been active in the last 5 minutes
+      if (timeDiff < 5 * 60 * 1000) {
+        setTimeSpent(prev => prev + 1);
+      }
+      
+      setLastActivityTime(now);
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, [lastActivityTime]);
+
+  // Update user activity time on interactions
+  const updateActivity = () => {
+    setLastActivityTime(Date.now());
+  };
+
+  // Save progress when user leaves the page
+  useEffect(() => {
+    // Track initial visit
+    if (user) {
+      updateProgress('sentences', { timeSpent: 1 });
+    }
+    
+    // Save progress when component unmounts
+    return () => {
+      if (user && timeSpent > 0) {
+        // Calculate progress based on time spent and exercise completion
+        const exerciseCompletion = arrangedWords.length + 
+                                  (selectedOption ? 1 : 0) + 
+                                  (transformInput ? 1 : 0);
+        
+        // Mark as completed if user has spent significant time or completed exercises
+        const completed = timeSpent > 15 || exerciseCompletion >= 5;
+        
+        updateProgress('sentences', { 
+          timeSpent, 
+          completed: completed
+        });
+      }
+    };
+  }, [user, timeSpent, arrangedWords, selectedOption, transformInput]);
 
   const basicRules = [
     {
@@ -202,28 +269,29 @@ const SentenceConstructionPage: React.FC = () => {
     {
       type: "Arrange words",
       instruction: "Arrange these words to form a correct Georgian sentence:",
-      words: ["წიგნს", "ბავშვი", "კითხულობს"],
-      correctOrder: "ბავშვი წიგნს კითხულობს",
+      words: ["წიგნს (tsigns)", "ბავშვი (bavshvi)", "კითხულობს (kitkholobs)"],
+      correctOrder: "ბავშვი (bavshvi) წიგნს (tsigns) კითხულობს (kitkholobs)",
       translation: "The child is reading a book"
     },
     {
       type: "Complete sentence",
       instruction: "Complete the sentence with the correct form:",
       sentence: "მე ___ ვწერ",
-      options: ["წერილს", "წერილი", "წერილმა"],
-      correct: "წერილს",
+      options: ["წერილს (tserils)", "წერილი (tserili)", "წერილმა (tserilma)"],
+      correct: "წერილს (tserils)",
       explanation: "Direct objects take the dative case (-ს)"
     },
     {
       type: "Transform",
       instruction: "Transform this positive sentence into negative:",
-      sentence: "ვხედავ მას",
-      answer: "არ ვხედავ მას",
+      sentence: "ვხედავ მას (vkhedav mas)",
+      answer: "არ ვხედავ მას (ar vkhedav mas)",
       explanation: "Add არ before the verb to make it negative"
     }
   ];
 
   const playAudio = (text: string) => {
+    updateActivity();
     if (isPlaying === text) {
       setIsPlaying(null);
     } else {
@@ -233,14 +301,63 @@ const SentenceConstructionPage: React.FC = () => {
     }
   };
 
+  const startArrangeExercise = () => {
+    updateActivity();
+    setExerciseMode('arrange');
+    setArrangedWords([]);
+    setAvailableWords([...exercises[0].words]);
+    setShowFeedback(false);
+  };
+
+  const handleWordClick = (word: string, isArranged: boolean) => {
+    updateActivity();
+    if (isArranged) {
+      // Move from arranged back to available
+      setArrangedWords(arrangedWords.filter(w => w !== word));
+      setAvailableWords([...availableWords, word]);
+    } else {
+      // Move from available to arranged
+      setAvailableWords(availableWords.filter(w => w !== word));
+      setArrangedWords([...arrangedWords, word]);
+    }
+  };
+
+  const checkArrangeAnswer = () => {
+    updateActivity();
+    setShowFeedback(true);
+  };
+
+  const handleOptionSelect = (option: string) => {
+    updateActivity();
+    setSelectedOption(option);
+    setShowFeedback(true);
+  };
+
+  const handleTransformSubmit = () => {
+    updateActivity();
+    setShowFeedback(true);
+  };
+
+  const isArrangeCorrect = () => {
+    return arrangedWords.join(' ') === exercises[0].correctOrder;
+  };
+
+  const isCompleteCorrect = () => {
+    return selectedOption === exercises[1].correct;
+  };
+
+  const isTransformCorrect = () => {
+    return transformInput.trim().toLowerCase() === exercises[2].answer.toLowerCase();
+  };
+
   return (
-    <div className="pt-16 pb-16">
+    <div className="pt-16 pb-16" onClick={updateActivity}>
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>Sentence Construction</span>
+                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>Sentence Construction</span> - წინადადების აგება (tsinadadebis ageba)
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Learn how to build proper Georgian sentences with these essential rules and patterns.
@@ -356,95 +473,248 @@ const SentenceConstructionPage: React.FC = () => {
             Practice Exercises
           </h2>
           
-          <div className="space-y-6">
-            {exercises.map((exercise, index) => (
-              <div 
-                key={index}
-                className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}
+          {!exerciseMode ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <button
+                onClick={startArrangeExercise}
+                className={`p-6 rounded-lg text-center transition-transform hover:scale-105 ${
+                  theme === 'dark' ? 'bg-gray-700 hover:bg-gray-650' : 'bg-white hover:bg-gray-50'
+                } shadow-lg`}
               >
-                <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Exercise {index + 1}: {exercise.type}
+                <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Word Arrangement
                 </h3>
-                <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {exercise.instruction}
+                <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                  Arrange words to form correct Georgian sentences
                 </p>
-                
-                {exercise.type === "Arrange words" && (
+              </button>
+              
+              <button
+                onClick={() => setExerciseMode('complete')}
+                className={`p-6 rounded-lg text-center transition-transform hover:scale-105 ${
+                  theme === 'dark' ? 'bg-gray-700 hover:bg-gray-650' : 'bg-white hover:bg-gray-50'
+                } shadow-lg`}
+              >
+                <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Sentence Completion
+                </h3>
+                <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                  Complete sentences with the correct form
+                </p>
+              </button>
+              
+              <button
+                onClick={() => setExerciseMode('transform')}
+                className={`p-6 rounded-lg text-center transition-transform hover:scale-105 ${
+                  theme === 'dark' ? 'bg-gray-700 hover:bg-gray-650' : 'bg-white hover:bg-gray-50'
+                } shadow-lg`}
+              >
+                <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Sentence Transformation
+                </h3>
+                <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                  Transform sentences from positive to negative
+                </p>
+              </button>
+            </div>
+          ) : (
+            <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}>
+              <div className="flex justify-between items-center mb-6">
+                <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {exerciseMode === 'arrange' ? 'Word Arrangement' : 
+                   exerciseMode === 'complete' ? 'Sentence Completion' : 'Sentence Transformation'}
+                </h3>
+                <button
+                  onClick={() => setExerciseMode(null)}
+                  className={`px-4 py-2 rounded ${
+                    theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500' : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
+                >
+                  Back to Exercises
+                </button>
+              </div>
+              
+              {exerciseMode === 'arrange' && (
+                <div>
+                  <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    {exercises[0].instruction}
+                  </p>
+                  
                   <div className="space-y-4">
-                    <div className="flex flex-wrap gap-2">
-                      {exercise.words.map((word, wordIndex) => (
-                        <div
-                          key={wordIndex}
-                          className={`px-3 py-2 rounded ${
-                            theme === 'dark' 
-                              ? 'bg-gray-600 text-white' 
-                              : 'bg-gray-100 text-gray-800'
-                          }`}
-                        >
-                          {word}
-                        </div>
-                      ))}
+                    <div className="p-4 rounded-lg border-2 border-dashed min-h-20 flex flex-wrap gap-2 items-center
+                      ${theme === 'dark' ? 'border-gray-600 bg-gray-800' : 'border-gray-300 bg-gray-50'}">
+                      {arrangedWords.length > 0 ? (
+                        arrangedWords.map((word, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleWordClick(word, true)}
+                            className={`px-3 py-2 rounded ${
+                              theme === 'dark' 
+                                ? 'bg-blue-700 text-white hover:bg-blue-600' 
+                                : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                            }`}
+                          >
+                            {word}
+                          </button>
+                        ))
+                      ) : (
+                        <span className={`text-sm italic ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                          Drag words here to form a sentence
+                        </span>
+                      )}
                     </div>
+                    
+                    <div className="mt-4">
+                      <p className={`text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                        Available words:
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {availableWords.map((word, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleWordClick(word, false)}
+                            className={`px-3 py-2 rounded ${
+                              theme === 'dark' 
+                                ? 'bg-gray-600 text-white hover:bg-gray-500' 
+                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                            }`}
+                          >
+                            {word}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
                     <button
+                      onClick={checkArrangeAnswer}
+                      disabled={arrangedWords.length !== exercises[0].words.length}
                       className={`mt-4 px-4 py-2 rounded ${
-                        theme === 'dark'
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
-                          : 'bg-blue-500 text-white hover:bg-blue-600'
+                        arrangedWords.length !== exercises[0].words.length
+                          ? (theme === 'dark' ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed')
+                          : (theme === 'dark' ? 'bg-blue-700 text-white hover:bg-blue-600' : 'bg-blue-600 text-white hover:bg-blue-700')
                       }`}
                     >
                       Check Answer
                     </button>
+                    
+                    {showFeedback && (
+                      <div className={`mt-4 p-4 rounded-md ${
+                        isArrangeCorrect()
+                          ? (theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800')
+                          : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
+                      }`}>
+                        {isArrangeCorrect()
+                          ? 'Correct! Well done.'
+                          : `Incorrect. The correct order is: "${exercises[0].correctOrder}"`}
+                        <p className={`mt-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                          Translation: {exercises[0].translation}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                )}
-                
-                {exercise.type === "Complete sentence" && (
+                </div>
+              )}
+              
+              {exerciseMode === 'complete' && (
+                <div>
+                  <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    {exercises[1].instruction}
+                  </p>
+                  
                   <div className="space-y-4">
                     <div className="flex flex-wrap gap-2 items-center">
-                      {exercise.sentence.split('___').map((part, partIndex, array) => (
+                      {exercises[1].sentence.split('___').map((part, partIndex, array) => (
                         <React.Fragment key={partIndex}>
-                          <span>{part}</span>
+                          <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>{part}</span>
                           {partIndex < array.length - 1 && (
-                            <select
-                              className={`px-3 py-2 rounded ${
-                                theme === 'dark'
-                                  ? 'bg-gray-600 text-white border-gray-500'
-                                  : 'bg-white text-gray-800 border-gray-300'
-                              } border`}
-                            >
-                              <option value="">Choose...</option>
-                              {exercise.options.map((option, optionIndex) => (
-                                <option key={optionIndex} value={option}>
-                                  {option}
-                                </option>
-                              ))}
-                            </select>
+                            <div className="inline-block">
+                              {selectedOption ? (
+                                <span className={`px-3 py-2 rounded ${
+                                  selectedOption === exercises[1].correct
+                                    ? (theme === 'dark' ? 'bg-green-700 text-white' : 'bg-green-100 text-green-800')
+                                    : (theme === 'dark' ? 'bg-red-700 text-white' : 'bg-red-100 text-red-800')
+                                }`}>
+                                  {selectedOption}
+                                </span>
+                              ) : (
+                                <span className={`px-3 py-2 rounded border-2 border-dashed ${
+                                  theme === 'dark' ? 'border-gray-600 bg-gray-800' : 'border-gray-300 bg-gray-50'
+                                }`}>
+                                  ___
+                                </span>
+                              )}
+                            </div>
                           )}
                         </React.Fragment>
                       ))}
                     </div>
-                    <button
-                      className={`mt-4 px-4 py-2 rounded ${
-                        theme === 'dark'
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
-                          : 'bg-blue-500 text-white hover:bg-blue-600'
-                      }`}
-                    >
-                      Check Answer
-                    </button>
+                    
+                    <div className="mt-4">
+                      <p className={`text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                        Choose the correct option:
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {exercises[1].options.map((option, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleOptionSelect(option)}
+                            disabled={showFeedback}
+                            className={`px-3 py-2 rounded ${
+                              selectedOption === option
+                                ? option === exercises[1].correct
+                                  ? (theme === 'dark' ? 'bg-green-700 text-white' : 'bg-green-100 text-green-800')
+                                  : (theme === 'dark' ? 'bg-red-700 text-white' : 'bg-red-100 text-red-800')
+                                : (theme === 'dark' 
+                                    ? 'bg-gray-600 text-white hover:bg-gray-500' 
+                                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300')
+                            } ${showFeedback && option !== selectedOption ? 'opacity-50' : ''}`}
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {showFeedback && (
+                      <div className={`mt-4 p-4 rounded-md ${
+                        isCompleteCorrect()
+                          ? (theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800')
+                          : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
+                      }`}>
+                        {isCompleteCorrect()
+                          ? 'Correct! Well done.'
+                          : `Incorrect. The correct answer is "${exercises[1].correct}"`}
+                        <p className={`mt-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                          {exercises[1].explanation}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                )}
-                
-                {exercise.type === "Transform" && (
+                </div>
+              )}
+              
+              {exerciseMode === 'transform' && (
+                <div>
+                  <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    {exercises[2].instruction}
+                  </p>
+                  
                   <div className="space-y-4">
                     <div className={`p-4 rounded ${
                       theme === 'dark' ? 'bg-gray-600' : 'bg-gray-100'
                     }`}>
                       <p className={theme === 'dark' ? 'text-white' : 'text-gray-800'}>
-                        {exercise.sentence}
+                        {exercises[2].sentence}
                       </p>
                     </div>
+                    
                     <input
                       type="text"
+                      value={transformInput}
+                      onChange={(e) => {
+                        updateActivity();
+                        setTransformInput(e.target.value);
+                      }}
                       placeholder="Type your answer..."
                       className={`w-full px-4 py-2 rounded ${
                         theme === 'dark'
@@ -452,20 +722,38 @@ const SentenceConstructionPage: React.FC = () => {
                           : 'bg-white text-gray-800 border-gray-300'
                       } border`}
                     />
+                    
                     <button
+                      onClick={handleTransformSubmit}
+                      disabled={!transformInput.trim()}
                       className={`mt-4 px-4 py-2 rounded ${
-                        theme === 'dark'
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
-                          : 'bg-blue-500 text-white hover:bg-blue-600'
+                        !transformInput.trim()
+                          ? (theme === 'dark' ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed')
+                          : (theme === 'dark' ? 'bg-blue-700 text-white hover:bg-blue-600' : 'bg-blue-600 text-white hover:bg-blue-700')
                       }`}
                     >
                       Check Answer
                     </button>
+                    
+                    {showFeedback && (
+                      <div className={`mt-4 p-4 rounded-md ${
+                        isTransformCorrect()
+                          ? (theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800')
+                          : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
+                      }`}>
+                        {isTransformCorrect()
+                          ? 'Correct! Well done.'
+                          : `Incorrect. The correct answer is "${exercises[2].answer}"`}
+                        <p className={`mt-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                          {exercises[2].explanation}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
     </div>

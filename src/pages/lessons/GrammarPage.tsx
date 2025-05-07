@@ -1,49 +1,108 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, BookOpen, Check, Pencil } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { useAuth } from '../../contexts/AuthContext';
 
 const GrammarPage: React.FC = () => {
   const { theme } = useTheme();
+  const { user } = useAuth();
+  const { updateProgress } = useUserProgress();
   const [writingInput, setWritingInput] = useState('');
   const [writingFeedback, setWritingFeedback] = useState<string | null>(null);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: string }>({});
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [lastActivityTime, setLastActivityTime] = useState(Date.now());
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Track time spent on the page
+  useEffect(() => {
+    // Set up interval to track time spent
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const timeDiff = now - lastActivityTime;
+      
+      // Only count time if user has been active in the last 5 minutes
+      if (timeDiff < 5 * 60 * 1000) {
+        setTimeSpent(prev => prev + 1);
+      }
+      
+      setLastActivityTime(now);
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, [lastActivityTime]);
+
+  // Update user activity time on interactions
+  const updateActivity = () => {
+    setLastActivityTime(Date.now());
+  };
+
+  // Save progress when user leaves the page
+  useEffect(() => {
+    // Track initial visit
+    if (user) {
+      updateProgress('grammar', { timeSpent: 1 });
+    }
+    
+    // Save progress when component unmounts
+    return () => {
+      if (user && timeSpent > 0) {
+        // Calculate progress based on time spent and exercise completion
+        const exerciseCompletion = Object.keys(selectedAnswers).length + 
+                                  (writingFeedback?.includes('Correct') ? 1 : 0);
+        
+        // Mark as completed if user has spent significant time or completed exercises
+        const completed = timeSpent > 15 || exerciseCompletion >= 5;
+        
+        updateProgress('grammar', { 
+          timeSpent, 
+          completed: completed
+        });
+      }
+    };
+  }, [user, timeSpent, selectedAnswers, writingFeedback]);
 
   const exercises = [
     {
       id: 'ex1',
       sentence: 'მე _____ წერილს',
-      options: ['ვწერ', 'წერს', 'წერთ'],
-      correct: 'ვწერ',
-      explanation: 'Use "ვწერ" with the first person singular (მე)'
+      options: ['ვწერ (vtser)', 'წერს (tsers)', 'წერთ (tsert)'],
+      correct: 'ვწერ (vtser)',
+      explanation: 'Use "ვწერ (vtser)" with the first person singular (მე)'
     },
     {
       id: 'ex2',
       sentence: 'შენ _____ წყალს',
-      options: ['სვამ', 'ვსვამ', 'სვამს'],
-      correct: 'სვამ',
-      explanation: 'Use "სვამ" with the second person singular (შენ)'
+      options: ['სვამ (svam)', 'ვსვამ (vsvam)', 'სვამს (svams)'],
+      correct: 'სვამ (svam)',
+      explanation: 'Use "სვამ (svam)" with the second person singular (შენ)'
     },
     {
       id: 'ex3',
       sentence: 'ის _____ ბურთით',
-      options: ['თამაშობს', 'ვთამაშობ', 'თამაშობთ'],
-      correct: 'თამაშობს',
-      explanation: 'Use "თამაშობს" with the third person singular (ის)'
+      options: ['თამაშობს (tamashobs)', 'ვთამაშობ (vtamashob)', 'თამაშობთ (tamashobт)'],
+      correct: 'თამაშობს (tamashobs)',
+      explanation: 'Use "თამაშობს (tamashobs)" with the third person singular (ის)'
     },
     {
       id: 'ex4',
       sentence: 'ჩვენ _____ ქართულს',
-      options: ['ვსწავლობთ', 'სწავლობენ', 'სწავლობს'],
-      correct: 'ვსწავლობთ',
-      explanation: 'Use "ვსწავლობთ" with the first person plural (ჩვენ)'
+      options: ['ვსწავლობთ (vstsavlobt)', 'სწავლობენ (stsavloben)', 'სწავლობს (stsavlobs)'],
+      correct: 'ვსწავლობთ (vstsavlobt)',
+      explanation: 'Use "ვსწავლობთ (vstsavlobt)" with the first person plural (ჩვენ)'
     },
     {
       id: 'ex5',
       sentence: 'ისინი _____ საჭმელს',
-      options: ['ჭამენ', 'ვჭამთ', 'ჭამს'],
-      correct: 'ჭამენ',
-      explanation: 'Use "ჭამენ" with the third person plural (ისინი)'
+      options: ['ჭამენ (chamen)', 'ვჭამთ (vchamt)', 'ჭამს (chams)'],
+      correct: 'ჭამენ (chamen)',
+      explanation: 'Use "ჭამენ (chamen)" with the third person plural (ისინი)'
     }
   ];
 
@@ -66,6 +125,7 @@ const GrammarPage: React.FC = () => {
   ];
 
   const handleAnswerSelect = (exerciseId: string, answer: string) => {
+    updateActivity();
     setSelectedAnswers(prev => ({
       ...prev,
       [exerciseId]: answer
@@ -73,6 +133,7 @@ const GrammarPage: React.FC = () => {
   };
 
   const handleWritingSubmit = (expectedAnswer: string) => {
+    updateActivity();
     if (writingInput.trim().toLowerCase() === expectedAnswer.toLowerCase()) {
       setWritingFeedback('Correct! Well done!');
     } else {
@@ -81,14 +142,14 @@ const GrammarPage: React.FC = () => {
   };
 
   return (
-    <div className="pt-16 pb-16">
+    <div className="pt-16 pb-16" onClick={updateActivity}>
       {/* Hero section */}
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>Grammar Fundamentals</span>
+                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>Grammar Fundamentals</span> - გრამატიკის საფუძვლები (gramatikis sapudzvlebi)
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Master essential Georgian grammar rules and parts of speech.
@@ -148,7 +209,7 @@ const GrammarPage: React.FC = () => {
           {/* Pronouns Section */}
           <div className="mb-12">
             <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Pronouns (ნაცვალსახელები)
+              Pronouns (ნაცვალსახელები - natsvalsakelebi)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'} shadow-lg`}>
@@ -161,9 +222,9 @@ const GrammarPage: React.FC = () => {
                       Singular:
                     </p>
                     <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      <li>მე - I</li>
-                      <li>შენ - you</li>
-                      <li>ის - he/she/it</li>
+                      <li>მე (me) - I</li>
+                      <li>შენ (shen) - you</li>
+                      <li>ის (is) - he/she/it</li>
                     </ul>
                   </div>
                   <div>
@@ -171,9 +232,9 @@ const GrammarPage: React.FC = () => {
                       Plural:
                     </p>
                     <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      <li>ჩვენ - we</li>
-                      <li>თქვენ - you (plural)</li>
-                      <li>ისინი - they</li>
+                      <li>ჩვენ (chven) - we</li>
+                      <li>თქვენ (tkven) - you (plural)</li>
+                      <li>ისინი (isini) - they</li>
                     </ul>
                   </div>
                 </div>
@@ -189,10 +250,10 @@ const GrammarPage: React.FC = () => {
                       Common Forms:
                     </p>
                     <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      <li>ეს - this</li>
-                      <li>ის - that</li>
-                      <li>ესენი - these</li>
-                      <li>ისინი - those</li>
+                      <li>ეს (es) - this</li>
+                      <li>ის (is) - that</li>
+                      <li>ესენი (eseni) - these</li>
+                      <li>ისინი (isini) - those</li>
                     </ul>
                   </div>
                 </div>
@@ -203,7 +264,7 @@ const GrammarPage: React.FC = () => {
           {/* Verbs Section */}
           <div className="mb-12">
             <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Verbs (ზმნები)
+              Verbs (ზმნები - zmnebi)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'} shadow-lg`}>
@@ -213,15 +274,15 @@ const GrammarPage: React.FC = () => {
                 <div className="space-y-4">
                   <div>
                     <p className={`font-medium mb-2 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>
-                      წერა (to write):
+                      წერა (tsera) - to write:
                     </p>
                     <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      <li>მე ვწერ - I write</li>
-                      <li>შენ წერ - You write</li>
-                      <li>ის წერს - He/She writes</li>
-                      <li>ჩვენ ვწერთ - We write</li>
-                      <li>თქვენ წერთ - You (pl.) write</li>
-                      <li>ისინი წერენ - They write</li>
+                      <li>მე ვწერ (me vtser) - I write</li>
+                      <li>შენ წერ (shen tser) - You write</li>
+                      <li>ის წერს (is tsers) - He/She writes</li>
+                      <li>ჩვენ ვწერთ (chven vtsert) - We write</li>
+                      <li>თქვენ წერთ (tkven tsert) - You (pl.) write</li>
+                      <li>ისინი წერენ (isini tseren) - They write</li>
                     </ul>
                   </div>
                 </div>
@@ -234,15 +295,15 @@ const GrammarPage: React.FC = () => {
                 <div className="space-y-4">
                   <div>
                     <p className={`font-medium mb-2 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>
-                      წერა (to write):
+                      წერა (tsera) - to write:
                     </p>
                     <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      <li>მე ვწერდი - I wrote</li>
-                      <li>შენ წერდი - You wrote</li>
-                      <li>ის წერდა - He/She wrote</li>
-                      <li>ჩვენ ვწერდით - We wrote</li>
-                      <li>თქვენ წერდით - You (pl.) wrote</li>
-                      <li>ისინი წერდნენ - They wrote</li>
+                      <li>მე ვწერდი (me vtserdi) - I wrote</li>
+                      <li>შენ წერდი (shen tserdi) - You wrote</li>
+                      <li>ის წერდა (is tserda) - He/She wrote</li>
+                      <li>ჩვენ ვწერდით (chven vtserdit) - We wrote</li>
+                      <li>თქვენ წერდით (tkven tserdit) - You (pl.) wrote</li>
+                      <li>ისინი წერდნენ (isini tserdnen) - They wrote</li>
                     </ul>
                   </div>
                 </div>
@@ -253,7 +314,7 @@ const GrammarPage: React.FC = () => {
           {/* Adverbs Section */}
           <div className="mb-12">
             <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Adverbs (ზმნიზედები)
+              Adverbs (ზმნიზედები - zmnizedebi)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'} shadow-lg`}>
@@ -261,12 +322,12 @@ const GrammarPage: React.FC = () => {
                   Time Adverbs
                 </h3>
                 <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  <li>ახლა - now</li>
-                  <li>გუშინ - yesterday</li>
-                  <li>ხვალ - tomorrow</li>
-                  <li>მალე - soon</li>
-                  <li>ადრე - early</li>
-                  <li>გვიან - late</li>
+                  <li>ახლა (akhla) - now</li>
+                  <li>გუშინ (gushin) - yesterday</li>
+                  <li>ხვალ (khval) - tomorrow</li>
+                  <li>მალე (male) - soon</li>
+                  <li>ადრე (adre) - early</li>
+                  <li>გვიან (gvian) - late</li>
                 </ul>
               </div>
 
@@ -275,12 +336,12 @@ const GrammarPage: React.FC = () => {
                   Place Adverbs
                 </h3>
                 <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  <li>აქ - here</li>
-                  <li>იქ - there</li>
-                  <li>ახლოს - near</li>
-                  <li>შორს - far</li>
-                  <li>ზემოთ - up</li>
-                  <li>ქვემოთ - down</li>
+                  <li>აქ (ak) - here</li>
+                  <li>იქ (ik) - there</li>
+                  <li>ახლოს (akhlos) - near</li>
+                  <li>შორს (shors) - far</li>
+                  <li>ზემოთ (zemot) - up</li>
+                  <li>ქვემოთ (kvemot) - down</li>
                 </ul>
               </div>
 
@@ -289,12 +350,12 @@ const GrammarPage: React.FC = () => {
                   Manner Adverbs
                 </h3>
                 <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  <li>კარგად - well</li>
-                  <li>ცუდად - badly</li>
-                  <li>სწრაფად - quickly</li>
-                  <li>ნელა - slowly</li>
-                  <li>ხმამაღლა - loudly</li>
-                  <li>ჩუმად - quietly</li>
+                  <li>კარგად (kargad) - well</li>
+                  <li>ცუდად (tsudad) - badly</li>
+                  <li>სწრაფად (stsrapad) - quickly</li>
+                  <li>ნელა (nela) - slowly</li>
+                  <li>ხმამაღლა (khmamaghla) - loudly</li>
+                  <li>ჩუმად (chumad) - quietly</li>
                 </ul>
               </div>
             </div>
@@ -303,7 +364,7 @@ const GrammarPage: React.FC = () => {
           {/* Conjunctions Section */}
           <div className="mb-12">
             <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Conjunctions (კავშირები)
+              Conjunctions (კავშირები - kavshirebi)
             </h2>
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'} shadow-lg`}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -312,11 +373,11 @@ const GrammarPage: React.FC = () => {
                     Coordinating Conjunctions
                   </h3>
                   <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    <li>და - and</li>
-                    <li>მაგრამ - but</li>
-                    <li>ან - or</li>
-                    <li>თუ - if</li>
-                    <li>რომ - that</li>
+                    <li>და (da) - and</li>
+                    <li>მაგრამ (magram) - but</li>
+                    <li>ან (an) - or</li>
+                    <li>თუ (tu) - if</li>
+                    <li>რომ (rom) - that</li>
                   </ul>
                 </div>
                 <div>
@@ -324,10 +385,10 @@ const GrammarPage: React.FC = () => {
                     Usage Examples
                   </h3>
                   <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    <li>მე და შენ - you and I</li>
-                    <li>მინდა, მაგრამ არ შემიძლია - I want to, but I can't</li>
-                    <li>დღეს ან ხვალ - today or tomorrow</li>
-                    <li>თუ მოხვალ - if you come</li>
+                    <li>მე და შენ (me da shen) - you and I</li>
+                    <li>მინდა, მაგრამ არ შემიძლია (minda, magram ar shemidzlia) - I want to, but I can't</li>
+                    <li>დღეს ან ხვალ (dghes an khval) - today or tomorrow</li>
+                    <li>თუ მოხვალ (tu mokhval) - if you come</li>
                   </ul>
                 </div>
               </div>
@@ -337,7 +398,7 @@ const GrammarPage: React.FC = () => {
           {/* Interjections Section */}
           <div className="mb-12">
             <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Interjections (შორისდებულები)
+              Interjections (შორისდებულები - shorisdebulebi)
             </h2>
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'} shadow-lg`}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -346,12 +407,12 @@ const GrammarPage: React.FC = () => {
                     Common Interjections
                   </h3>
                   <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    <li>ვაი! - Oh! (pain/distress)</li>
-                    <li>ვაჰ! - Wow!</li>
-                    <li>უი! - Oops!</li>
-                    <li>ოჰ! - Oh! (surprise)</li>
-                    <li>აჰა! - Aha!</li>
-                    <li>ჰეი! - Hey!</li>
+                    <li>ვაი! (vai!) - Oh! (pain/distress)</li>
+                    <li>ვაჰ! (vah!) - Wow!</li>
+                    <li>უი! (ui!) - Oops!</li>
+                    <li>ოჰ! (oh!) - Oh! (surprise)</li>
+                    <li>აჰა! (aha!) - Aha!</li>
+                    <li>ჰეი! (hei!) - Hey!</li>
                   </ul>
                 </div>
                 <div>
@@ -359,10 +420,10 @@ const GrammarPage: React.FC = () => {
                     Usage Examples
                   </h3>
                   <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    <li>ვაი, რა ცხელა! - Oh, how hot it is!</li>
-                    <li>ვაჰ, რა ლამაზია! - Wow, how beautiful!</li>
-                    <li>უი, ბოდიში! - Oops, sorry!</li>
-                    <li>აჰა, გავიგე! - Aha, I understand!</li>
+                    <li>ვაი, რა ცხელა! (vai, ra tskhela!) - Oh, how hot it is!</li>
+                    <li>ვაჰ, რა ლამაზია! (vah, ra lamazia!) - Wow, how beautiful!</li>
+                    <li>უი, ბოდიში! (ui, bodishi!) - Oops, sorry!</li>
+                    <li>აჰა, გავიგე! (aha, gavige!) - Aha, I understand!</li>
                   </ul>
                 </div>
               </div>
@@ -372,7 +433,7 @@ const GrammarPage: React.FC = () => {
           {/* Prepositions Section */}
           <div className="mb-12">
             <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Postpositions (თანდებულები)
+              Postpositions (თანდებულები - tandebulebi)
             </h2>
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'} shadow-lg`}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -381,12 +442,12 @@ const GrammarPage: React.FC = () => {
                     Common Postpositions
                   </h3>
                   <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    <li>-ში - in</li>
-                    <li>-ზე - on</li>
-                    <li>-თან - with/at</li>
-                    <li>-დან - from</li>
-                    <li>-კენ - towards</li>
-                    <li>-მდე - until/up to</li>
+                    <li>-ში (-shi) - in</li>
+                    <li>-ზე (-ze) - on</li>
+                    <li>-თან (-tan) - with/at</li>
+                    <li>-დან (-dan) - from</li>
+                    <li>-კენ (-ken) - towards</li>
+                    <li>-მდე (-mde) - until/up to</li>
                   </ul>
                 </div>
                 <div>
@@ -394,11 +455,11 @@ const GrammarPage: React.FC = () => {
                     Usage Examples
                   </h3>
                   <ul className={`list-disc list-inside space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                    <li>სახლში - in the house</li>
-                    <li>მაგიდაზე - on the table</li>
-                    <li>მეგობართან - with a friend</li>
-                    <li>თბილისიდან - from Tbilisi</li>
-                    <li>სახლისკენ - towards home</li>
+                    <li>სახლში (sakhlshi) - in the house</li>
+                    <li>მაგიდაზე (magidaze) - on the table</li>
+                    <li>მეგობართან (megobartan) - with a friend</li>
+                    <li>თბილისიდან (tbilisidan) - from Tbilisi</li>
+                    <li>სახლისკენ (sakhlisken) - towards home</li>
                   </ul>
                 </div>
               </div>

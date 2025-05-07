@@ -79,48 +79,48 @@ function App() {
                   </ProtectedRoute>
                 } />
                 <Route path="beginner/colors-and-shapes" element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <ColorsAndShapesPage />
                   </ProtectedRoute>
                 } />
                 <Route path="beginner/numbers" element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <NumbersPage />
                   </ProtectedRoute>
                 } />
                 <Route path="beginner/months-and-seasons" element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <MonthsAndSeasonsPage />
                   </ProtectedRoute>
                 } />
                 <Route path="beginner/food-and-drinks" element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <FoodAndDrinksPage />
                   </ProtectedRoute>
                 } />
                 <Route path="beginner/human-body" element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <HumanBodyPage />
                   </ProtectedRoute>
                 } />
                 <Route path="beginner/animals" element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <AnimalsPage />
                   </ProtectedRoute>
                 } />
                 <Route path="beginner/daily-activities" element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <DailyActivitiesPage />
                   </ProtectedRoute>
                 } />
                 <Route path="beginner/quiz/:topic" element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
                     <QuizPage />
                   </ProtectedRoute>
                 } />
                 
                 <Route path="intermediate" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <ProtectedRoute>
                     <IntermediateLevelPage />
                   </ProtectedRoute>
                 } />
@@ -161,7 +161,7 @@ function App() {
                 } />
                 
                 <Route path="advanced" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <ProtectedRoute>
                     <AdvancedLevelPage />
                   </ProtectedRoute>
                 } />
@@ -181,7 +181,7 @@ function App() {
                 <Route path="contact" element={<ContactPage />} />
                 
                 <Route path="vocabulary" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <ProtectedRoute>
                     <VocabularyPage />
                   </ProtectedRoute>
                 } />

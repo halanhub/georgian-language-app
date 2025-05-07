@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, Brain, Edit, GraduationCap, MessageCircle, Pencil } from 'lucide-react';
+import { ArrowRight, BookOpen, Brain, Edit, GraduationCap, MessageCircle, Pencil, Lock } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSubscription } from '../../hooks/useSubscription';
@@ -55,6 +55,11 @@ const IntermediateLevelPage: React.FC = () => {
     }
   }, [user, progressLoading, updateProgress]);
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const topics = [
     { 
       id: 'grammar', 
@@ -62,10 +67,11 @@ const IntermediateLevelPage: React.FC = () => {
       description: 'Master essential Georgian grammar rules',
       icon: <BookOpen size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
-      path: '/intermediate/grammar',
-      unlocked: hasActiveSubscription || isAdmin,
+      path: hasActiveSubscription || isAdmin ? '/intermediate/grammar' : '/pricing',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'grammar')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'grammar')?.timeSpent ? 40 : 0
+               progress?.find(p => p.lessonId === 'grammar')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'grammar')?.timeSpent || 0) * 2), 95) : 0
     },
     { 
       id: 'sentences', 
@@ -73,10 +79,11 @@ const IntermediateLevelPage: React.FC = () => {
       description: 'Learn to build proper Georgian sentences',
       icon: <Edit size={24} />,
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
-      path: '/intermediate/sentences',
-      unlocked: hasActiveSubscription || isAdmin,
+      path: hasActiveSubscription || isAdmin ? '/intermediate/sentences' : '/pricing',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'sentences')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'sentences')?.timeSpent ? 25 : 0
+               progress?.find(p => p.lessonId === 'sentences')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'sentences')?.timeSpent || 0) * 2), 95) : 0
     },
     { 
       id: 'common-words', 
@@ -84,10 +91,11 @@ const IntermediateLevelPage: React.FC = () => {
       description: 'Master the most frequently used Georgian words',
       icon: <Brain size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
-      path: '/intermediate/common-words',
-      unlocked: hasActiveSubscription || isAdmin,
+      path: hasActiveSubscription || isAdmin ? '/intermediate/common-words' : '/pricing',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'common-words')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'common-words')?.timeSpent ? 15 : 0
+               progress?.find(p => p.lessonId === 'common-words')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'common-words')?.timeSpent || 0) * 2), 95) : 0
     },
     { 
       id: 'conversations', 
@@ -95,10 +103,11 @@ const IntermediateLevelPage: React.FC = () => {
       description: 'Practice real-world dialogues and improve speaking skills',
       icon: <MessageCircle size={24} />,
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
-      path: '/intermediate/conversations',
-      unlocked: hasActiveSubscription || isAdmin,
+      path: hasActiveSubscription || isAdmin ? '/intermediate/conversations' : '/pricing',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'conversations')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'conversations')?.timeSpent ? 10 : 0
+               progress?.find(p => p.lessonId === 'conversations')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'conversations')?.timeSpent || 0) * 2), 95) : 0
     },
     { 
       id: 'reading', 
@@ -106,10 +115,11 @@ const IntermediateLevelPage: React.FC = () => {
       description: 'Read and comprehend Georgian texts with confidence',
       icon: <GraduationCap size={24} />,
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
-      path: '/intermediate/reading',
-      unlocked: hasActiveSubscription || isAdmin,
+      path: hasActiveSubscription || isAdmin ? '/intermediate/reading' : '/pricing',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'reading')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'reading')?.timeSpent ? 5 : 0
+               progress?.find(p => p.lessonId === 'reading')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'reading')?.timeSpent || 0) * 2), 95) : 0
     },
     { 
       id: 'writing', 
@@ -117,10 +127,11 @@ const IntermediateLevelPage: React.FC = () => {
       description: 'Develop your written Georgian skills through guided practice',
       icon: <Pencil size={24} />,
       color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
-      path: '/intermediate/writing',
-      unlocked: hasActiveSubscription || isAdmin,
+      path: hasActiveSubscription || isAdmin ? '/intermediate/writing' : '/pricing',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'writing')?.completed ? 100 : 
-               progress?.find(p => p.lessonId === 'writing')?.timeSpent ? 0 : 0
+               progress?.find(p => p.lessonId === 'writing')?.timeSpent ? 
+               Math.min(Math.round((progress?.find(p => p.lessonId === 'writing')?.timeSpent || 0) * 2), 95) : 0
     },
   ];
 
@@ -215,11 +226,18 @@ const IntermediateLevelPage: React.FC = () => {
               <div
                 key={topic.id}
                 className={`p-6 rounded-lg shadow-md transition-all ${
-                  topic.unlocked
-                    ? (theme === 'dark' ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50')
-                    : (theme === 'dark' ? 'bg-gray-800 opacity-70' : 'bg-white opacity-70')
-                }`}
+                  theme === 'dark' ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
+                } ${topic.premium && !hasActiveSubscription && !isAdmin ? 'relative' : ''}`}
               >
+                {topic.premium && !hasActiveSubscription && !isAdmin && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center z-10">
+                    <div className="text-center p-4">
+                      <Lock className="mx-auto h-8 w-8 text-white mb-2" />
+                      <p className="text-white font-medium">Premium Content</p>
+                      <p className="text-white text-sm mt-1">Upgrade to access</p>
+                    </div>
+                  </div>
+                )}
                 <div className={`p-3 rounded-full inline-block mb-4 ${topic.color}`}>
                   {topic.icon}
                 </div>
@@ -229,45 +247,29 @@ const IntermediateLevelPage: React.FC = () => {
                 <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   {topic.description}
                 </p>
-                {topic.unlocked ? (
-                  <>
-                    <div className="mb-3">
-                      <div className={`w-full h-1.5 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`}>
-                        <div 
-                          className={`h-1.5 rounded-full ${
-                            theme === 'dark' ? 'bg-blue-500' : 'bg-blue-600'
-                          }`}
-                          style={{ width: `${topic.progress}%` }}
-                        />
-                      </div>
-                      <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {topic.progress}% Complete
-                      </p>
-                    </div>
-                    <Link
-                      to={topic.path}
-                      className={`flex items-center text-sm font-medium ${
-                        theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+                <div className="mb-3">
+                  <div className={`w-full h-1.5 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                    <div 
+                      className={`h-1.5 rounded-full ${
+                        theme === 'dark' ? 'bg-blue-500' : 'bg-blue-600'
                       }`}
-                      onClick={() => updateProgress(topic.id, { timeSpent: 1 })}
-                    >
-                      {topic.progress > 0 ? 'Continue Learning' : 'Start Learning'}
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </>
-                ) : (
-                  <div className="flex items-center">
-                    <Link
-                      to="/pricing"
-                      className={`flex items-center text-sm font-medium ${
-                        theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
-                      }`}
-                    >
-                      Upgrade to Access
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
+                      style={{ width: `${topic.progress}%` }}
+                    />
                   </div>
-                )}
+                  <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {topic.progress}% Complete
+                  </p>
+                </div>
+                <Link
+                  to={topic.path}
+                  className={`flex items-center text-sm font-medium ${
+                    theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+                  }`}
+                  onClick={() => hasActiveSubscription && updateProgress(topic.id, { timeSpent: 1 })}
+                >
+                  {topic.premium && !hasActiveSubscription && !isAdmin ? 'Upgrade to Access' : (topic.progress > 0 ? 'Continue Learning' : 'Start Learning')}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </div>
             ))}
           </div>

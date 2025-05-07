@@ -11,10 +11,10 @@ interface Question {
   options: string[];
   correctAnswer: string;
   explanation?: string;
-  type: 'translation' | 'listening' | 'matching';
+  type: 'order' | 'completion' | 'transformation';
 }
 
-const CommonWordsQuiz: React.FC = () => {
+const SentenceConstructionQuiz: React.FC = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
   const { updateProgress } = useUserProgress();
@@ -22,7 +22,7 @@ const CommonWordsQuiz: React.FC = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(30);
+  const [remainingTime, setRemainingTime] = useState(45);
   const [isChecking, setIsChecking] = useState(false);
   const [timeSpent, setTimeSpent] = useState(0);
   const [lastActivityTime, setLastActivityTime] = useState(Date.now());
@@ -35,83 +35,133 @@ const CommonWordsQuiz: React.FC = () => {
   const questions: Question[] = [
     {
       id: 1,
-      question: "What does 'მე (me)' mean?",
-      options: ['You', 'I', 'He', 'She'],
-      correctAnswer: 'I',
-      explanation: 'მე (me) is the first-person singular pronoun "I" in Georgian',
-      type: 'translation'
+      question: "What is the correct word order for 'The child reads a book' in Georgian?",
+      options: [
+        'ბავშვი წიგნს კითხულობს (bavshvi tsigns kitkholobs)',
+        'კითხულობს ბავშვი წიგნს (kitkholobs bavshvi tsigns)',
+        'წიგნს ბავშვი კითხულობს (tsigns bavshvi kitkholobs)',
+        'ბავშვი კითხულობს წიგნს (bavshvi kitkholobs tsigns)'
+      ],
+      correctAnswer: 'ბავშვი წიგნს კითხულობს (bavshvi tsigns kitkholobs)',
+      explanation: "Georgian typically follows Subject-Object-Verb (SOV) word order, so 'ბავშვი წიგნს კითხულობს' is correct.",
+      type: 'order'
     },
     {
       id: 2,
-      question: "Choose the correct translation for 'thank you'",
-      options: ['გამარჯობა (gamarjoba)', 'მადლობა (madloba)', 'ნახვამდის (nakhvamdis)', 'გთხოვთ (gtxovt)'],
-      correctAnswer: 'მადლობა (madloba)',
-      explanation: 'მადლობა (madloba) means "thank you" in Georgian',
-      type: 'translation'
+      question: "Which is the correct form to complete: 'მე _____ ვსვამ' (I am drinking water)?",
+      options: [
+        'წყალი (tsqali)',
+        'წყალს (tsqals)',
+        'წყალით (tsqalit)',
+        'წყალმა (tsqalma)'
+      ],
+      correctAnswer: 'წყალს (tsqals)',
+      explanation: "Direct objects in Georgian take the dative case, so 'წყალს (tsqals)' is the correct form.",
+      type: 'completion'
     },
     {
       id: 3,
-      question: "Match the word 'სახლი (sakhli)' with its meaning",
-      options: ['Car', 'House', 'Book', 'Tree'],
-      correctAnswer: 'House',
-      explanation: 'სახლი (sakhli) means "house" in Georgian',
-      type: 'matching'
+      question: "Which is the correct negative form of 'მე ვჭამ' (me vcham - I eat)?",
+      options: [
+        'მე არ ვჭამ (me ar vcham)',
+        'არ მე ვჭამ (ar me vcham)',
+        'მე ვჭამ არ (me vcham ar)',
+        'მე ვჭამ არა (me vcham ara)'
+      ],
+      correctAnswer: 'მე არ ვჭამ (me ar vcham)',
+      explanation: "To form a negative sentence in Georgian, place 'არ (ar)' before the verb.",
+      type: 'transformation'
     },
     {
       id: 4,
-      question: "What is the Georgian word for 'water'?",
-      options: ['წყალი (tsqali)', 'პური (puri)', 'ღვინო (ghvino)', 'ჩაი (chai)'],
-      correctAnswer: 'წყალი (tsqali)',
-      explanation: 'წყალი (tsqali) means "water" in Georgian',
-      type: 'translation'
+      question: "What is the correct word order for 'I gave the book to my friend' in Georgian?",
+      options: [
+        'მე წიგნი ჩემს მეგობარს მივეცი (me tsigni chems megobars mivetsi)',
+        'მე მივეცი წიგნი ჩემს მეგობარს (me mivetsi tsigni chems megobars)',
+        'ჩემს მეგობარს მე წიგნი მივეცი (chems megobars me tsigni mivetsi)',
+        'წიგნი მე ჩემს მეგობარს მივეცი (tsigni me chems megobars mivetsi)'
+      ],
+      correctAnswer: 'მე წიგნი ჩემს მეგობარს მივეცი (me tsigni chems megobars mivetsi)',
+      explanation: "In Georgian, the typical order for ditransitive verbs is Subject-Direct Object-Indirect Object-Verb.",
+      type: 'order'
     },
     {
       id: 5,
-      question: "Choose the correct meaning of 'დიდი (didi)'",
-      options: ['Small', 'Big', 'New', 'Old'],
-      correctAnswer: 'Big',
-      explanation: 'დიდი (didi) means "big" in Georgian',
-      type: 'translation'
+      question: "Which is the correct form to complete: 'ის _____ ცხოვრობს' (He/she lives in Tbilisi)?",
+      options: [
+        'თბილისი (tbilisi)',
+        'თბილისის (tbilisis)',
+        'თბილისში (tbilisshi)',
+        'თბილისიდან (tbilisidan)'
+      ],
+      correctAnswer: 'თბილისში (tbilisshi)',
+      explanation: "The postposition '-ში (-shi)' is used to indicate 'in' a location, so 'თბილისში (tbilisshi)' means 'in Tbilisi'.",
+      type: 'completion'
     },
     {
       id: 6,
-      question: "What does 'მინდა (minda)' mean?",
-      options: ['I need', 'I want', 'I have', 'I like'],
-      correctAnswer: 'I want',
-      explanation: 'მინდა (minda) means "I want" in Georgian',
-      type: 'translation'
+      question: "Which is the correct question form of 'ის წერს წერილს' (is tsers tserils - He/she writes a letter)?",
+      options: [
+        'ის წერს წერილს? (is tsers tserils?)',
+        'წერს ის წერილს? (tsers is tserils?)',
+        'წერილს ის წერს? (tserils is tsers?)',
+        'ის წერილს წერს? (is tserils tsers?)'
+      ],
+      correctAnswer: 'ის წერს წერილს? (is tsers tserils?)',
+      explanation: "In Georgian, yes/no questions often maintain the same word order as statements but with rising intonation.",
+      type: 'transformation'
     },
     {
       id: 7,
-      question: "Match the word 'კარგი (kargi)' with its meaning",
-      options: ['Bad', 'Good', 'Fast', 'Slow'],
-      correctAnswer: 'Good',
-      explanation: 'კარგი (kargi) means "good" in Georgian',
-      type: 'matching'
+      question: "What is the correct form to express 'I want to go home' in Georgian?",
+      options: [
+        'მე მინდა სახლში წასვლა (me minda sakhlshi tsasvla)',
+        'მე სახლში წასვლა მინდა (me sakhlshi tsasvla minda)',
+        'მინდა მე სახლში წასვლა (minda me sakhlshi tsasvla)',
+        'წასვლა სახლში მე მინდა (tsasvla sakhlshi me minda)'
+      ],
+      correctAnswer: 'მე მინდა სახლში წასვლა (me minda sakhlshi tsasvla)',
+      explanation: "The structure 'მინდა (minda) + infinitive' is used to express 'I want to do something' in Georgian.",
+      type: 'order'
     },
     {
       id: 8,
-      question: "What is the Georgian word for 'book'?",
-      options: ['წიგნი (tsigni)', 'კარი (kari)', 'მაგიდა (magida)', 'სკამი (skami)'],
-      correctAnswer: 'წიგნი (tsigni)',
-      explanation: 'წიგნი (tsigni) means "book" in Georgian',
-      type: 'translation'
+      question: "Which is the correct past tense form of 'ვაკეთებ' (vaketeb - I do/make)?",
+      options: [
+        'ვაკეთე (vakete)',
+        'გავაკეთე (gavakete)',
+        'ვაკეთებდი (vaketebdi)',
+        'გავაკეთებდი (gavaketebdi)'
+      ],
+      correctAnswer: 'გავაკეთე (gavakete)',
+      explanation: "The correct past tense form of 'ვაკეთებ (vaketeb)' is 'გავაკეთე (gavakete)', which adds the preverb 'გა-' and changes the ending.",
+      type: 'transformation'
     },
     {
       id: 9,
-      question: "Choose the correct translation for 'friend'",
-      options: ['მეგობარი (megobari)', 'ოჯახი (ojakhi)', 'მასწავლებელი (mastsavlebeli)', 'ექიმი (ekimi)'],
-      correctAnswer: 'მეგობარი (megobari)',
-      explanation: 'მეგობარი (megobari) means "friend" in Georgian',
-      type: 'translation'
+      question: "Which is the correct form to complete: 'მე მაქვს _____' (I have a car)?",
+      options: [
+        'მანქანა (manqana)',
+        'მანქანას (manqanas)',
+        'მანქანით (manqanit)',
+        'მანქანაში (manqanashi)'
+      ],
+      correctAnswer: 'მანქანა (manqana)',
+      explanation: "With the verb 'მაქვს (makvs)' meaning 'I have', the object takes the nominative case, so 'მანქანა (manqana)' is correct.",
+      type: 'completion'
     },
     {
       id: 10,
-      question: "What does 'ვარ (var)' mean?",
-      options: ['I am', 'You are', 'He is', 'They are'],
-      correctAnswer: 'I am',
-      explanation: 'ვარ (var) means "I am" in Georgian',
-      type: 'translation'
+      question: "What is the correct way to form 'I can speak Georgian' in Georgian?",
+      options: [
+        'მე შემიძლია ქართულად ლაპარაკი (me shemidzlia kartulad laparaki)',
+        'მე ქართულად ლაპარაკი შემიძლია (me kartulad laparaki shemidzlia)',
+        'შემიძლია მე ქართულად ლაპარაკი (shemidzlia me kartulad laparaki)',
+        'ქართულად ლაპარაკი მე შემიძლია (kartulad laparaki me shemidzlia)'
+      ],
+      correctAnswer: 'მე შემიძლია ქართულად ლაპარაკი (me shemidzlia kartulad laparaki)',
+      explanation: "The structure with 'შემიძლია (shemidzlia)' typically follows the pattern: subject + შემიძლია + verbal noun.",
+      type: 'order'
     }
   ];
 
@@ -142,7 +192,7 @@ const CommonWordsQuiz: React.FC = () => {
   useEffect(() => {
     // Track initial visit
     if (user) {
-      updateProgress('quiz-common-words', { timeSpent: 1 });
+      updateProgress('quiz-sentences', { timeSpent: 1 });
     }
     
     // Save progress when component unmounts
@@ -151,7 +201,7 @@ const CommonWordsQuiz: React.FC = () => {
         // Calculate progress based on time spent and quiz completion
         const completed = showScore;
         
-        updateProgress('quiz-common-words', { 
+        updateProgress('quiz-sentences', { 
           timeSpent, 
           completed: completed,
           score: Math.round((score / questions.length) * 100)
@@ -194,7 +244,7 @@ const CommonWordsQuiz: React.FC = () => {
       if (currentQuestion < questions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
         setSelectedAnswer(null);
-        setRemainingTime(30);
+        setRemainingTime(45);
       } else {
         setShowScore(true);
       }
@@ -208,7 +258,7 @@ const CommonWordsQuiz: React.FC = () => {
     setScore(0);
     setShowScore(false);
     setSelectedAnswer(null);
-    setRemainingTime(30);
+    setRemainingTime(45);
   };
 
   return (
@@ -218,14 +268,14 @@ const CommonWordsQuiz: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className={`text-2xl md:text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-green-400' : 'text-green-600'}>Common Words Quiz</span>
+                <span className={theme === 'dark' ? 'text-green-400' : 'text-green-600'}>Sentence Construction Quiz</span>
               </h1>
               <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Test your knowledge of common Georgian words
+                Test your knowledge of Georgian sentence construction
               </p>
             </div>
             <Link
-              to="/intermediate/common-words"
+              to="/intermediate/sentences"
               className={`inline-flex items-center px-3 py-1.5 rounded text-sm font-medium ${
                 theme === 'dark' 
                   ? 'bg-gray-700 text-white hover:bg-gray-600' 
@@ -233,7 +283,7 @@ const CommonWordsQuiz: React.FC = () => {
               }`}
             >
               <ArrowLeft className="mr-1 h-4 w-4" />
-              Back to Words
+              Back to Sentences
             </Link>
           </div>
         </div>
@@ -356,10 +406,10 @@ const CommonWordsQuiz: React.FC = () => {
                 
                 <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   {score / questions.length >= 0.8 
-                    ? 'Excellent! You have a great understanding of common Georgian words.'
+                    ? 'Excellent! You have a great understanding of Georgian sentence construction.'
                     : score / questions.length >= 0.6
-                      ? 'Good job! Keep practicing to improve your vocabulary.'
-                      : 'Keep learning! Review the common words and try again.'}
+                      ? 'Good job! Keep practicing to improve your sentence construction skills.'
+                      : 'Keep learning! Review the sentence construction rules and try again.'}
                 </p>
               </div>
               
@@ -376,14 +426,14 @@ const CommonWordsQuiz: React.FC = () => {
                 </button>
                 
                 <Link
-                  to="/intermediate/common-words"
+                  to="/intermediate/sentences"
                   className={`px-6 py-3 rounded-lg font-medium ${
                     theme === 'dark' 
                       ? 'bg-gray-700 text-white hover:bg-gray-600' 
                       : 'bg-white border border-gray-300 text-gray-800 hover:bg-gray-50'
                   }`}
                 >
-                  Back to Common Words
+                  Back to Sentences
                 </Link>
               </div>
             </div>
@@ -394,4 +444,4 @@ const CommonWordsQuiz: React.FC = () => {
   );
 };
 
-export default CommonWordsQuiz;
+export default SentenceConstructionQuiz;

@@ -1,7 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check, Utensils, ChevronDown, ChevronUp, Play, Volume2, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface FoodItem {
   georgian: string;
@@ -19,6 +21,8 @@ interface FoodCategory {
 
 const FoodAndDrinksPage: React.FC = () => {
   const { theme } = useTheme();
+  const { user } = useAuth();
+  const { updateProgress } = useUserProgress();
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -27,6 +31,13 @@ const FoodAndDrinksPage: React.FC = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [categorizationAnswers, setCategorizationAnswers] = useState<Record<string, string>>({});
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [lastActivityTime, setLastActivityTime] = useState(Date.now());
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const categories: FoodCategory[] = [
     {
@@ -34,14 +45,14 @@ const FoodAndDrinksPage: React.FC = () => {
       title: 'Traditional Georgian Dishes',
       description: 'Famous Georgian cuisine classics',
       items: [
-        { georgian: 'ხაჭაპური', latin: 'khachapuri', english: 'cheese bread', example: 'აჭარული ხაჭაპური - Adjarian khachapuri' },
-        { georgian: 'ხინკალი', latin: 'khinkali', english: 'dumplings', example: 'ხორცის ხინკალი - Meat dumplings' },
-        { georgian: 'მწვადი', latin: 'mtsvadi', english: 'grilled meat skewers', example: 'ღორის მწვადი - Pork mtsvadi' },
-        { georgian: 'ლობიანი', latin: 'lobiani', english: 'bean-filled bread', example: 'ცხელი ლობიანი - Hot lobiani' },
-        { georgian: 'საცივი', latin: 'satsivi', english: 'walnut sauce with chicken', example: 'ქათმის საცივი - Chicken satsivi' },
-        { georgian: 'ჩახოხბილი', latin: 'chakhokhbili', english: 'stewed chicken', example: 'ქათმის ჩახოხბილი - Chicken chakhokhbili' },
-        { georgian: 'აჯაფსანდალი', latin: 'ajapsandali', english: 'vegetable stew', example: 'ცხელი აჯაფსანდალი - Hot ajapsandali' },
-        { georgian: 'ფხალი', latin: 'pkhali', english: 'vegetable pâté', example: 'ისპანახის ფხალი - Spinach pkhali' }
+        { georgian: 'ხაჭაპური', latin: 'khachapuri', english: 'cheese bread', example: 'აჭარული ხაჭაპური (acharuli khachapuri) - Adjarian khachapuri' },
+        { georgian: 'ხინკალი', latin: 'khinkali', english: 'dumplings', example: 'ხორცის ხინკალი (khortsis khinkali) - Meat dumplings' },
+        { georgian: 'მწვადი', latin: 'mtsvadi', english: 'grilled meat skewers', example: 'ღორის მწვადი (ghoris mtsvadi) - Pork mtsvadi' },
+        { georgian: 'ლობიანი', latin: 'lobiani', english: 'bean-filled bread', example: 'ცხელი ლობიანი (tskheli lobiani) - Hot lobiani' },
+        { georgian: 'საცივი', latin: 'satsivi', english: 'walnut sauce with chicken', example: 'ქათმის საცივი (katmis satsivi) - Chicken satsivi' },
+        { georgian: 'ჩახოხბილი', latin: 'chakhokhbili', english: 'stewed chicken', example: 'ქათმის ჩახოხბილი (katmis chakhokhbili) - Chicken chakhokhbili' },
+        { georgian: 'აჯაფსანდალი', latin: 'ajapsandali', english: 'vegetable stew', example: 'ცხელი აჯაფსანდალი (tskheli ajapsandali) - Hot ajapsandali' },
+        { georgian: 'ფხალი', latin: 'pkhali', english: 'vegetable pâté', example: 'ისპანახის ფხალი (ispanakhis pkhali) - Spinach pkhali' }
       ]
     },
     {
@@ -49,12 +60,12 @@ const FoodAndDrinksPage: React.FC = () => {
       title: 'Breads & Pastries',
       description: 'Traditional Georgian breads and baked goods',
       items: [
-        { georgian: 'პური', latin: 'puri', english: 'bread', example: 'თონის პური - Clay oven bread' },
-        { georgian: 'მჭადი', latin: 'mchadi', english: 'cornbread', example: 'ცხელი მჭადი - Hot cornbread' },
-        { georgian: 'ქადა', latin: 'kada', english: 'sweet bread', example: 'ნიგვზიანი ქადა - Walnut kada' },
-        { georgian: 'ნაზუქი', latin: 'nazuki', english: 'sweet spiced bread', example: 'ახალი ნაზუქი - Fresh nazuki' },
-        { georgian: 'გოზინაყი', latin: 'gozinaki', english: 'honey-walnut candy', example: 'თაფლის გოზინაყი - Honey gozinaki' },
-        { georgian: 'ჩურჩხელა', latin: 'churchkhela', english: 'grape juice candy', example: 'კაკლის ჩურჩხელა - Walnut churchkhela' }
+        { georgian: 'პური', latin: 'puri', english: 'bread', example: 'თონის პური (tonis puri) - Clay oven bread' },
+        { georgian: 'მჭადი', latin: 'mchadi', english: 'cornbread', example: 'ცხელი მჭადი (tskheli mchadi) - Hot cornbread' },
+        { georgian: 'ქადა', latin: 'kada', english: 'sweet bread', example: 'ნიგვზიანი ქადა (nigvziani kada) - Walnut kada' },
+        { georgian: 'ნაზუქი', latin: 'nazuki', english: 'sweet spiced bread', example: 'ახალი ნაზუქი (akhali nazuki) - Fresh nazuki' },
+        { georgian: 'გოზინაყი', latin: 'gozinaki', english: 'honey-walnut candy', example: 'თაფლის გოზინაყი (taplis gozinaki) - Honey gozinaki' },
+        { georgian: 'ჩურჩხელა', latin: 'churchkhela', english: 'grape juice candy', example: 'კაკლის ჩურჩხელა (kaklis churchkhela) - Walnut churchkhela' }
       ]
     },
     {
@@ -62,12 +73,12 @@ const FoodAndDrinksPage: React.FC = () => {
       title: 'Beverages',
       description: 'Traditional Georgian drinks',
       items: [
-        { georgian: 'ღვინო', latin: 'ghvino', english: 'wine', example: 'წითელი ღვინო - Red wine' },
-        { georgian: 'ჭაჭა', latin: 'chacha', english: 'grape vodka', example: 'ყურძნის ჭაჭა - Grape chacha' },
-        { georgian: 'წყალი', latin: 'tsqali', english: 'water', example: 'ცივი წყალი - Cold water' },
-        { georgian: 'ლიმონათი', latin: 'limonati', english: 'lemonade', example: 'ქართული ლიმონათი - Georgian lemonade' },
-        { georgian: 'ჩაი', latin: 'chai', english: 'tea', example: 'შავი ჩაი - Black tea' },
-        { georgian: 'ყავა', latin: 'qava', english: 'coffee', example: 'თურქული ყავა - Turkish coffee' }
+        { georgian: 'ღვინო', latin: 'ghvino', english: 'wine', example: 'წითელი ღვინო (tsiteli ghvino) - Red wine' },
+        { georgian: 'ჭაჭა', latin: 'chacha', english: 'grape vodka', example: 'ყურძნის ჭაჭა (qurdznis chacha) - Grape chacha' },
+        { georgian: 'წყალი', latin: 'tsqali', english: 'water', example: 'ცივი წყალი (tsivi tsqali) - Cold water' },
+        { georgian: 'ლიმონათი', latin: 'limonati', english: 'lemonade', example: 'ქართული ლიმონათი (kartuli limonati) - Georgian lemonade' },
+        { georgian: 'ჩაი', latin: 'chai', english: 'tea', example: 'შავი ჩაი (shavi chai) - Black tea' },
+        { georgian: 'ყავა', latin: 'qava', english: 'coffee', example: 'თურქული ყავა (turkuli qava) - Turkish coffee' }
       ]
     },
     {
@@ -75,14 +86,14 @@ const FoodAndDrinksPage: React.FC = () => {
       title: 'Common Ingredients',
       description: 'Basic cooking ingredients',
       items: [
-        { georgian: 'ყველი', latin: 'qveli', english: 'cheese', example: 'სულგუნი - Sulguni cheese' },
-        { georgian: 'ხორცი', latin: 'khortsi', english: 'meat', example: 'საქონლის ხორცი - Beef' },
-        { georgian: 'ბოსტნეული', latin: 'bostneuli', english: 'vegetables', example: 'ახალი ბოსტნეული - Fresh vegetables' },
-        { georgian: 'ნიგოზი', latin: 'nigozi', english: 'walnuts', example: 'დაჭრილი ნიგოზი - Chopped walnuts' },
-        { georgian: 'სუნელები', latin: 'sunelebi', english: 'spices', example: 'ქართული სუნელები - Georgian spices' },
-        { georgian: 'ხილი', latin: 'khili', english: 'fruit', example: 'ახალი ხილი - Fresh fruit' },
-        { georgian: 'პომიდორი', latin: 'pomidori', english: 'tomato', example: 'წითელი პომიდორი - Red tomato' },
-        { georgian: 'კიტრი', latin: 'kitri', english: 'cucumber', example: 'მწვანე კიტრი - Green cucumber' }
+        { georgian: 'ყველი', latin: 'qveli', english: 'cheese', example: 'სულგუნი (sulguni) - Sulguni cheese' },
+        { georgian: 'ხორცი', latin: 'khortsi', english: 'meat', example: 'საქონლის ხორცი (sakonlis khortsi) - Beef' },
+        { georgian: 'ბოსტნეული', latin: 'bostneuli', english: 'vegetables', example: 'ახალი ბოსტნეული (akhali bostneuli) - Fresh vegetables' },
+        { georgian: 'ნიგოზი', latin: 'nigozi', english: 'walnuts', example: 'დაჭრილი ნიგოზი (dachrili nigozi) - Chopped walnuts' },
+        { georgian: 'სუნელები', latin: 'sunelebi', english: 'spices', example: 'ქართული სუნელები (kartuli sunelebi) - Georgian spices' },
+        { georgian: 'ხილი', latin: 'khili', english: 'fruit', example: 'ახალი ხილი (akhali khili) - Fresh fruit' },
+        { georgian: 'პომიდორი', latin: 'pomidori', english: 'tomato', example: 'წითელი პომიდორი (tsiteli pomidori) - Red tomato' },
+        { georgian: 'კიტრი', latin: 'kitri', english: 'cucumber', example: 'მწვანე კიტრი (mtsvane kitri) - Green cucumber' }
       ]
     },
     {
@@ -90,70 +101,120 @@ const FoodAndDrinksPage: React.FC = () => {
       title: 'Meals & Dining',
       description: 'Words related to meals and dining',
       items: [
-        { georgian: 'საუზმე', latin: 'sauzme', english: 'breakfast', example: 'დილის საუზმე - Morning breakfast' },
-        { georgian: 'სადილი', latin: 'sadili', english: 'lunch', example: 'შუადღის სადილი - Midday lunch' },
-        { georgian: 'ვახშამი', latin: 'vakhshami', english: 'dinner', example: 'საღამოს ვახშამი - Evening dinner' },
-        { georgian: 'რესტორანი', latin: 'restorani', english: 'restaurant', example: 'ქართული რესტორანი - Georgian restaurant' },
-        { georgian: 'სამზარეულო', latin: 'samzareulo', english: 'kitchen', example: 'დიდი სამზარეულო - Big kitchen' },
-        { georgian: 'სუფრა', latin: 'supra', english: 'feast table', example: 'ქართული სუფრა - Georgian feast' }
+        { georgian: 'საუზმე', latin: 'sauzme', english: 'breakfast', example: 'დილის საუზმე (dilis sauzme) - Morning breakfast' },
+        { georgian: 'სადილი', latin: 'sadili', english: 'lunch', example: 'შუადღის სადილი (shuadghis sadili) - Midday lunch' },
+        { georgian: 'ვახშამი', latin: 'vakhshami', english: 'dinner', example: 'საღამოს ვახშამი (saghamos vakhshami) - Evening dinner' },
+        { georgian: 'რესტორანი', latin: 'restorani', english: 'restaurant', example: 'ქართული რესტორანი (kartuli restorani) - Georgian restaurant' },
+        { georgian: 'სამზარეულო', latin: 'samzareulo', english: 'kitchen', example: 'დიდი სამზარეულო (didi samzareulo) - Big kitchen' },
+        { georgian: 'სუფრა', latin: 'supra', english: 'feast table', example: 'ქართული სუფრა (kartuli supra) - Georgian feast' }
       ]
     }
   ];
 
   // Exercise data
   const matchingExercises = [
-    { georgian: 'ხაჭაპური', options: ['dumplings', 'cheese bread', 'grilled meat', 'bean-filled bread'], correct: 'cheese bread' },
-    { georgian: 'ღვინო', options: ['water', 'wine', 'tea', 'coffee'], correct: 'wine' },
-    { georgian: 'პური', options: ['bread', 'cheese', 'meat', 'vegetables'], correct: 'bread' },
-    { georgian: 'ხორცი', options: ['fruit', 'vegetables', 'meat', 'spices'], correct: 'meat' },
-    { georgian: 'სადილი', options: ['breakfast', 'lunch', 'dinner', 'feast'], correct: 'lunch' }
+    { georgian: 'ხაჭაპური (khachapuri)', options: ['dumplings', 'cheese bread', 'grilled meat', 'bean-filled bread'], correct: 'cheese bread' },
+    { georgian: 'ღვინო (ghvino)', options: ['water', 'wine', 'tea', 'coffee'], correct: 'wine' },
+    { georgian: 'პური (puri)', options: ['bread', 'cheese', 'meat', 'vegetables'], correct: 'bread' },
+    { georgian: 'ხორცი (khortsi)', options: ['fruit', 'vegetables', 'meat', 'spices'], correct: 'meat' },
+    { georgian: 'სადილი (sadili)', options: ['breakfast', 'lunch', 'dinner', 'feast'], correct: 'lunch' }
   ];
 
   const translationExercises = [
-    { english: 'tea', options: ['ჩაი', 'ყავა', 'წყალი', 'ღვინო'], correct: 'ჩაი' },
-    { english: 'restaurant', options: ['სამზარეულო', 'სუფრა', 'რესტორანი', 'ვახშამი'], correct: 'რესტორანი' },
-    { english: 'cheese', options: ['ხორცი', 'ყველი', 'პური', 'ხილი'], correct: 'ყველი' },
-    { english: 'breakfast', options: ['საუზმე', 'სადილი', 'ვახშამი', 'სუფრა'], correct: 'საუზმე' },
-    { english: 'dumplings', options: ['ხაჭაპური', 'მწვადი', 'ხინკალი', 'ლობიანი'], correct: 'ხინკალი' }
+    { english: 'tea', options: ['ჩაი (chai)', 'ყავა (qava)', 'წყალი (tsqali)', 'ღვინო (ghvino)'], correct: 'ჩაი (chai)' },
+    { english: 'restaurant', options: ['სამზარეულო (samzareulo)', 'სუფრა (supra)', 'რესტორანი (restorani)', 'ვახშამი (vakhshami)'], correct: 'რესტორანი (restorani)' },
+    { english: 'cheese', options: ['ხორცი (khortsi)', 'ყველი (qveli)', 'პური (puri)', 'ხილი (khili)'], correct: 'ყველი (qveli)' },
+    { english: 'breakfast', options: ['საუზმე (sauzme)', 'სადილი (sadili)', 'ვახშამი (vakhshami)', 'სუფრა (supra)'], correct: 'საუზმე (sauzme)' },
+    { english: 'dumplings', options: ['ხაჭაპური (khachapuri)', 'მწვადი (mtsvadi)', 'ხინკალი (khinkali)', 'ლობიანი (lobiani)'], correct: 'ხინკალი (khinkali)' }
   ];
 
   const categorizationExercises = [
     {
       title: "Categorize these food items",
-      items: ['ხაჭაპური', 'ღვინო', 'პური', 'ჩაი'],
+      items: ['ხაჭაპური (khachapuri)', 'ღვინო (ghvino)', 'პური (puri)', 'ჩაი (chai)'],
       categories: ['Food', 'Drink'],
       correctCategories: {
-        'ხაჭაპური': 'Food',
-        'ღვინო': 'Drink',
-        'პური': 'Food',
-        'ჩაი': 'Drink'
+        'ხაჭაპური (khachapuri)': 'Food',
+        'ღვინო (ghvino)': 'Drink',
+        'პური (puri)': 'Food',
+        'ჩაი (chai)': 'Drink'
       }
     },
     {
       title: "Categorize these items",
-      items: ['ხორცი', 'ყველი', 'წყალი', 'ყავა'],
+      items: ['ხორცი (khortsi)', 'ყველი (qveli)', 'წყალი (tsqali)', 'ყავა (qava)'],
       categories: ['Ingredient', 'Beverage'],
       correctCategories: {
-        'ხორცი': 'Ingredient',
-        'ყველი': 'Ingredient',
-        'წყალი': 'Beverage',
-        'ყავა': 'Beverage'
+        'ხორცი (khortsi)': 'Ingredient',
+        'ყველი (qveli)': 'Ingredient',
+        'წყალი (tsqali)': 'Beverage',
+        'ყავა (qava)': 'Beverage'
       }
     },
     {
       title: "Categorize these meal times",
-      items: ['საუზმე', 'სადილი', 'ვახშამი', 'სუფრა'],
+      items: ['საუზმე (sauzme)', 'სადილი (sadili)', 'ვახშამი (vakhshami)', 'სუფრა (supra)'],
       categories: ['Meal', 'Other'],
       correctCategories: {
-        'საუზმე': 'Meal',
-        'სადილი': 'Meal',
-        'ვახშამი': 'Meal',
-        'სუფრა': 'Other'
+        'საუზმე (sauzme)': 'Meal',
+        'სადილი (sadili)': 'Meal',
+        'ვახშამი (vakhshami)': 'Meal',
+        'სუფრა (supra)': 'Other'
       }
     }
   ];
 
+  // Track time spent on the page
+  useEffect(() => {
+    // Set up interval to track time spent
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const timeDiff = now - lastActivityTime;
+      
+      // Only count time if user has been active in the last 5 minutes
+      if (timeDiff < 5 * 60 * 1000) {
+        setTimeSpent(prev => prev + 1);
+      }
+      
+      setLastActivityTime(now);
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, [lastActivityTime]);
+
+  // Update user activity time on interactions
+  const updateActivity = () => {
+    setLastActivityTime(Date.now());
+  };
+
+  // Save progress when user leaves the page
+  useEffect(() => {
+    // Track initial visit
+    if (user) {
+      updateProgress('food', { timeSpent: 1 });
+    }
+    
+    // Save progress when component unmounts
+    return () => {
+      if (user && timeSpent > 0) {
+        // Calculate progress based on time spent and exercise completion
+        const exerciseCompletion = Object.keys(matchingExercises).length + 
+                                  Object.keys(translationExercises).length + 
+                                  Object.keys(categorizationAnswers).length;
+        
+        // Mark as completed if user has spent significant time or completed exercises
+        const completed = timeSpent > 10 || exerciseCompletion >= 5;
+        
+        updateProgress('food', { 
+          timeSpent, 
+          completed: completed
+        });
+      }
+    };
+  }, [user, timeSpent, categorizationAnswers]);
+
   const toggleCategory = (categoryId: string) => {
+    updateActivity();
     if (expandedCategory === categoryId) {
       setExpandedCategory(null);
     } else {
@@ -167,6 +228,7 @@ const FoodAndDrinksPage: React.FC = () => {
   };
 
   const playAudio = (word: string) => {
+    updateActivity();
     if (isPlaying === word) {
       setIsPlaying(null);
     } else {
@@ -177,11 +239,13 @@ const FoodAndDrinksPage: React.FC = () => {
   };
 
   const handleExerciseAnswer = (answer: string) => {
+    updateActivity();
     setSelectedAnswer(answer);
     setShowFeedback(true);
   };
 
   const handleCategorization = (item: string, category: string) => {
+    updateActivity();
     setCategorizationAnswers(prev => ({
       ...prev,
       [item]: category
@@ -189,6 +253,7 @@ const FoodAndDrinksPage: React.FC = () => {
   };
 
   const checkCategorizationAnswers = () => {
+    updateActivity();
     const exercise = categorizationExercises[currentExerciseIndex];
     const isCorrect = Object.entries(categorizationAnswers).every(
       ([item, category]) => exercise.correctCategories[item as keyof typeof exercise.correctCategories] === category
@@ -198,6 +263,7 @@ const FoodAndDrinksPage: React.FC = () => {
   };
 
   const nextExercise = () => {
+    updateActivity();
     if (exerciseMode === 'matching' && currentExerciseIndex < matchingExercises.length - 1) {
       setCurrentExerciseIndex(currentExerciseIndex + 1);
     } else if (exerciseMode === 'translation' && currentExerciseIndex < translationExercises.length - 1) {
@@ -211,6 +277,7 @@ const FoodAndDrinksPage: React.FC = () => {
   };
 
   const resetExercise = () => {
+    updateActivity();
     setCurrentExerciseIndex(0);
     setSelectedAnswer(null);
     setShowFeedback(false);
@@ -232,13 +299,13 @@ const FoodAndDrinksPage: React.FC = () => {
   };
 
   return (
-    <div className="pt-16 pb-16">
+    <div className="pt-16 pb-16" onClick={updateActivity}>
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gradient-to-br from-orange-50 to-red-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-orange-400' : 'text-orange-600'}>Food & Drinks</span> - საჭმელი და სასმელი
+                <span className={theme === 'dark' ? 'text-orange-400' : 'text-orange-600'}>Food & Drinks</span> - საჭმელი და სასმელი (sachmeli da sasmeli)
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Learn Georgian cuisine vocabulary and traditional dishes.

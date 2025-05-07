@@ -11,10 +11,10 @@ interface Question {
   options: string[];
   correctAnswer: string;
   explanation?: string;
-  type: 'translation' | 'listening' | 'matching';
+  type: 'translation' | 'response' | 'context';
 }
 
-const CommonWordsQuiz: React.FC = () => {
+const ConversationsQuiz: React.FC = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
   const { updateProgress } = useUserProgress();
@@ -22,7 +22,7 @@ const CommonWordsQuiz: React.FC = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(30);
+  const [remainingTime, setRemainingTime] = useState(45);
   const [isChecking, setIsChecking] = useState(false);
   const [timeSpent, setTimeSpent] = useState(0);
   const [lastActivityTime, setLastActivityTime] = useState(Date.now());
@@ -35,83 +35,133 @@ const CommonWordsQuiz: React.FC = () => {
   const questions: Question[] = [
     {
       id: 1,
-      question: "What does 'მე (me)' mean?",
-      options: ['You', 'I', 'He', 'She'],
-      correctAnswer: 'I',
-      explanation: 'მე (me) is the first-person singular pronoun "I" in Georgian',
+      question: "How would you say 'Hello, how are you?' in Georgian?",
+      options: [
+        'გამარჯობა, როგორ ხარ? (gamarjoba, rogor khar?)',
+        'ნახვამდის, როგორ ხარ? (nakhvamdis, rogor khar?)',
+        'გამარჯობა, სად ხარ? (gamarjoba, sad khar?)',
+        'გამარჯობა, ვინ ხარ? (gamarjoba, vin khar?)'
+      ],
+      correctAnswer: 'გამარჯობა, როგორ ხარ? (gamarjoba, rogor khar?)',
+      explanation: "The phrase 'გამარჯობა, როგორ ხარ? (gamarjoba, rogor khar?)' is the standard greeting asking how someone is doing.",
       type: 'translation'
     },
     {
       id: 2,
-      question: "Choose the correct translation for 'thank you'",
-      options: ['გამარჯობა (gamarjoba)', 'მადლობა (madloba)', 'ნახვამდის (nakhvamdis)', 'გთხოვთ (gtxovt)'],
-      correctAnswer: 'მადლობა (madloba)',
-      explanation: 'მადლობა (madloba) means "thank you" in Georgian',
-      type: 'translation'
+      question: "What's the appropriate response to 'როგორ ხარ? (rogor khar? - How are you?)'",
+      options: [
+        'გმადლობთ (gmadlobt - thank you)',
+        'კარგად, შენ? (kargad, shen? - Good, and you?)',
+        'დიახ (diakh - yes)',
+        'ნახვამდის (nakhvamdis - goodbye)'
+      ],
+      correctAnswer: 'კარგად, შენ? (kargad, shen? - Good, and you?)',
+      explanation: "The appropriate response is 'კარგად, შენ? (kargad, shen?)' which means 'Good, and you?'",
+      type: 'response'
     },
     {
       id: 3,
-      question: "Match the word 'სახლი (sakhli)' with its meaning",
-      options: ['Car', 'House', 'Book', 'Tree'],
-      correctAnswer: 'House',
-      explanation: 'სახლი (sakhli) means "house" in Georgian',
-      type: 'matching'
+      question: "How would you ask for the bill in a restaurant?",
+      options: [
+        'ანგარიში, თუ შეიძლება (angarishi, tu sheidzleba - The bill, please)',
+        'მენიუ, თუ შეიძლება (meniu, tu sheidzleba - The menu, please)',
+        'წყალი, თუ შეიძლება (tsqali, tu sheidzleba - Water, please)',
+        'მადლობა (madloba - Thank you)'
+      ],
+      correctAnswer: 'ანგარიში, თუ შეიძლება (angarishi, tu sheidzleba - The bill, please)',
+      explanation: "To ask for the bill, you would say 'ანგარიში, თუ შეიძლება (angarishi, tu sheidzleba)' which means 'The bill, please'.",
+      type: 'context'
     },
     {
       id: 4,
-      question: "What is the Georgian word for 'water'?",
-      options: ['წყალი (tsqali)', 'პური (puri)', 'ღვინო (ghvino)', 'ჩაი (chai)'],
-      correctAnswer: 'წყალი (tsqali)',
-      explanation: 'წყალი (tsqali) means "water" in Georgian',
+      question: "How would you introduce yourself by saying 'My name is [name]' in Georgian?",
+      options: [
+        'მე ვარ [name] (me var [name])',
+        'მე მქვია [name] (me mkvia [name])',
+        'ჩემი სახელია [name] (chemi sakhelia [name])',
+        'All of the above'
+      ],
+      correctAnswer: 'All of the above',
+      explanation: "All three phrases can be used to introduce yourself in Georgian: 'მე ვარ [name]', 'მე მქვია [name]', and 'ჩემი სახელია [name]'.",
       type: 'translation'
     },
     {
       id: 5,
-      question: "Choose the correct meaning of 'დიდი (didi)'",
-      options: ['Small', 'Big', 'New', 'Old'],
-      correctAnswer: 'Big',
-      explanation: 'დიდი (didi) means "big" in Georgian',
-      type: 'translation'
+      question: "What would you say to ask 'Where is the bathroom?' in Georgian?",
+      options: [
+        'სად არის საპირფარეშო? (sad aris sapirparesho?)',
+        'რა ღირს ეს? (ra ghirs es?)',
+        'რომელი საათია? (romeli saatia?)',
+        'როგორ მივიდე...? (rogor mivide...?)'
+      ],
+      correctAnswer: 'სად არის საპირფარეშო? (sad aris sapirparesho?)',
+      explanation: "To ask where the bathroom is, you would say 'სად არის საპირფარეშო? (sad aris sapirparesho?)'",
+      type: 'context'
     },
     {
       id: 6,
-      question: "What does 'მინდა (minda)' mean?",
-      options: ['I need', 'I want', 'I have', 'I like'],
-      correctAnswer: 'I want',
-      explanation: 'მინდა (minda) means "I want" in Georgian',
-      type: 'translation'
+      question: "What's the appropriate response to 'გმადლობთ (gmadlobt - thank you)'?",
+      options: [
+        'გმადლობთ (gmadlobt - thank you)',
+        'კარგად (kargad - well)',
+        'არაფრის (arapris - you're welcome)',
+        'დიახ (diakh - yes)'
+      ],
+      correctAnswer: 'არაფრის (arapris - you're welcome)',
+      explanation: "The appropriate response to 'გმადლობთ (thank you)' is 'არაფრის (arapris)' which means 'you're welcome'.",
+      type: 'response'
     },
     {
       id: 7,
-      question: "Match the word 'კარგი (kargi)' with its meaning",
-      options: ['Bad', 'Good', 'Fast', 'Slow'],
-      correctAnswer: 'Good',
-      explanation: 'კარგი (kargi) means "good" in Georgian',
-      type: 'matching'
-    },
-    {
-      id: 8,
-      question: "What is the Georgian word for 'book'?",
-      options: ['წიგნი (tsigni)', 'კარი (kari)', 'მაგიდა (magida)', 'სკამი (skami)'],
-      correctAnswer: 'წიგნი (tsigni)',
-      explanation: 'წიგნი (tsigni) means "book" in Georgian',
+      question: "How would you ask 'Do you speak English?' in Georgian?",
+      options: [
+        'ინგლისურად ლაპარაკობ? (inglisurad laparakob?)',
+        'ქართულად ლაპარაკობ? (karturad laparakob?)',
+        'საიდან ხარ? (saidan khar?)',
+        'რა გქვია? (ra gkvia?)'
+      ],
+      correctAnswer: 'ინგლისურად ლაპარაკობ? (inglisurad laparakob?)',
+      explanation: "To ask if someone speaks English, you would say 'ინგლისურად ლაპარაკობ? (inglisurad laparakob?)'",
       type: 'translation'
     },
     {
+      id: 8,
+      question: "What would you say to order food in a restaurant?",
+      options: [
+        'მე მინდა... (me minda... - I want...)',
+        'მე მიყვარს... (me miqvars... - I love...)',
+        'მე მაქვს... (me makvs... - I have...)',
+        'მე ვარ... (me var... - I am...)'
+      ],
+      correctAnswer: 'მე მინდა... (me minda... - I want...)',
+      explanation: "To order food in a restaurant, you would typically start with 'მე მინდა... (me minda...)' which means 'I want...'",
+      type: 'context'
+    },
+    {
       id: 9,
-      question: "Choose the correct translation for 'friend'",
-      options: ['მეგობარი (megobari)', 'ოჯახი (ojakhi)', 'მასწავლებელი (mastsavlebeli)', 'ექიმი (ekimi)'],
-      correctAnswer: 'მეგობარი (megobari)',
-      explanation: 'მეგობარი (megobari) means "friend" in Georgian',
+      question: "How would you ask for the time in Georgian?",
+      options: [
+        'რა დროა? (ra droa?)',
+        'რომელი საათია? (romeli saatia?)',
+        'რამდენი საათია? (ramdeni saatia?)',
+        'Both B and C'
+      ],
+      correctAnswer: 'Both B and C',
+      explanation: "Both 'რომელი საათია? (romeli saatia?)' and 'რამდენი საათია? (ramdeni saatia?)' are common ways to ask for the time in Georgian.",
       type: 'translation'
     },
     {
       id: 10,
-      question: "What does 'ვარ (var)' mean?",
-      options: ['I am', 'You are', 'He is', 'They are'],
-      correctAnswer: 'I am',
-      explanation: 'ვარ (var) means "I am" in Georgian',
-      type: 'translation'
+      question: "What's the appropriate response when someone asks 'საიდან ხარ? (saidan khar? - Where are you from?)'",
+      options: [
+        'მე ვარ... (me var... - I am...)',
+        'მე მქვია... (me mkvia... - My name is...)',
+        'მე [country]-დან ვარ (me [country]-dan var - I am from [country])',
+        'გმადლობთ (gmadlobt - thank you)'
+      ],
+      correctAnswer: 'მე [country]-დან ვარ (me [country]-dan var - I am from [country])',
+      explanation: "The appropriate response is 'მე [country]-დან ვარ (me [country]-dan var)' which means 'I am from [country]'. For example, 'მე ამერიკიდან ვარ (me amerikidan var)' means 'I am from America'.",
+      type: 'response'
     }
   ];
 
@@ -142,7 +192,7 @@ const CommonWordsQuiz: React.FC = () => {
   useEffect(() => {
     // Track initial visit
     if (user) {
-      updateProgress('quiz-common-words', { timeSpent: 1 });
+      updateProgress('quiz-conversations', { timeSpent: 1 });
     }
     
     // Save progress when component unmounts
@@ -151,7 +201,7 @@ const CommonWordsQuiz: React.FC = () => {
         // Calculate progress based on time spent and quiz completion
         const completed = showScore;
         
-        updateProgress('quiz-common-words', { 
+        updateProgress('quiz-conversations', { 
           timeSpent, 
           completed: completed,
           score: Math.round((score / questions.length) * 100)
@@ -194,7 +244,7 @@ const CommonWordsQuiz: React.FC = () => {
       if (currentQuestion < questions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
         setSelectedAnswer(null);
-        setRemainingTime(30);
+        setRemainingTime(45);
       } else {
         setShowScore(true);
       }
@@ -208,24 +258,24 @@ const CommonWordsQuiz: React.FC = () => {
     setScore(0);
     setShowScore(false);
     setSelectedAnswer(null);
-    setRemainingTime(30);
+    setRemainingTime(45);
   };
 
   return (
     <div className="pt-16 pb-16" onClick={updateActivity}>
-      <section className={`py-8 ${theme === 'dark' ? 'bg-gray-800' : 'bg-green-50'}`}>
+      <section className={`py-8 ${theme === 'dark' ? 'bg-gray-800' : 'bg-yellow-50'}`}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className={`text-2xl md:text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-green-400' : 'text-green-600'}>Common Words Quiz</span>
+                <span className={theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}>Conversations Quiz</span>
               </h1>
               <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                Test your knowledge of common Georgian words
+                Test your knowledge of Georgian conversations
               </p>
             </div>
             <Link
-              to="/intermediate/common-words"
+              to="/intermediate/conversations"
               className={`inline-flex items-center px-3 py-1.5 rounded text-sm font-medium ${
                 theme === 'dark' 
                   ? 'bg-gray-700 text-white hover:bg-gray-600' 
@@ -233,7 +283,7 @@ const CommonWordsQuiz: React.FC = () => {
               }`}
             >
               <ArrowLeft className="mr-1 h-4 w-4" />
-              Back to Words
+              Back to Conversations
             </Link>
           </div>
         </div>
@@ -259,7 +309,7 @@ const CommonWordsQuiz: React.FC = () => {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                   <div 
-                    className="bg-green-500 h-2.5 rounded-full transition-all duration-300" 
+                    className="bg-yellow-500 h-2.5 rounded-full transition-all duration-300" 
                     style={{ width: `${((currentQuestion) / questions.length) * 100}%` }}
                   ></div>
                 </div>
@@ -317,7 +367,7 @@ const CommonWordsQuiz: React.FC = () => {
                   className={`px-6 py-3 rounded-lg font-medium flex items-center ${
                     !selectedAnswer || isChecking
                       ? (theme === 'dark' ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-500 cursor-not-allowed')
-                      : (theme === 'dark' ? 'bg-green-700 text-white hover:bg-green-800' : 'bg-green-600 text-white hover:bg-green-700')
+                      : (theme === 'dark' ? 'bg-yellow-700 text-white hover:bg-yellow-800' : 'bg-yellow-600 text-white hover:bg-yellow-700')
                   }`}
                 >
                   {isChecking ? 'Checking...' : 'Check Answer'}
@@ -327,7 +377,7 @@ const CommonWordsQuiz: React.FC = () => {
             </div>
           ) : (
             <div className={`p-8 rounded-lg text-center ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
-              <Trophy size={64} className={`mx-auto mb-4 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+              <Trophy size={64} className={`mx-auto mb-4 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-500'}`} />
               
               <h2 className={`text-2xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Quiz Completed!
@@ -356,10 +406,10 @@ const CommonWordsQuiz: React.FC = () => {
                 
                 <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   {score / questions.length >= 0.8 
-                    ? 'Excellent! You have a great understanding of common Georgian words.'
+                    ? 'Excellent! You have a great understanding of Georgian conversations.'
                     : score / questions.length >= 0.6
-                      ? 'Good job! Keep practicing to improve your vocabulary.'
-                      : 'Keep learning! Review the common words and try again.'}
+                      ? 'Good job! Keep practicing to improve your conversation skills.'
+                      : 'Keep learning! Practice more conversations and try again.'}
                 </p>
               </div>
               
@@ -368,22 +418,22 @@ const CommonWordsQuiz: React.FC = () => {
                   onClick={handleRetakeQuiz}
                   className={`px-6 py-3 rounded-lg font-medium ${
                     theme === 'dark' 
-                      ? 'bg-green-700 text-white hover:bg-green-800' 
-                      : 'bg-green-600 text-white hover:bg-green-700'
+                      ? 'bg-yellow-700 text-white hover:bg-yellow-800' 
+                      : 'bg-yellow-600 text-white hover:bg-yellow-700'
                   }`}
                 >
                   Retake Quiz
                 </button>
                 
                 <Link
-                  to="/intermediate/common-words"
+                  to="/intermediate/conversations"
                   className={`px-6 py-3 rounded-lg font-medium ${
                     theme === 'dark' 
                       ? 'bg-gray-700 text-white hover:bg-gray-600' 
                       : 'bg-white border border-gray-300 text-gray-800 hover:bg-gray-50'
                   }`}
                 >
-                  Back to Common Words
+                  Back to Conversations
                 </Link>
               </div>
             </div>
@@ -394,4 +444,4 @@ const CommonWordsQuiz: React.FC = () => {
   );
 };
 
-export default CommonWordsQuiz;
+export default ConversationsQuiz;

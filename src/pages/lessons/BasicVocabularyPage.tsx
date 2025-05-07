@@ -1,7 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Book, Brain, Check, ChevronDown, ChevronUp, Play, Volume2, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface VocabularyItem {
   georgian: string;
@@ -19,6 +21,8 @@ interface VocabularyCategory {
 
 const BasicVocabularyPage: React.FC = () => {
   const { theme } = useTheme();
+  const { user } = useAuth();
+  const { updateProgress } = useUserProgress();
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -28,6 +32,13 @@ const BasicVocabularyPage: React.FC = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [blankInput, setBlankInput] = useState('');
   const [blankFeedback, setBlankFeedback] = useState<'correct' | 'incorrect' | null>(null);
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [lastActivityTime, setLastActivityTime] = useState(Date.now());
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const categories: VocabularyCategory[] = [
     {
@@ -35,14 +46,14 @@ const BasicVocabularyPage: React.FC = () => {
       title: 'Greetings & Politeness',
       description: 'Essential phrases for polite conversation',
       words: [
-        { georgian: 'გამარჯობა', latin: 'gamarjoba', english: 'hello', example: 'გამარჯობა! - Hello!' },
-        { georgian: 'ნახვამდის', latin: 'nakhvamdis', english: 'goodbye', example: 'ნახვამდის! - Goodbye!' },
-        { georgian: 'გმადლობთ', latin: 'gmadlobt', english: 'thank you', example: 'დიდი მადლობა - Thank you very much' },
-        { georgian: 'გთხოვთ', latin: 'gtxovt', english: 'please', example: 'თუ შეიძლება - Please (if possible)' },
-        { georgian: 'კი', latin: 'ki', english: 'yes', example: 'კი, რა თქმა უნდა - Yes, of course' },
-        { georgian: 'არა', latin: 'ara', english: 'no', example: 'არა, გმადლობთ - No, thank you' },
-        { georgian: 'კარგად', latin: 'kargad', english: 'well/good', example: 'კარგად ბრძანდებოდეთ - Be well' },
-        { georgian: 'ბოდიში', latin: 'bodishi', english: 'sorry', example: 'ბოდიში შეწუხებისთვის - Sorry for the trouble' }
+        { georgian: 'გამარჯობა', latin: 'gamarjoba', english: 'hello', example: 'გამარჯობა! (gamarjoba!) - Hello!' },
+        { georgian: 'ნახვამდის', latin: 'nakhvamdis', english: 'goodbye', example: 'ნახვამდის! (nakhvamdis!) - Goodbye!' },
+        { georgian: 'გმადლობთ', latin: 'gmadlobt', english: 'thank you', example: 'დიდი მადლობა (didi madloba) - Thank you very much' },
+        { georgian: 'გთხოვთ', latin: 'gtxovt', english: 'please', example: 'თუ შეიძლება (tu sheidzleba) - Please (if possible)' },
+        { georgian: 'კი', latin: 'ki', english: 'yes', example: 'კი, რა თქმა უნდა (ki, ra tkma unda) - Yes, of course' },
+        { georgian: 'არა', latin: 'ara', english: 'no', example: 'არა, გმადლობთ (ara, gmadlobt) - No, thank you' },
+        { georgian: 'კარგად', latin: 'kargad', english: 'well/good', example: 'კარგად ბრძანდებოდეთ (kargad brdzandebodet) - Be well' },
+        { georgian: 'ბოდიში', latin: 'bodishi', english: 'sorry', example: 'ბოდიში შეწუხებისთვის (bodishi shetsukhebistvs) - Sorry for the trouble' }
       ]
     },
     {
@@ -50,14 +61,14 @@ const BasicVocabularyPage: React.FC = () => {
       title: 'People & Family',
       description: 'Words for people and family members',
       words: [
-        { georgian: 'კაცი', latin: 'katsi', english: 'man', example: 'ეს კაცი - This man' },
-        { georgian: 'ქალი', latin: 'kali', english: 'woman', example: 'ეს ქალი - This woman' },
-        { georgian: 'ბავშვი', latin: 'bavshvi', english: 'child', example: 'პატარა ბავშვი - Small child' },
-        { georgian: 'დედა', latin: 'deda', english: 'mother', example: 'ჩემი დედა - My mother' },
-        { georgian: 'მამა', latin: 'mama', english: 'father', example: 'შენი მამა - Your father' },
-        { georgian: 'და', latin: 'da', english: 'sister', example: 'ჩემი და - My sister' },
-        { georgian: 'ძმა', latin: 'dzma', english: 'brother', example: 'უფროსი ძმა - Elder brother' },
-        { georgian: 'მეგობარი', latin: 'megobari', english: 'friend', example: 'კარგი მეგობარი - Good friend' }
+        { georgian: 'კაცი', latin: 'katsi', english: 'man', example: 'ეს კაცი (es katsi) - This man' },
+        { georgian: 'ქალი', latin: 'kali', english: 'woman', example: 'ეს ქალი (es kali) - This woman' },
+        { georgian: 'ბავშვი', latin: 'bavshvi', english: 'child', example: 'პატარა ბავშვი (patara bavshvi) - Small child' },
+        { georgian: 'დედა', latin: 'deda', english: 'mother', example: 'ჩემი დედა (chemi deda) - My mother' },
+        { georgian: 'მამა', latin: 'mama', english: 'father', example: 'შენი მამა (sheni mama) - Your father' },
+        { georgian: 'და', latin: 'da', english: 'sister', example: 'ჩემი და (chemi da) - My sister' },
+        { georgian: 'ძმა', latin: 'dzma', english: 'brother', example: 'უფროსი ძმა (uprosi dzma) - Elder brother' },
+        { georgian: 'მეგობარი', latin: 'megobari', english: 'friend', example: 'კარგი მეგობარი (kargi megobari) - Good friend' }
       ]
     },
     {
@@ -65,14 +76,14 @@ const BasicVocabularyPage: React.FC = () => {
       title: 'Common Objects',
       description: 'Everyday items and objects',
       words: [
-        { georgian: 'მაგიდა', latin: 'magida', english: 'table', example: 'დიდი მაგიდა - Big table' },
-        { georgian: 'სკამი', latin: 'skami', english: 'chair', example: 'ახალი სკამი - New chair' },
-        { georgian: 'წიგნი', latin: 'tsigni', english: 'book', example: 'საინტერესო წიგნი - Interesting book' },
-        { georgian: 'კარი', latin: 'kari', english: 'door', example: 'კარი ღიაა - The door is open' },
-        { georgian: 'ფანჯარა', latin: 'panjara', english: 'window', example: 'დიდი ფანჯარა - Big window' },
-        { georgian: 'ტელეფონი', latin: 'teleponi', english: 'phone', example: 'ჩემი ტელეფონი - My phone' },
-        { georgian: 'საათი', latin: 'saati', english: 'clock/watch', example: 'კედლის საათი - Wall clock' },
-        { georgian: 'კალამი', latin: 'kalami', english: 'pen', example: 'ლურჯი კალამი - Blue pen' }
+        { georgian: 'მაგიდა', latin: 'magida', english: 'table', example: 'დიდი მაგიდა (didi magida) - Big table' },
+        { georgian: 'სკამი', latin: 'skami', english: 'chair', example: 'ახალი სკამი (akhali skami) - New chair' },
+        { georgian: 'წიგნი', latin: 'tsigni', english: 'book', example: 'საინტერესო წიგნი (saintereso tsigni) - Interesting book' },
+        { georgian: 'კარი', latin: 'kari', english: 'door', example: 'კარი ღიაა (kari ghiaa) - The door is open' },
+        { georgian: 'ფანჯარა', latin: 'panjara', english: 'window', example: 'დიდი ფანჯარა (didi panjara) - Big window' },
+        { georgian: 'ტელეფონი', latin: 'teleponi', english: 'phone', example: 'ჩემი ტელეფონი (chemi teleponi) - My phone' },
+        { georgian: 'საათი', latin: 'saati', english: 'clock/watch', example: 'კედლის საათი (kedlis saati) - Wall clock' },
+        { georgian: 'კალამი', latin: 'kalami', english: 'pen', example: 'ლურჯი კალამი (lurji kalami) - Blue pen' }
       ]
     },
     {
@@ -80,14 +91,14 @@ const BasicVocabularyPage: React.FC = () => {
       title: 'Common Actions',
       description: 'Basic verbs and actions',
       words: [
-        { georgian: 'კეთება', latin: 'keteba', english: 'to do', example: 'რას აკეთებ? - What are you doing?' },
-        { georgian: 'სწავლა', latin: 'stsavla', english: 'to learn', example: 'ქართულს ვსწავლობ - I am learning Georgian' },
-        { georgian: 'ჭამა', latin: 'chama', english: 'to eat', example: 'საჭმელს ვჭამ - I am eating food' },
-        { georgian: 'სმა', latin: 'sma', english: 'to drink', example: 'წყალს ვსვამ - I am drinking water' },
-        { georgian: 'სიარული', latin: 'siaruli', english: 'to walk', example: 'პარკში დავდივარ - I walk in the park' },
-        { georgian: 'ლაპარაკი', latin: 'laparaki', english: 'to talk', example: 'ქართულად ვლაპარაკობ - I speak Georgian' },
-        { georgian: 'ყიდვა', latin: 'qidva', english: 'to buy', example: 'წიგნს ვყიდულობ - I am buying a book' },
-        { georgian: 'ყურება', latin: 'qureba', english: 'to watch', example: 'ტელევიზორს ვუყურებ - I am watching TV' }
+        { georgian: 'კეთება', latin: 'keteba', english: 'to do', example: 'რას აკეთებ? (ras aketeb?) - What are you doing?' },
+        { georgian: 'სწავლა', latin: 'stsavla', english: 'to learn', example: 'ქართულს ვსწავლობ (kartuls vstsavlob) - I am learning Georgian' },
+        { georgian: 'ჭამა', latin: 'chama', english: 'to eat', example: 'საჭმელს ვჭამ (sachmels vcham) - I am eating food' },
+        { georgian: 'სმა', latin: 'sma', english: 'to drink', example: 'წყალს ვსვამ (tsqals vsvam) - I am drinking water' },
+        { georgian: 'სიარული', latin: 'siaruli', english: 'to walk', example: 'პარკში დავდივარ (parkshi davdivar) - I walk in the park' },
+        { georgian: 'ლაპარაკი', latin: 'laparaki', english: 'to talk', example: 'ქართულად ვლაპარაკობ (kartulad vlaparakob) - I speak Georgian' },
+        { georgian: 'ყიდვა', latin: 'qidva', english: 'to buy', example: 'წიგნს ვყიდულობ (tsigns vqidulob) - I am buying a book' },
+        { georgian: 'ყურება', latin: 'qureba', english: 'to watch', example: 'ტელევიზორს ვუყურებ (televizors vuqureb) - I am watching TV' }
       ]
     },
     {
@@ -95,69 +106,119 @@ const BasicVocabularyPage: React.FC = () => {
       title: 'Common Adjectives',
       description: 'Basic descriptive words',
       words: [
-        { georgian: 'დიდი', latin: 'didi', english: 'big', example: 'დიდი სახლი - Big house' },
-        { georgian: 'პატარა', latin: 'patara', english: 'small', example: 'პატარა ბავშვი - Small child' },
-        { georgian: 'კარგი', latin: 'kargi', english: 'good', example: 'კარგი იდეა - Good idea' },
-        { georgian: 'ცუდი', latin: 'tsudi', english: 'bad', example: 'ცუდი ამინდი - Bad weather' },
-        { georgian: 'ახალი', latin: 'akhali', english: 'new', example: 'ახალი მანქანა - New car' },
-        { georgian: 'ძველი', latin: 'dzveli', english: 'old', example: 'ძველი წიგნი - Old book' },
-        { georgian: 'ლამაზი', latin: 'lamazi', english: 'beautiful', example: 'ლამაზი ყვავილი - Beautiful flower' },
-        { georgian: 'ცხელი', latin: 'tskheli', english: 'hot', example: 'ცხელი ყავა - Hot coffee' }
+        { georgian: 'დიდი', latin: 'didi', english: 'big', example: 'დიდი სახლი (didi sakhli) - Big house' },
+        { georgian: 'პატარა', latin: 'patara', english: 'small', example: 'პატარა ბავშვი (patara bavshvi) - Small child' },
+        { georgian: 'კარგი', latin: 'kargi', english: 'good', example: 'კარგი იდეა (kargi idea) - Good idea' },
+        { georgian: 'ცუდი', latin: 'tsudi', english: 'bad', example: 'ცუდი ამინდი (tsudi amindi) - Bad weather' },
+        { georgian: 'ახალი', latin: 'akhali', english: 'new', example: 'ახალი მანქანა (akhali manqana) - New car' },
+        { georgian: 'ძველი', latin: 'dzveli', english: 'old', example: 'ძველი წიგნი (dzveli tsigni) - Old book' },
+        { georgian: 'ლამაზი', latin: 'lamazi', english: 'beautiful', example: 'ლამაზი ყვავილი (lamazi qvavili) - Beautiful flower' },
+        { georgian: 'ცხელი', latin: 'tskheli', english: 'hot', example: 'ცხელი ყავა (tskheli qava) - Hot coffee' }
       ]
     }
   ];
 
   // Exercise data
   const matchingExercises = [
-    { georgian: 'გამარჯობა', options: ['goodbye', 'hello', 'thank you', 'please'], correct: 'hello' },
-    { georgian: 'დედა', options: ['father', 'mother', 'sister', 'brother'], correct: 'mother' },
-    { georgian: 'მაგიდა', options: ['chair', 'table', 'book', 'door'], correct: 'table' },
-    { georgian: 'ჭამა', options: ['to drink', 'to walk', 'to eat', 'to talk'], correct: 'to eat' },
-    { georgian: 'დიდი', options: ['small', 'big', 'good', 'bad'], correct: 'big' }
+    { georgian: 'გამარჯობა (gamarjoba)', options: ['goodbye', 'hello', 'thank you', 'please'], correct: 'hello' },
+    { georgian: 'დედა (deda)', options: ['father', 'mother', 'sister', 'brother'], correct: 'mother' },
+    { georgian: 'მაგიდა (magida)', options: ['chair', 'table', 'book', 'door'], correct: 'table' },
+    { georgian: 'ჭამა (chama)', options: ['to drink', 'to walk', 'to eat', 'to talk'], correct: 'to eat' },
+    { georgian: 'დიდი (didi)', options: ['small', 'big', 'good', 'bad'], correct: 'big' }
   ];
 
   const translationExercises = [
-    { english: 'thank you', options: ['გამარჯობა', 'ნახვამდის', 'გმადლობთ', 'გთხოვთ'], correct: 'გმადლობთ' },
-    { english: 'child', options: ['კაცი', 'ქალი', 'ბავშვი', 'მეგობარი'], correct: 'ბავშვი' },
-    { english: 'book', options: ['მაგიდა', 'სკამი', 'წიგნი', 'კარი'], correct: 'წიგნი' },
-    { english: 'to walk', options: ['კეთება', 'სწავლა', 'ჭამა', 'სიარული'], correct: 'სიარული' },
-    { english: 'beautiful', options: ['დიდი', 'პატარა', 'კარგი', 'ლამაზი'], correct: 'ლამაზი' }
+    { english: 'thank you', options: ['გამარჯობა (gamarjoba)', 'ნახვამდის (nakhvamdis)', 'გმადლობთ (gmadlobt)', 'გთხოვთ (gtxovt)'], correct: 'გმადლობთ (gmadlobt)' },
+    { english: 'child', options: ['კაცი (katsi)', 'ქალი (kali)', 'ბავშვი (bavshvi)', 'მეგობარი (megobari)'], correct: 'ბავშვი (bavshvi)' },
+    { english: 'book', options: ['მაგიდა (magida)', 'სკამი (skami)', 'წიგნი (tsigni)', 'კარი (kari)'], correct: 'წიგნი (tsigni)' },
+    { english: 'to walk', options: ['კეთება (keteba)', 'სწავლა (stsavla)', 'ჭამა (chama)', 'სიარული (siaruli)'], correct: 'სიარული (siaruli)' },
+    { english: 'beautiful', options: ['დიდი (didi)', 'პატარა (patara)', 'კარგი (kargi)', 'ლამაზი (lamazi)'], correct: 'ლამაზი (lamazi)' }
   ];
 
   const fillInBlankExercises = [
     { 
       sentence: "_____ ვარ საქართველოში.", 
       blank: "გამარჯობა", 
-      hint: "This is a greeting word",
+      hint: "This is a greeting word (gamarjoba)",
       translation: "Hello, I am in Georgia."
     },
     { 
       sentence: "ეს ჩემი _____ არის.", 
       blank: "მეგობარი", 
-      hint: "This refers to a person you know well",
+      hint: "This refers to a person you know well (megobari)",
       translation: "This is my friend."
     },
     { 
       sentence: "მე _____ ვსვამ.", 
       blank: "წყალს", 
-      hint: "This is something you drink",
+      hint: "This is something you drink (tsqals)",
       translation: "I am drinking water."
     },
     { 
       sentence: "ეს _____ წიგნია.", 
       blank: "კარგი", 
-      hint: "This is a positive quality",
+      hint: "This is a positive quality (kargi)",
       translation: "This is a good book."
     },
     { 
       sentence: "_____, როგორ ხარ?", 
       blank: "გამარჯობა", 
-      hint: "This is how you start a conversation",
+      hint: "This is how you start a conversation (gamarjoba)",
       translation: "Hello, how are you?"
     }
   ];
 
+  // Track time spent on the page
+  useEffect(() => {
+    // Set up interval to track time spent
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const timeDiff = now - lastActivityTime;
+      
+      // Only count time if user has been active in the last 5 minutes
+      if (timeDiff < 5 * 60 * 1000) {
+        setTimeSpent(prev => prev + 1);
+      }
+      
+      setLastActivityTime(now);
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, [lastActivityTime]);
+
+  // Update user activity time on interactions
+  const updateActivity = () => {
+    setLastActivityTime(Date.now());
+  };
+
+  // Save progress when user leaves the page
+  useEffect(() => {
+    // Track initial visit
+    if (user) {
+      updateProgress('basic-vocabulary', { timeSpent: 1 });
+    }
+    
+    // Save progress when component unmounts
+    return () => {
+      if (user && timeSpent > 0) {
+        // Calculate progress based on time spent and exercise completion
+        const exerciseCompletion = Object.keys(matchingExercises).length + 
+                                  Object.keys(translationExercises).length + 
+                                  (blankFeedback === 'correct' ? 1 : 0);
+        
+        // Mark as completed if user has spent significant time or completed exercises
+        const completed = timeSpent > 10 || exerciseCompletion >= 5;
+        
+        updateProgress('basic-vocabulary', { 
+          timeSpent, 
+          completed: completed
+        });
+      }
+    };
+  }, [user, timeSpent, blankFeedback]);
+
   const playAudio = (word: string) => {
+    updateActivity();
     if (isPlaying === word) {
       setIsPlaying(null);
     } else {
@@ -168,6 +229,7 @@ const BasicVocabularyPage: React.FC = () => {
   };
 
   const toggleCategory = (categoryId: string) => {
+    updateActivity();
     if (expandedCategory === categoryId) {
       setExpandedCategory(null);
     } else {
@@ -181,16 +243,20 @@ const BasicVocabularyPage: React.FC = () => {
   };
 
   const handleExerciseAnswer = (answer: string) => {
+    updateActivity();
     setSelectedAnswer(answer);
     setShowFeedback(true);
   };
 
   const handleBlankSubmit = () => {
-    const isCorrect = blankInput.trim().toLowerCase() === fillInBlankExercises[currentExerciseIndex].blank.toLowerCase();
+    updateActivity();
+    const exercise = fillInBlankExercises[currentExerciseIndex];
+    const isCorrect = blankInput.trim().toLowerCase() === exercise.blank.toLowerCase();
     setBlankFeedback(isCorrect ? 'correct' : 'incorrect');
   };
 
   const nextExercise = () => {
+    updateActivity();
     if (exerciseMode === 'matching' && currentExerciseIndex < matchingExercises.length - 1) {
       setCurrentExerciseIndex(currentExerciseIndex + 1);
     } else if (exerciseMode === 'translation' && currentExerciseIndex < translationExercises.length - 1) {
@@ -205,6 +271,7 @@ const BasicVocabularyPage: React.FC = () => {
   };
 
   const resetExercise = () => {
+    updateActivity();
     setCurrentExerciseIndex(0);
     setSelectedAnswer(null);
     setShowFeedback(false);
@@ -213,22 +280,25 @@ const BasicVocabularyPage: React.FC = () => {
   };
 
   const isCorrectAnswer = () => {
-    if (exerciseMode === 'matching' && selectedAnswer) {
+    if (!selectedAnswer) return false;
+    
+    if (exerciseMode === 'matching') {
       return selectedAnswer === matchingExercises[currentExerciseIndex].correct;
-    } else if (exerciseMode === 'translation' && selectedAnswer) {
+    } else if (exerciseMode === 'translation') {
       return selectedAnswer === translationExercises[currentExerciseIndex].correct;
     }
+    
     return false;
   };
 
   return (
-    <div className="pt-16 pb-16">
+    <div className="pt-16 pb-16" onClick={updateActivity}>
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gradient-to-br from-blue-50 to-purple-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>Basic Vocabulary</span> - ძირითადი ლექსიკა
+                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>Basic Vocabulary</span> - ძირითადი ლექსიკა (dziritadi leksika)
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Learn essential Georgian words and phrases organized by categories.

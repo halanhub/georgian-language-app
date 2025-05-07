@@ -2,15 +2,79 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Book, Brain, Check, ChevronDown, ChevronUp, Headphones, MessageSquare, Pencil, Play, Volume2, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { useAuth } from '../../contexts/AuthContext';
 
 const DailyConversationsPage: React.FC = () => {
   const { theme } = useTheme();
+  const { user } = useAuth();
+  const { updateProgress } = useUserProgress();
   const [expandedType, setExpandedType] = useState<string | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
   const [showExplanation, setShowExplanation] = useState(false);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const contentRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [lastActivityTime, setLastActivityTime] = useState(Date.now());
+  const [exerciseMode, setExerciseMode] = useState<'listening' | 'translation' | 'completion' | null>(null);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [completionInput, setCompletionInput] = useState('');
+  const [completionFeedback, setCompletionFeedback] = useState<'correct' | 'incorrect' | null>(null);
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Track time spent on the page
+  useEffect(() => {
+    // Set up interval to track time spent
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const timeDiff = now - lastActivityTime;
+      
+      // Only count time if user has been active in the last 5 minutes
+      if (timeDiff < 5 * 60 * 1000) {
+        setTimeSpent(prev => prev + 1);
+      }
+      
+      setLastActivityTime(now);
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, [lastActivityTime]);
+
+  // Update user activity time on interactions
+  const updateActivity = () => {
+    setLastActivityTime(Date.now());
+  };
+
+  // Save progress when user leaves the page
+  useEffect(() => {
+    // Track initial visit
+    if (user) {
+      updateProgress('conversations', { timeSpent: 1 });
+    }
+    
+    // Save progress when component unmounts
+    return () => {
+      if (user && timeSpent > 0) {
+        // Calculate progress based on time spent and exercise completion
+        const exerciseCompletion = (showFeedback ? 1 : 0) + 
+                                  (completionFeedback === 'correct' ? 1 : 0);
+        
+        // Mark as completed if user has spent significant time or completed exercises
+        const completed = timeSpent > 15 || exerciseCompletion >= 2;
+        
+        updateProgress('conversations', { 
+          timeSpent, 
+          completed: completed
+        });
+      }
+    };
+  }, [user, timeSpent, showFeedback, completionFeedback]);
 
   const studyTips = {
     reading: [
@@ -662,7 +726,99 @@ const DailyConversationsPage: React.FC = () => {
     }
   ];
 
+  // Exercise data
+  const listeningExercises = [
+    {
+      audio: "greeting.mp3",
+      question: "What is the person saying?",
+      options: [
+        "გამარჯობა! (gamarjoba!) - Hello!",
+        "ნახვამდის! (nakhvamdis!) - Goodbye!",
+        "გმადლობთ! (gmadlobt!) - Thank you!",
+        "გთხოვთ! (gtxovt!) - Please!"
+      ],
+      correct: "გამარჯობა! (gamarjoba!) - Hello!"
+    },
+    {
+      audio: "howAreYou.mp3",
+      question: "What question is being asked?",
+      options: [
+        "რა გქვია? (ra gkvia?) - What's your name?",
+        "როგორ ხარ? (rogor khar?) - How are you?",
+        "საიდან ხარ? (saidan khar?) - Where are you from?",
+        "რამდენი წლის ხარ? (ramdeni tslis khar?) - How old are you?"
+      ],
+      correct: "როგორ ხარ? (rogor khar?) - How are you?"
+    },
+    {
+      audio: "whereAreYouFrom.mp3",
+      question: "What is the person asking?",
+      options: [
+        "სად მიდიხარ? (sad midikhar?) - Where are you going?",
+        "სად ცხოვრობ? (sad tskhovrob?) - Where do you live?",
+        "საიდან ხარ? (saidan khar?) - Where are you from?",
+        "სად მუშაობ? (sad mushaob?) - Where do you work?"
+      ],
+      correct: "საიდან ხარ? (saidan khar?) - Where are you from?"
+    }
+  ];
+
+  const translationExercises = [
+    {
+      english: "I would like a coffee, please.",
+      options: [
+        "ერთი ჩაი, გთხოვთ. (erti chai, gtxovt.)",
+        "ერთი ყავა მინდა, გთხოვთ. (erti qava minda, gtxovt.)",
+        "წყალი მინდა, გთხოვთ. (tsqali minda, gtxovt.)",
+        "ღვინო მინდა, გთხოვთ. (ghvino minda, gtxovt.)"
+      ],
+      correct: "ერთი ყავა მინდა, გთხოვთ. (erti qava minda, gtxovt.)"
+    },
+    {
+      english: "How much is this?",
+      options: [
+        "ეს რა არის? (es ra aris?)",
+        "ეს სად არის? (es sad aris?)",
+        "ეს რა ღირს? (es ra ghirs?)",
+        "ეს ვისია? (es visia?)"
+      ],
+      correct: "ეს რა ღირს? (es ra ghirs?)"
+    },
+    {
+      english: "Can I pay by card?",
+      options: [
+        "ნაღდი ფულით შეიძლება? (naghdi pulit sheidzleba?)",
+        "ბარათით შეიძლება? (baratit sheidzleba?)",
+        "ჩეკი შეიძლება? (cheki sheidzleba?)",
+        "ხურდა გაქვთ? (khurda gaqvt?)"
+      ],
+      correct: "ბარათით შეიძლება? (baratit sheidzleba?)"
+    }
+  ];
+
+  const completionExercises = [
+    {
+      sentence: "გამარჯობა! როგორ _____?",
+      options: ["ხარ (khar)", "არის (aris)", "ვარ (var)"],
+      correct: "ხარ (khar)",
+      translation: "Hello! How are you?"
+    },
+    {
+      sentence: "მე _____ ნინო.",
+      options: ["მქვია (mkvia)", "ქვია (kvia)", "ჰქვია (hkvia)"],
+      correct: "მქვია (mkvia)",
+      translation: "My name is Nino."
+    },
+    {
+      sentence: "რამდენი _____ ეს ხაჭაპური?",
+      options: ["ღირს (ghirs)", "ფასი (pasi)", "ლარი (lari)"],
+      correct: "ღირს (ghirs)",
+      translation: "How much is this khachapuri?"
+    }
+  ];
+
   const toggleType = (typeId: string) => {
+    updateActivity();
     if (expandedType === typeId) {
       setExpandedType(null);
     } else {
@@ -682,23 +838,25 @@ const DailyConversationsPage: React.FC = () => {
     }
   };
 
-  const playAudio = (word: string) => {
+  const playAudio = (text: string) => {
+    updateActivity();
     if (audioRef.current) {
-      if (isPlaying === word) {
+      if (isPlaying === text) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
         setIsPlaying(null);
       } else {
-        audioRef.current.src = `https://api.example.com/audio/${word}.mp3`;
+        audioRef.current.src = `https://api.example.com/audio/${text}.mp3`;
         audioRef.current.play().catch(error => {
           console.error('Error playing audio:', error);
         });
-        setIsPlaying(word);
+        setIsPlaying(text);
       }
     }
   };
 
   const playAllAudio = (words: string[]) => {
+    updateActivity();
     let currentIndex = 0;
 
     const playNext = () => {
@@ -714,8 +872,53 @@ const DailyConversationsPage: React.FC = () => {
     }
   };
 
+  const handleExerciseAnswer = (answer: string) => {
+    updateActivity();
+    setSelectedAnswer(answer);
+    setShowFeedback(true);
+  };
+
+  const handleCompletionSelect = (option: string) => {
+    updateActivity();
+    setCompletionInput(option);
+    setCompletionFeedback(option === completionExercises[currentExerciseIndex].correct ? 'correct' : 'incorrect');
+  };
+
+  const nextExercise = () => {
+    updateActivity();
+    if (exerciseMode === 'listening' && currentExerciseIndex < listeningExercises.length - 1) {
+      setCurrentExerciseIndex(currentExerciseIndex + 1);
+    } else if (exerciseMode === 'translation' && currentExerciseIndex < translationExercises.length - 1) {
+      setCurrentExerciseIndex(currentExerciseIndex + 1);
+    } else if (exerciseMode === 'completion' && currentExerciseIndex < completionExercises.length - 1) {
+      setCurrentExerciseIndex(currentExerciseIndex + 1);
+      setCompletionInput('');
+      setCompletionFeedback(null);
+    }
+    setSelectedAnswer('');
+    setShowFeedback(false);
+  };
+
+  const resetExercise = () => {
+    updateActivity();
+    setCurrentExerciseIndex(0);
+    setSelectedAnswer('');
+    setShowFeedback(false);
+    setCompletionInput('');
+    setCompletionFeedback(null);
+  };
+
+  const isCorrectAnswer = () => {
+    if (exerciseMode === 'listening') {
+      return selectedAnswer === listeningExercises[currentExerciseIndex].correct;
+    } else if (exerciseMode === 'translation') {
+      return selectedAnswer === translationExercises[currentExerciseIndex].correct;
+    }
+    return false;
+  };
+
   return (
-    <div className="pt-16 pb-16">
+    <div className="pt-16 pb-16" onClick={updateActivity}>
       <audio 
         ref={audioRef} 
         onEnded={() => setIsPlaying(null)}
@@ -730,7 +933,7 @@ const DailyConversationsPage: React.FC = () => {
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}>Daily Conversations</span>
+                <span className={theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}>Daily Conversations</span> - ყოველდღიური საუბრები (qoveldghiuri saubrebi)
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Practice real-world Georgian conversations for everyday situations
@@ -875,6 +1078,290 @@ const DailyConversationsPage: React.FC = () => {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Practice Exercises Section */}
+      <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-purple-50'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Practice Exercises
+          </h2>
+          
+          {!exerciseMode ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <button
+                onClick={() => setExerciseMode('listening')}
+                className={`p-6 rounded-lg text-center transition-transform hover:scale-105 ${
+                  theme === 'dark' ? 'bg-gray-700 hover:bg-gray-650' : 'bg-white hover:bg-gray-50'
+                } shadow-lg`}
+              >
+                <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Listening Comprehension
+                </h3>
+                <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                  Listen to audio and select the correct meaning
+                </p>
+              </button>
+              
+              <button
+                onClick={() => setExerciseMode('translation')}
+                className={`p-6 rounded-lg text-center transition-transform hover:scale-105 ${
+                  theme === 'dark' ? 'bg-gray-700 hover:bg-gray-650' : 'bg-white hover:bg-gray-50'
+                } shadow-lg`}
+              >
+                <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Translation Practice
+                </h3>
+                <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                  Translate English phrases to Georgian
+                </p>
+              </button>
+              
+              <button
+                onClick={() => setExerciseMode('completion')}
+                className={`p-6 rounded-lg text-center transition-transform hover:scale-105 ${
+                  theme === 'dark' ? 'bg-gray-700 hover:bg-gray-650' : 'bg-white hover:bg-gray-50'
+                } shadow-lg`}
+              >
+                <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Sentence Completion
+                </h3>
+                <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                  Complete conversations with the correct phrases
+                </p>
+              </button>
+            </div>
+          ) : (
+            <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}>
+              <div className="flex justify-between items-center mb-6">
+                <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {exerciseMode === 'listening' ? 'Listening Comprehension' : 
+                   exerciseMode === 'translation' ? 'Translation Practice' : 'Sentence Completion'}
+                </h3>
+                <button
+                  onClick={() => setExerciseMode(null)}
+                  className={`px-4 py-2 rounded ${
+                    theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500' : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
+                >
+                  Back to Exercises
+                </button>
+              </div>
+              
+              {exerciseMode === 'listening' && (
+                <div>
+                  <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    {listeningExercises[currentExerciseIndex].question}
+                  </p>
+                  
+                  <div className="mb-6">
+                    <button
+                      onClick={() => playAudio(`listening-${currentExerciseIndex}`)}
+                      className={`mb-4 px-6 py-3 rounded-md flex items-center ${
+                        theme === 'dark'
+                          ? 'bg-purple-700 text-white hover:bg-purple-600'
+                          : 'bg-purple-600 text-white hover:bg-purple-700'
+                      }`}
+                    >
+                      <Headphones size={20} className="mr-2" />
+                      {isPlaying === `listening-${currentExerciseIndex}` ? 'Stop Audio' : 'Play Audio'}
+                    </button>
+                    
+                    <div className="grid grid-cols-1 gap-3">
+                      {listeningExercises[currentExerciseIndex].options.map((option, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleExerciseAnswer(option)}
+                          className={`px-4 py-3 rounded-md text-left ${
+                            selectedAnswer === option
+                              ? option === listeningExercises[currentExerciseIndex].correct
+                                ? (theme === 'dark' ? 'bg-green-700 text-white' : 'bg-green-100 text-green-800')
+                                : (theme === 'dark' ? 'bg-red-700 text-white' : 'bg-red-100 text-red-800')
+                              : (theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800')
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {showFeedback && (
+                      <div className={`mt-4 p-4 rounded-md ${
+                        isCorrectAnswer()
+                          ? (theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800')
+                          : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
+                      }`}>
+                        {isCorrectAnswer()
+                          ? 'Correct! Well done.'
+                          : `Incorrect. The correct answer is "${listeningExercises[currentExerciseIndex].correct}".`}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <button
+                      onClick={resetExercise}
+                      className={`px-4 py-2 rounded ${
+                        theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                      }`}
+                    >
+                      Reset
+                    </button>
+                    
+                    {currentExerciseIndex < listeningExercises.length - 1 && (
+                      <button
+                        onClick={nextExercise}
+                        disabled={!showFeedback}
+                        className={`px-4 py-2 rounded ${
+                          !showFeedback
+                            ? (theme === 'dark' ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed')
+                            : (theme === 'dark' ? 'bg-purple-700 hover:bg-purple-600 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white')
+                        }`}
+                      >
+                        Next
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {exerciseMode === 'translation' && (
+                <div>
+                  <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Translate to Georgian: <span className="font-bold">{translationExercises[currentExerciseIndex].english}</span>
+                  </p>
+                  
+                  <div className="mb-6">
+                    <div className="grid grid-cols-1 gap-3">
+                      {translationExercises[currentExerciseIndex].options.map((option, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleExerciseAnswer(option)}
+                          className={`px-4 py-3 rounded-md text-left ${
+                            selectedAnswer === option
+                              ? option === translationExercises[currentExerciseIndex].correct
+                                ? (theme === 'dark' ? 'bg-green-700 text-white' : 'bg-green-100 text-green-800')
+                                : (theme === 'dark' ? 'bg-red-700 text-white' : 'bg-red-100 text-red-800')
+                              : (theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800')
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {showFeedback && (
+                      <div className={`mt-4 p-4 rounded-md ${
+                        isCorrectAnswer()
+                          ? (theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800')
+                          : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
+                      }`}>
+                        {isCorrectAnswer()
+                          ? 'Correct! Well done.'
+                          : `Incorrect. The correct answer is "${translationExercises[currentExerciseIndex].correct}".`}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <button
+                      onClick={resetExercise}
+                      className={`px-4 py-2 rounded ${
+                        theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                      }`}
+                    >
+                      Reset
+                    </button>
+                    
+                    {currentExerciseIndex < translationExercises.length - 1 && (
+                      <button
+                        onClick={nextExercise}
+                        disabled={!showFeedback}
+                        className={`px-4 py-2 rounded ${
+                          !showFeedback
+                            ? (theme === 'dark' ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed')
+                            : (theme === 'dark' ? 'bg-purple-700 hover:bg-purple-600 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white')
+                        }`}
+                      >
+                        Next
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {exerciseMode === 'completion' && (
+                <div>
+                  <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Complete the sentence by selecting the correct word:
+                  </p>
+                  
+                  <div className="mb-6">
+                    <p className={`text-lg mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {completionExercises[currentExerciseIndex].sentence}
+                    </p>
+                    <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Translation: {completionExercises[currentExerciseIndex].translation}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {completionExercises[currentExerciseIndex].options.map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => handleCompletionSelect(option)}
+                          className={`px-4 py-2 rounded-md ${
+                            completionInput === option
+                              ? (theme === 'dark' ? 'bg-purple-700 text-white' : 'bg-purple-100 text-purple-800')
+                              : (theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800')
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {completionFeedback && (
+                      <div className={`mt-4 p-4 rounded-md ${
+                        completionFeedback === 'correct'
+                          ? (theme === 'dark' ? 'bg-green-900 text-green-100' : 'bg-green-100 text-green-800')
+                          : (theme === 'dark' ? 'bg-red-900 text-red-100' : 'bg-red-100 text-red-800')
+                      }`}>
+                        {completionFeedback === 'correct'
+                          ? 'Correct! Well done.'
+                          : `Incorrect. The correct answer is "${completionExercises[currentExerciseIndex].correct}".`}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <button
+                      onClick={resetExercise}
+                      className={`px-4 py-2 rounded ${
+                        theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                      }`}
+                    >
+                      Reset
+                    </button>
+                    
+                    {currentExerciseIndex < completionExercises.length - 1 && (
+                      <button
+                        onClick={nextExercise}
+                        disabled={!completionFeedback}
+                        className={`px-4 py-2 rounded ${
+                          !completionFeedback
+                            ? (theme === 'dark' ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed')
+                            : (theme === 'dark' ? 'bg-purple-700 hover:bg-purple-600 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white')
+                        }`}
+                      >
+                        Next
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
     </div>

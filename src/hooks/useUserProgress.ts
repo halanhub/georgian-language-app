@@ -306,7 +306,18 @@ export function useUserProgress(lessonId?: string) {
         { user_id: userId, lesson_id: 'common-words', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'reading', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'writing', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'sentences', completed: false, time_spent: 0 }
+        { user_id: userId, lesson_id: 'sentences', completed: false, time_spent: 0 },
+        // Advanced lessons
+        { user_id: userId, lesson_id: 'advanced-grammar', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'advanced-culture', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'advanced-literature', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'advanced-idioms', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'advanced-writing', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'advanced-listening', completed: false, time_spent: 0 },
+        // Level tracking
+        { user_id: userId, lesson_id: 'beginner', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'intermediate', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'advanced', completed: false, time_spent: 0 }
       ];
       
       const { error } = await supabase

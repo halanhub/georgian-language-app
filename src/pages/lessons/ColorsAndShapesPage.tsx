@@ -1,7 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Book, Check, Palette, Play, Volume2, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ColorOrShape {
   georgian: string;
@@ -12,6 +14,8 @@ interface ColorOrShape {
 
 const ColorsAndShapesPage: React.FC = () => {
   const { theme } = useTheme();
+  const { user } = useAuth();
+  const { updateProgress } = useUserProgress();
   const [expandedSection, setExpandedSection] = useState<'colors' | 'shapes' | null>(null);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -19,61 +23,118 @@ const ColorsAndShapesPage: React.FC = () => {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [lastActivityTime, setLastActivityTime] = useState(Date.now());
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const colors: ColorOrShape[] = [
-    { georgian: 'წითელი', latin: 'tsiteli', english: 'red', example: 'წითელი ვარდი - Red rose' },
-    { georgian: 'ლურჯი', latin: 'lurji', english: 'blue', example: 'ლურჯი ცა - Blue sky' },
-    { georgian: 'ყვითელი', latin: 'qviteli', english: 'yellow', example: 'ყვითელი მზე - Yellow sun' },
-    { georgian: 'მწვანე', latin: 'mtsvane', english: 'green', example: 'მწვანე ბალახი - Green grass' },
-    { georgian: 'შავი', latin: 'shavi', english: 'black', example: 'შავი კატა - Black cat' },
-    { georgian: 'თეთრი', latin: 'tetri', english: 'white', example: 'თეთრი თოვლი - White snow' },
-    { georgian: 'ნარინჯისფერი', latin: 'narinjisperi', english: 'orange', example: 'ნარინჯისფერი ფორთოხალი - Orange fruit' },
-    { georgian: 'იისფერი', latin: 'iisperi', english: 'purple', example: 'იისფერი ყვავილი - Purple flower' },
-    { georgian: 'ვარდისფერი', latin: 'vardisperi', english: 'pink', example: 'ვარდისფერი კაბა - Pink dress' },
-    { georgian: 'ყავისფერი', latin: 'qavisperi', english: 'brown', example: 'ყავისფერი მაგიდა - Brown table' },
-    { georgian: 'ნაცრისფერი', latin: 'nacrisperi', english: 'gray', example: 'ნაცრისფერი ღრუბელი - Gray cloud' },
-    { georgian: 'ოქროსფერი', latin: 'okrosperi', english: 'gold', example: 'ოქროსფერი ბეჭედი - Gold ring' }
+    { georgian: 'წითელი', latin: 'tsiteli', english: 'red', example: 'წითელი ვარდი (tsiteli vardi) - Red rose' },
+    { georgian: 'ლურჯი', latin: 'lurji', english: 'blue', example: 'ლურჯი ცა (lurji tsa) - Blue sky' },
+    { georgian: 'ყვითელი', latin: 'qviteli', english: 'yellow', example: 'ყვითელი მზე (qviteli mze) - Yellow sun' },
+    { georgian: 'მწვანე', latin: 'mtsvane', english: 'green', example: 'მწვანე ბალახი (mtsvane balakhi) - Green grass' },
+    { georgian: 'შავი', latin: 'shavi', english: 'black', example: 'შავი კატა (shavi kata) - Black cat' },
+    { georgian: 'თეთრი', latin: 'tetri', english: 'white', example: 'თეთრი თოვლი (tetri tovli) - White snow' },
+    { georgian: 'ნარინჯისფერი', latin: 'narinjisperi', english: 'orange', example: 'ნარინჯისფერი ფორთოხალი (narinjisperi portoxali) - Orange fruit' },
+    { georgian: 'იისფერი', latin: 'iisperi', english: 'purple', example: 'იისფერი ყვავილი (iisperi qvavili) - Purple flower' },
+    { georgian: 'ვარდისფერი', latin: 'vardisperi', english: 'pink', example: 'ვარდისფერი კაბა (vardisperi kaba) - Pink dress' },
+    { georgian: 'ყავისფერი', latin: 'qavisperi', english: 'brown', example: 'ყავისფერი მაგიდა (qavisperi magida) - Brown table' },
+    { georgian: 'ნაცრისფერი', latin: 'nacrisperi', english: 'gray', example: 'ნაცრისფერი ღრუბელი (nacrisperi ghrubeli) - Gray cloud' },
+    { georgian: 'ოქროსფერი', latin: 'okrosperi', english: 'gold', example: 'ოქროსფერი ბეჭედი (okrosperi bechedi) - Gold ring' }
   ];
 
   const shapes: ColorOrShape[] = [
-    { georgian: 'წრე', latin: 'tsre', english: 'circle', example: 'სრული წრე - Full circle' },
-    { georgian: 'კვადრატი', latin: 'kvadrati', english: 'square', example: 'წითელი კვადრატი - Red square' },
-    { georgian: 'სამკუთხედი', latin: 'samkutkhedi', english: 'triangle', example: 'დიდი სამკუთხედი - Big triangle' },
-    { georgian: 'მართკუთხედი', latin: 'martkutkhedi', english: 'rectangle', example: 'გრძელი მართკუთხედი - Long rectangle' },
-    { georgian: 'ოვალი', latin: 'ovali', english: 'oval', example: 'ოვალური ფორმა - Oval shape' },
-    { georgian: 'რომბი', latin: 'rombi', english: 'rhombus', example: 'პატარა რომბი - Small rhombus' },
-    { georgian: 'ხაზი', latin: 'khazi', english: 'line', example: 'სწორი ხაზი - Straight line' },
-    { georgian: 'წერტილი', latin: 'tsertili', english: 'point', example: 'შავი წერტილი - Black point' },
-    { georgian: 'ვარსკვლავი', latin: 'varskvlavi', english: 'star', example: 'ბრწყინვალე ვარსკვლავი - Shining star' },
-    { georgian: 'სპირალი', latin: 'spirali', english: 'spiral', example: 'გრძელი სპირალი - Long spiral' }
+    { georgian: 'წრე', latin: 'tsre', english: 'circle', example: 'სრული წრე (sruli tsre) - Full circle' },
+    { georgian: 'კვადრატი', latin: 'kvadrati', english: 'square', example: 'წითელი კვადრატი (tsiteli kvadrati) - Red square' },
+    { georgian: 'სამკუთხედი', latin: 'samkutkhedi', english: 'triangle', example: 'დიდი სამკუთხედი (didi samkutkhedi) - Big triangle' },
+    { georgian: 'მართკუთხედი', latin: 'martkutkhedi', english: 'rectangle', example: 'გრძელი მართკუთხედი (grdzeli martkutkhedi) - Long rectangle' },
+    { georgian: 'ოვალი', latin: 'ovali', english: 'oval', example: 'ოვალური ფორმა (ovaluri porma) - Oval shape' },
+    { georgian: 'რომბი', latin: 'rombi', english: 'rhombus', example: 'პატარა რომბი (patara rombi) - Small rhombus' },
+    { georgian: 'ხაზი', latin: 'khazi', english: 'line', example: 'სწორი ხაზი (stsori khazi) - Straight line' },
+    { georgian: 'წერტილი', latin: 'tsertili', english: 'point', example: 'შავი წერტილი (shavi tsertili) - Black point' },
+    { georgian: 'ვარსკვლავი', latin: 'varskvlavi', english: 'star', example: 'ბრწყინვალე ვარსკვლავი (brtsqinvale varskvlavi) - Shining star' },
+    { georgian: 'სპირალი', latin: 'spirali', english: 'spiral', example: 'გრძელი სპირალი (grdzeli spirali) - Long spiral' }
   ];
 
   // Exercise data
   const matchingExercises = [
-    { georgian: 'წითელი', options: ['blue', 'red', 'green', 'yellow'], correct: 'red' },
-    { georgian: 'ლურჯი', options: ['blue', 'red', 'green', 'yellow'], correct: 'blue' },
-    { georgian: 'მწვანე', options: ['blue', 'red', 'green', 'yellow'], correct: 'green' },
-    { georgian: 'კვადრატი', options: ['circle', 'square', 'triangle', 'rectangle'], correct: 'square' },
-    { georgian: 'სამკუთხედი', options: ['circle', 'square', 'triangle', 'rectangle'], correct: 'triangle' }
+    { georgian: 'წითელი (tsiteli)', options: ['blue', 'red', 'green', 'yellow'], correct: 'red' },
+    { georgian: 'ლურჯი (lurji)', options: ['blue', 'red', 'green', 'yellow'], correct: 'blue' },
+    { georgian: 'მწვანე (mtsvane)', options: ['blue', 'red', 'green', 'yellow'], correct: 'green' },
+    { georgian: 'კვადრატი (kvadrati)', options: ['circle', 'square', 'triangle', 'rectangle'], correct: 'square' },
+    { georgian: 'სამკუთხედი (samkutkhedi)', options: ['circle', 'square', 'triangle', 'rectangle'], correct: 'triangle' }
   ];
 
   const translationExercises = [
-    { english: 'red', options: ['წითელი', 'ლურჯი', 'მწვანე', 'ყვითელი'], correct: 'წითელი' },
-    { english: 'blue', options: ['წითელი', 'ლურჯი', 'მწვანე', 'ყვითელი'], correct: 'ლურჯი' },
-    { english: 'circle', options: ['წრე', 'კვადრატი', 'სამკუთხედი', 'მართკუთხედი'], correct: 'წრე' },
-    { english: 'square', options: ['წრე', 'კვადრატი', 'სამკუთხედი', 'მართკუთხედი'], correct: 'კვადრატი' },
-    { english: 'triangle', options: ['წრე', 'კვადრატი', 'სამკუთხედი', 'მართკუთხედი'], correct: 'სამკუთხედი' }
+    { english: 'red', options: ['წითელი (tsiteli)', 'ლურჯი (lurji)', 'მწვანე (mtsvane)', 'ყვითელი (qviteli)'], correct: 'წითელი (tsiteli)' },
+    { english: 'blue', options: ['წითელი (tsiteli)', 'ლურჯი (lurji)', 'მწვანე (mtsvane)', 'ყვითელი (qviteli)'], correct: 'ლურჯი (lurji)' },
+    { english: 'circle', options: ['წრე (tsre)', 'კვადრატი (kvadrati)', 'სამკუთხედი (samkutkhedi)', 'მართკუთხედი (martkutkhedi)'], correct: 'წრე (tsre)' },
+    { english: 'square', options: ['წრე (tsre)', 'კვადრატი (kvadrati)', 'სამკუთხედი (samkutkhedi)', 'მართკუთხედი (martkutkhedi)'], correct: 'კვადრატი (kvadrati)' },
+    { english: 'triangle', options: ['წრე (tsre)', 'კვადრატი (kvadrati)', 'სამკუთხედი (samkutkhedi)', 'მართკუთხედი (martkutkhedi)'], correct: 'სამკუთხედი (samkutkhedi)' }
   ];
 
   const identificationExercises = [
-    { prompt: "What color is 'ყვითელი'?", options: ['Red', 'Blue', 'Yellow', 'Green'], correct: 'Yellow' },
-    { prompt: "What shape is 'წრე'?", options: ['Square', 'Circle', 'Triangle', 'Rectangle'], correct: 'Circle' },
-    { prompt: "What color is 'შავი'?", options: ['White', 'Black', 'Gray', 'Brown'], correct: 'Black' },
-    { prompt: "What shape is 'მართკუთხედი'?", options: ['Square', 'Circle', 'Triangle', 'Rectangle'], correct: 'Rectangle' },
-    { prompt: "What color is 'ვარდისფერი'?", options: ['Red', 'Purple', 'Pink', 'Orange'], correct: 'Pink' }
+    { prompt: "What color is 'ყვითელი (qviteli)'?", options: ['Red', 'Blue', 'Yellow', 'Green'], correct: 'Yellow' },
+    { prompt: "What shape is 'წრე (tsre)'?", options: ['Square', 'Circle', 'Triangle', 'Rectangle'], correct: 'Circle' },
+    { prompt: "What color is 'შავი (shavi)'?", options: ['White', 'Black', 'Gray', 'Brown'], correct: 'Black' },
+    { prompt: "What shape is 'მართკუთხედი (martkutkhedi)'?", options: ['Square', 'Circle', 'Triangle', 'Rectangle'], correct: 'Rectangle' },
+    { prompt: "What color is 'ვარდისფერი (vardisperi)'?", options: ['Red', 'Purple', 'Pink', 'Orange'], correct: 'Pink' }
   ];
 
+  // Track time spent on the page
+  useEffect(() => {
+    // Set up interval to track time spent
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const timeDiff = now - lastActivityTime;
+      
+      // Only count time if user has been active in the last 5 minutes
+      if (timeDiff < 5 * 60 * 1000) {
+        setTimeSpent(prev => prev + 1);
+      }
+      
+      setLastActivityTime(now);
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, [lastActivityTime]);
+
+  // Update user activity time on interactions
+  const updateActivity = () => {
+    setLastActivityTime(Date.now());
+  };
+
+  // Save progress when user leaves the page
+  useEffect(() => {
+    // Track initial visit
+    if (user) {
+      updateProgress('colors-shapes', { timeSpent: 1 });
+    }
+    
+    // Save progress when component unmounts
+    return () => {
+      if (user && timeSpent > 0) {
+        // Calculate progress based on time spent and exercise completion
+        const exerciseCompletion = Object.keys(matchingExercises).length + 
+                                  Object.keys(translationExercises).length + 
+                                  (showFeedback ? 1 : 0);
+        
+        // Mark as completed if user has spent significant time or completed exercises
+        const completed = timeSpent > 10 || exerciseCompletion >= 5;
+        
+        updateProgress('colors-shapes', { 
+          timeSpent, 
+          completed: completed
+        });
+      }
+    };
+  }, [user, timeSpent, showFeedback]);
+
   const toggleSection = (section: 'colors' | 'shapes') => {
+    updateActivity();
     if (expandedSection === section) {
       setExpandedSection(null);
     } else {
@@ -87,6 +148,7 @@ const ColorsAndShapesPage: React.FC = () => {
   };
 
   const playAudio = (word: string) => {
+    updateActivity();
     if (isPlaying === word) {
       setIsPlaying(null);
     } else {
@@ -97,11 +159,13 @@ const ColorsAndShapesPage: React.FC = () => {
   };
 
   const handleExerciseAnswer = (answer: string) => {
+    updateActivity();
     setSelectedAnswer(answer);
     setShowFeedback(true);
   };
 
   const nextExercise = () => {
+    updateActivity();
     if (exerciseMode === 'matching' && currentExerciseIndex < matchingExercises.length - 1) {
       setCurrentExerciseIndex(currentExerciseIndex + 1);
     } else if (exerciseMode === 'translation' && currentExerciseIndex < translationExercises.length - 1) {
@@ -114,6 +178,7 @@ const ColorsAndShapesPage: React.FC = () => {
   };
 
   const resetExercise = () => {
+    updateActivity();
     setCurrentExerciseIndex(0);
     setSelectedAnswer(null);
     setShowFeedback(false);
@@ -138,13 +203,13 @@ const ColorsAndShapesPage: React.FC = () => {
   };
 
   return (
-    <div className="pt-16 pb-16">
+    <div className="pt-16 pb-16" onClick={updateActivity}>
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gradient-to-br from-pink-50 to-purple-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}>Colors & Shapes</span> - ფერები და ფორმები
+                <span className={theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}>Colors & Shapes</span> - ფერები და ფორმები (perebi da pormebi)
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Learn Georgian colors and geometric shapes with pronunciation and examples.
@@ -206,7 +271,7 @@ const ColorsAndShapesPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Colors - ფერები
+                    Colors - ფერები (perebi)
                   </h2>
                   <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
                     Learn common colors in Georgian
@@ -276,7 +341,7 @@ const ColorsAndShapesPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Shapes - ფორმები
+                    Shapes - ფორმები (pormebi)
                   </h2>
                   <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
                     Learn geometric shapes in Georgian

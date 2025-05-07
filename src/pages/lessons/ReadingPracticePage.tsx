@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Book, ChevronDown, ChevronUp, Play, Volume2, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ReadingText {
   id: string;
@@ -470,14 +472,75 @@ const readingCategories: Category[] = [
 
 const ReadingPracticePage: React.FC = () => {
   const { theme } = useTheme();
+  const { user } = useAuth();
+  const { updateProgress } = useUserProgress();
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [lastActivityTime, setLastActivityTime] = useState(Date.now());
+  const [exerciseMode, setExerciseMode] = useState<'comprehension' | 'vocabulary' | 'translation' | null>(null);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Track time spent on the page
+  useEffect(() => {
+    // Set up interval to track time spent
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const timeDiff = now - lastActivityTime;
+      
+      // Only count time if user has been active in the last 5 minutes
+      if (timeDiff < 5 * 60 * 1000) {
+        setTimeSpent(prev => prev + 1);
+      }
+      
+      setLastActivityTime(now);
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, [lastActivityTime]);
+
+  // Update user activity time on interactions
+  const updateActivity = () => {
+    setLastActivityTime(Date.now());
+  };
+
+  // Save progress when user leaves the page
+  useEffect(() => {
+    // Track initial visit
+    if (user) {
+      updateProgress('reading', { timeSpent: 1 });
+    }
+    
+    // Save progress when component unmounts
+    return () => {
+      if (user && timeSpent > 0) {
+        // Calculate progress based on time spent and exercise completion
+        const exerciseCompletion = Object.keys(selectedAnswers).length;
+        
+        // Mark as completed if user has spent significant time or completed exercises
+        const completed = timeSpent > 15 || exerciseCompletion >= 3;
+        
+        updateProgress('reading', { 
+          timeSpent, 
+          completed: completed
+        });
+      }
+    };
+  }, [user, timeSpent, selectedAnswers]);
 
   const toggleCategory = (categoryName: string) => {
+    updateActivity();
     if (expandedCategory === categoryName) {
       setExpandedCategory(null);
     } else {
@@ -491,6 +554,7 @@ const ReadingPracticePage: React.FC = () => {
   };
 
   const playAudio = (text: string) => {
+    updateActivity();
     if (audioRef.current) {
       if (isPlaying === text) {
         audioRef.current.pause();
@@ -506,14 +570,32 @@ const ReadingPracticePage: React.FC = () => {
     }
   };
 
+  const handleAnswerSelect = (questionId: string, answerIndex: number) => {
+    updateActivity();
+    setSelectedAnswers(prev => ({
+      ...prev,
+      [questionId]: answerIndex
+    }));
+  };
+
+  const isCorrectAnswer = (text: ReadingText, questionIndex: number, selectedIndex: number) => {
+    return selectedIndex === text.questions[questionIndex].correctAnswer;
+  };
+
   return (
-    <div className="pt-16 pb-16">
+    <div className="pt-16 pb-16" onClick={updateActivity}>
+      <audio 
+        ref={audioRef}
+        onEnded={() => setIsPlaying(null)}
+        onError={() => setIsPlaying(null)}
+      />
+
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>Reading Practice</span>
+                <span className={theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}>Reading Practice</span> - კითხვის პრაქტიკა (kitkhvis praktika)
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Improve your Georgian reading comprehension with these engaging texts
@@ -673,17 +755,14 @@ const ReadingPracticePage: React.FC = () => {
                                 <div className="space-y-2">
                                   {question.options.map((option, oIndex) => {
                                     const questionId = `${text.id}-${qIndex}`;
-                                    const isSelected = selectedAnswer === `${questionId}-${oIndex}`;
-                                    const showResult = selectedAnswer?.startsWith(questionId);
+                                    const isSelected = selectedAnswers[questionId] === oIndex;
+                                    const showResult = questionId in selectedAnswers;
                                     const isCorrect = oIndex === question.correctAnswer;
 
                                     return (
                                       <button
                                         key={oIndex}
-                                        onClick={() => {
-                                          setSelectedAnswer(`${questionId}-${oIndex}`);
-                                          setShowExplanation(true);
-                                        }}
+                                        onClick={() => handleAnswerSelect(questionId, oIndex)}
                                         className={`w-full text-left p-3 rounded ${
                                           showResult
                                             ? isCorrect
@@ -717,6 +796,44 @@ const ReadingPracticePage: React.FC = () => {
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Practice Exercises Section */}
+      <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Reading Strategies
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}>
+              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Skimming
+              </h3>
+              <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                Quickly read through the text to get the main idea. Look for headings, first sentences of paragraphs, and keywords. This helps you understand the general topic before diving into details.
+              </p>
+            </div>
+            
+            <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}>
+              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Scanning
+              </h3>
+              <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                Look for specific information in the text, such as names, dates, or key terms. This is useful when you need to find particular details quickly without reading the entire text.
+              </p>
+            </div>
+            
+            <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}>
+              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Intensive Reading
+              </h3>
+              <p className={theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}>
+                Read the text carefully, focusing on understanding every word and grammatical structure. Use a dictionary for unfamiliar words and take notes on new vocabulary and grammar patterns.
+              </p>
+            </div>
           </div>
         </div>
       </section>

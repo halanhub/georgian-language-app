@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Calendar, Check, ChevronDown, ChevronUp, Play, Volume2, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface TimeWord {
   georgian: string;
@@ -19,6 +21,8 @@ interface TimeCategory {
 
 const MonthsAndSeasonsPage: React.FC = () => {
   const { theme } = useTheme();
+  const { user } = useAuth();
+  const { updateProgress } = useUserProgress();
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -28,6 +32,13 @@ const MonthsAndSeasonsPage: React.FC = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [orderingItems, setOrderingItems] = useState<string[]>([]);
   const [orderedItems, setOrderedItems] = useState<string[]>([]);
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [lastActivityTime, setLastActivityTime] = useState(Date.now());
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const categories: TimeCategory[] = [
     {
@@ -35,18 +46,18 @@ const MonthsAndSeasonsPage: React.FC = () => {
       title: 'Months of the Year',
       description: 'Learn the Georgian names for months',
       words: [
-        { georgian: 'იანვარი', latin: 'ianuari', english: 'January', example: 'იანვარში თოვს - It snows in January' },
-        { georgian: 'თებერვალი', latin: 'tebervali', english: 'February', example: 'თებერვალი მოკლე თვეა - February is a short month' },
-        { georgian: 'მარტი', latin: 'marti', english: 'March', example: 'მარტში გაზაფხული იწყება - Spring begins in March' },
-        { georgian: 'აპრილი', latin: 'aprili', english: 'April', example: 'აპრილში წვიმს - It rains in April' },
-        { georgian: 'მაისი', latin: 'maisi', english: 'May', example: 'მაისში ყვავილები ყვავის - Flowers bloom in May' },
-        { georgian: 'ივნისი', latin: 'ivnisi', english: 'June', example: 'ივნისში ზაფხული იწყება - Summer begins in June' },
-        { georgian: 'ივლისი', latin: 'ivlisi', english: 'July', example: 'ივლისში ცხელა - It\'s hot in July' },
-        { georgian: 'აგვისტო', latin: 'agvisto', english: 'August', example: 'აგვისტოში ზღვაზე მივდივართ - We go to the sea in August' },
-        { georgian: 'სექტემბერი', latin: 'sektemberi', english: 'September', example: 'სექტემბერში სკოლა იწყება - School starts in September' },
-        { georgian: 'ოქტომბერი', latin: 'oktomberi', english: 'October', example: 'ოქტომბერში ფოთლები ცვივა - Leaves fall in October' },
-        { georgian: 'ნოემბერი', latin: 'noemberi', english: 'November', example: 'ნოემბერში შემოდგომაა - It\'s autumn in November' },
-        { georgian: 'დეკემბერი', latin: 'dekemberi', english: 'December', example: 'დეკემბერში ახალი წელია - New Year is in December' }
+        { georgian: 'იანვარი', latin: 'ianuari', english: 'January', example: 'იანვარში თოვს (ianvarshi tovs) - It snows in January' },
+        { georgian: 'თებერვალი', latin: 'tebervali', english: 'February', example: 'თებერვალი მოკლე თვეა (tebervali mokle tvea) - February is a short month' },
+        { georgian: 'მარტი', latin: 'marti', english: 'March', example: 'მარტში გაზაფხული იწყება (martshi gazapkhuli itsqeba) - Spring begins in March' },
+        { georgian: 'აპრილი', latin: 'aprili', english: 'April', example: 'აპრილში წვიმს (aprilshi tsvims) - It rains in April' },
+        { georgian: 'მაისი', latin: 'maisi', english: 'May', example: 'მაისში ყვავილები ყვავის (maisshi qvavilebi qvavis) - Flowers bloom in May' },
+        { georgian: 'ივნისი', latin: 'ivnisi', english: 'June', example: 'ივნისში ზაფხული იწყება (ivnisshi zapkhuli itsqeba) - Summer begins in June' },
+        { georgian: 'ივლისი', latin: 'ivlisi', english: 'July', example: 'ივლისში ცხელა (ivlisshi tskhela) - It\'s hot in July' },
+        { georgian: 'აგვისტო', latin: 'agvisto', english: 'August', example: 'აგვისტოში ზღვაზე მივდივართ (agvistoshi zghvaze mivdivart) - We go to the sea in August' },
+        { georgian: 'სექტემბერი', latin: 'sektemberi', english: 'September', example: 'სექტემბერში სკოლა იწყება (sektembershi skola itsqeba) - School starts in September' },
+        { georgian: 'ოქტომბერი', latin: 'oktomberi', english: 'October', example: 'ოქტომბერში ფოთლები ცვივა (oktombershi potlebi tsviva) - Leaves fall in October' },
+        { georgian: 'ნოემბერი', latin: 'noemberi', english: 'November', example: 'ნოემბერში შემოდგომაა (noembershi shemodgomaa) - It\'s autumn in November' },
+        { georgian: 'დეკემბერი', latin: 'dekemberi', english: 'December', example: 'დეკემბერში ახალი წელია (dekembershi akhali tselia) - New Year is in December' }
       ]
     },
     {
@@ -54,10 +65,10 @@ const MonthsAndSeasonsPage: React.FC = () => {
       title: 'Seasons',
       description: 'Learn the four seasons in Georgian',
       words: [
-        { georgian: 'გაზაფხული', latin: 'gazapkhuli', english: 'Spring', example: 'გაზაფხული ლამაზი სეზონია - Spring is a beautiful season' },
-        { georgian: 'ზაფხული', latin: 'zapkhuli', english: 'Summer', example: 'ზაფხულში ცხელა - It\'s hot in summer' },
-        { georgian: 'შემოდგომა', latin: 'shemodgoma', english: 'Autumn', example: 'შემოდგომაზე წვიმს - It rains in autumn' },
-        { georgian: 'ზამთარი', latin: 'zamtari', english: 'Winter', example: 'ზამთარში თოვს - It snows in winter' }
+        { georgian: 'გაზაფხული', latin: 'gazapkhuli', english: 'Spring', example: 'გაზაფხული ლამაზი სეზონია (gazapkhuli lamazi sezonia) - Spring is a beautiful season' },
+        { georgian: 'ზაფხული', latin: 'zapkhuli', english: 'Summer', example: 'ზაფხულში ცხელა (zapkhulshi tskhela) - It\'s hot in summer' },
+        { georgian: 'შემოდგომა', latin: 'shemodgoma', english: 'Autumn', example: 'შემოდგომაზე წვიმს (shemodgomaze tsvims) - It rains in autumn' },
+        { georgian: 'ზამთარი', latin: 'zamtari', english: 'Winter', example: 'ზამთარში თოვს (zamtarshi tovs) - It snows in winter' }
       ]
     },
     {
@@ -65,13 +76,13 @@ const MonthsAndSeasonsPage: React.FC = () => {
       title: 'Days of the Week',
       description: 'Learn the Georgian names for days',
       words: [
-        { georgian: 'ორშაბათი', latin: 'orshabati', english: 'Monday', example: 'ორშაბათს სამსახურში მივდივარ - I go to work on Monday' },
-        { georgian: 'სამშაბათი', latin: 'samshabati', english: 'Tuesday', example: 'სამშაბათს სპორტზე დავდივარ - I go to sports on Tuesday' },
-        { georgian: 'ოთხშაბათი', latin: 'otkhshabati', english: 'Wednesday', example: 'ოთხშაბათს მეგობრებს ვხვდები - I meet friends on Wednesday' },
-        { georgian: 'ხუთშაბათი', latin: 'khutshabati', english: 'Thursday', example: 'ხუთშაბათს ვსწავლობ - I study on Thursday' },
-        { georgian: 'პარასკევი', latin: 'paraskevi', english: 'Friday', example: 'პარასკევს კინოში მივდივარ - I go to the cinema on Friday' },
-        { georgian: 'შაბათი', latin: 'shabati', english: 'Saturday', example: 'შაბათს ვისვენებ - I rest on Saturday' },
-        { georgian: 'კვირა', latin: 'kvira', english: 'Sunday', example: 'კვირას ოჯახთან ერთად ვარ - I am with family on Sunday' }
+        { georgian: 'ორშაბათი', latin: 'orshabati', english: 'Monday', example: 'ორშაბათს სამსახურში მივდივარ (orshabats samsakhurshi mivdivar) - I go to work on Monday' },
+        { georgian: 'სამშაბათი', latin: 'samshabati', english: 'Tuesday', example: 'სამშაბათს სპორტზე დავდივარ (samshabats sportze davdivar) - I go to sports on Tuesday' },
+        { georgian: 'ოთხშაბათი', latin: 'otkhshabati', english: 'Wednesday', example: 'ოთხშაბათს მეგობრებს ვხვდები (otkhshabats megobrebs vkhvdebi) - I meet friends on Wednesday' },
+        { georgian: 'ხუთშაბათი', latin: 'khutshabati', english: 'Thursday', example: 'ხუთშაბათს ვსწავლობ (khutshabats vstsavlob) - I study on Thursday' },
+        { georgian: 'პარასკევი', latin: 'paraskevi', english: 'Friday', example: 'პარასკევს კინოში მივდივარ (paraskevs kinoshi mivdivar) - I go to the cinema on Friday' },
+        { georgian: 'შაბათი', latin: 'shabati', english: 'Saturday', example: 'შაბათს ვისვენებ (shabats visveneb) - I rest on Saturday' },
+        { georgian: 'კვირა', latin: 'kvira', english: 'Sunday', example: 'კვირას ოჯახთან ერთად ვარ (kviras ojakhtan ertad var) - I am with family on Sunday' }
       ]
     },
     {
@@ -79,66 +90,116 @@ const MonthsAndSeasonsPage: React.FC = () => {
       title: 'Time Expressions',
       description: 'Common words and phrases about time',
       words: [
-        { georgian: 'დღეს', latin: 'dghes', english: 'today', example: 'დღეს მზიანი ამინდია - Today is sunny' },
-        { georgian: 'გუშინ', latin: 'gushin', english: 'yesterday', example: 'გუშინ წვიმდა - It was raining yesterday' },
-        { georgian: 'ხვალ', latin: 'khval', english: 'tomorrow', example: 'ხვალ მეგობარს ვხვდები - I\'m meeting a friend tomorrow' },
-        { georgian: 'დილა', latin: 'dila', english: 'morning', example: 'დილა მშვიდობისა - Good morning' },
-        { georgian: 'შუადღე', latin: 'shuadghe', english: 'noon', example: 'შუადღეზე ვსადილობ - I have lunch at noon' },
-        { georgian: 'საღამო', latin: 'saghamo', english: 'evening', example: 'საღამო მშვიდობისა - Good evening' },
-        { georgian: 'ღამე', latin: 'ghame', english: 'night', example: 'ღამე მშვიდობისა - Good night' },
-        { georgian: 'კვირა', latin: 'kvira', english: 'week', example: 'ერთი კვირა - One week' },
-        { georgian: 'თვე', latin: 'tve', english: 'month', example: 'ერთი თვე - One month' },
-        { georgian: 'წელი', latin: 'tseli', english: 'year', example: 'ახალი წელი - New Year' }
+        { georgian: 'დღეს', latin: 'dghes', english: 'today', example: 'დღეს მზიანი ამინდია (dghes mziani amindia) - Today is sunny' },
+        { georgian: 'გუშინ', latin: 'gushin', english: 'yesterday', example: 'გუშინ წვიმდა (gushin tsvimda) - It was raining yesterday' },
+        { georgian: 'ხვალ', latin: 'khval', english: 'tomorrow', example: 'ხვალ მეგობარს ვხვდები (khval megobars vkhvdebi) - I\'m meeting a friend tomorrow' },
+        { georgian: 'დილა', latin: 'dila', english: 'morning', example: 'დილა მშვიდობისა (dila mshvidobisa) - Good morning' },
+        { georgian: 'შუადღე', latin: 'shuadghe', english: 'noon', example: 'შუადღეზე ვსადილობ (shuadgheze vsadilob) - I have lunch at noon' },
+        { georgian: 'საღამო', latin: 'saghamo', english: 'evening', example: 'საღამო მშვიდობისა (saghamo mshvidobisa) - Good evening' },
+        { georgian: 'ღამე', latin: 'ghame', english: 'night', example: 'ღამე მშვიდობისა (ghame mshvidobisa) - Good night' },
+        { georgian: 'კვირა', latin: 'kvira', english: 'week', example: 'ერთი კვირა (erti kvira) - One week' },
+        { georgian: 'თვე', latin: 'tve', english: 'month', example: 'ერთი თვე (erti tve) - One month' },
+        { georgian: 'წელი', latin: 'tseli', english: 'year', example: 'ახალი წელი (akhali tseli) - New Year' }
       ]
     }
   ];
 
   // Exercise data
   const matchingExercises = [
-    { georgian: 'იანვარი', options: ['January', 'February', 'March', 'April'], correct: 'January' },
-    { georgian: 'ზაფხული', options: ['Winter', 'Spring', 'Summer', 'Autumn'], correct: 'Summer' },
-    { georgian: 'ორშაბათი', options: ['Sunday', 'Monday', 'Tuesday', 'Wednesday'], correct: 'Monday' },
-    { georgian: 'დღეს', options: ['Yesterday', 'Today', 'Tomorrow', 'Week'], correct: 'Today' },
-    { georgian: 'ზამთარი', options: ['Winter', 'Spring', 'Summer', 'Autumn'], correct: 'Winter' }
+    { georgian: 'იანვარი (ianuari)', options: ['January', 'February', 'March', 'April'], correct: 'January' },
+    { georgian: 'ზაფხული (zapkhuli)', options: ['Winter', 'Spring', 'Summer', 'Autumn'], correct: 'Summer' },
+    { georgian: 'ორშაბათი (orshabati)', options: ['Sunday', 'Monday', 'Tuesday', 'Wednesday'], correct: 'Monday' },
+    { georgian: 'დღეს (dghes)', options: ['Yesterday', 'Today', 'Tomorrow', 'Week'], correct: 'Today' },
+    { georgian: 'ზამთარი (zamtari)', options: ['Winter', 'Spring', 'Summer', 'Autumn'], correct: 'Winter' }
   ];
 
   const translationExercises = [
-    { english: 'March', options: ['მარტი', 'აპრილი', 'მაისი', 'ივნისი'], correct: 'მარტი' },
-    { english: 'Autumn', options: ['ზამთარი', 'გაზაფხული', 'ზაფხული', 'შემოდგომა'], correct: 'შემოდგომა' },
-    { english: 'Friday', options: ['ხუთშაბათი', 'პარასკევი', 'შაბათი', 'კვირა'], correct: 'პარასკევი' },
-    { english: 'Morning', options: ['დილა', 'შუადღე', 'საღამო', 'ღამე'], correct: 'დილა' },
-    { english: 'Year', options: ['დღე', 'კვირა', 'თვე', 'წელი'], correct: 'წელი' }
+    { english: 'March', options: ['მარტი (marti)', 'აპრილი (aprili)', 'მაისი (maisi)', 'ივნისი (ivnisi)'], correct: 'მარტი (marti)' },
+    { english: 'Autumn', options: ['ზამთარი (zamtari)', 'გაზაფხული (gazapkhuli)', 'ზაფხული (zapkhuli)', 'შემოდგომა (shemodgoma)'], correct: 'შემოდგომა (shemodgoma)' },
+    { english: 'Friday', options: ['ხუთშაბათი (khutshabati)', 'პარასკევი (paraskevi)', 'შაბათი (shabati)', 'კვირა (kvira)'], correct: 'პარასკევი (paraskevi)' },
+    { english: 'Morning', options: ['დილა (dila)', 'შუადღე (shuadghe)', 'საღამო (saghamo)', 'ღამე (ghame)'], correct: 'დილა (dila)' },
+    { english: 'Year', options: ['დღე (dghe)', 'კვირა (kvira)', 'თვე (tve)', 'წელი (tseli)'], correct: 'წელი (tseli)' }
   ];
 
   const orderingExercises = [
     {
       title: "Order the months from January to March",
-      items: ['თებერვალი', 'მარტი', 'იანვარი'],
-      correctOrder: ['იანვარი', 'თებერვალი', 'მარტი']
+      items: ['თებერვალი (tebervali)', 'მარტი (marti)', 'იანვარი (ianuari)'],
+      correctOrder: ['იანვარი (ianuari)', 'თებერვალი (tebervali)', 'მარტი (marti)']
     },
     {
       title: "Order the seasons starting from Spring",
-      items: ['ზამთარი', 'შემოდგომა', 'ზაფხული', 'გაზაფხული'],
-      correctOrder: ['გაზაფხული', 'ზაფხული', 'შემოდგომა', 'ზამთარი']
+      items: ['ზამთარი (zamtari)', 'შემოდგომა (shemodgoma)', 'ზაფხული (zapkhuli)', 'გაზაფხული (gazapkhuli)'],
+      correctOrder: ['გაზაფხული (gazapkhuli)', 'ზაფხული (zapkhuli)', 'შემოდგომა (shemodgoma)', 'ზამთარი (zamtari)']
     },
     {
       title: "Order the days from Monday to Wednesday",
-      items: ['სამშაბათი', 'ოთხშაბათი', 'ორშაბათი'],
-      correctOrder: ['ორშაბათი', 'სამშაბათი', 'ოთხშაბათი']
+      items: ['სამშაბათი (samshabati)', 'ოთხშაბათი (otkhshabati)', 'ორშაბათი (orshabati)'],
+      correctOrder: ['ორშაბათი (orshabati)', 'სამშაბათი (samshabati)', 'ოთხშაბათი (otkhshabati)']
     },
     {
       title: "Order from morning to night",
-      items: ['საღამო', 'შუადღე', 'ღამე', 'დილა'],
-      correctOrder: ['დილა', 'შუადღე', 'საღამო', 'ღამე']
+      items: ['საღამო (saghamo)', 'შუადღე (shuadghe)', 'ღამე (ghame)', 'დილა (dila)'],
+      correctOrder: ['დილა (dila)', 'შუადღე (shuadghe)', 'საღამო (saghamo)', 'ღამე (ghame)']
     },
     {
       title: "Order from yesterday to tomorrow",
-      items: ['დღეს', 'ხვალ', 'გუშინ'],
-      correctOrder: ['გუშინ', 'დღეს', 'ხვალ']
+      items: ['დღეს (dghes)', 'ხვალ (khval)', 'გუშინ (gushin)'],
+      correctOrder: ['გუშინ (gushin)', 'დღეს (dghes)', 'ხვალ (khval)']
     }
   ];
 
+  // Track time spent on the page
+  useEffect(() => {
+    // Set up interval to track time spent
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const timeDiff = now - lastActivityTime;
+      
+      // Only count time if user has been active in the last 5 minutes
+      if (timeDiff < 5 * 60 * 1000) {
+        setTimeSpent(prev => prev + 1);
+      }
+      
+      setLastActivityTime(now);
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, [lastActivityTime]);
+
+  // Update user activity time on interactions
+  const updateActivity = () => {
+    setLastActivityTime(Date.now());
+  };
+
+  // Save progress when user leaves the page
+  useEffect(() => {
+    // Track initial visit
+    if (user) {
+      updateProgress('months', { timeSpent: 1 });
+    }
+    
+    // Save progress when component unmounts
+    return () => {
+      if (user && timeSpent > 0) {
+        // Calculate progress based on time spent and exercise completion
+        const exerciseCompletion = Object.keys(matchingExercises).length + 
+                                  Object.keys(translationExercises).length + 
+                                  (showFeedback ? 1 : 0);
+        
+        // Mark as completed if user has spent significant time or completed exercises
+        const completed = timeSpent > 10 || exerciseCompletion >= 5;
+        
+        updateProgress('months', { 
+          timeSpent, 
+          completed: completed
+        });
+      }
+    };
+  }, [user, timeSpent, showFeedback]);
+
   const toggleCategory = (categoryId: string) => {
+    updateActivity();
     if (expandedCategory === categoryId) {
       setExpandedCategory(null);
     } else {
@@ -152,6 +213,7 @@ const MonthsAndSeasonsPage: React.FC = () => {
   };
 
   const playAudio = (word: string) => {
+    updateActivity();
     if (isPlaying === word) {
       setIsPlaying(null);
     } else {
@@ -162,16 +224,19 @@ const MonthsAndSeasonsPage: React.FC = () => {
   };
 
   const handleExerciseAnswer = (answer: string) => {
+    updateActivity();
     setSelectedAnswer(answer);
     setShowFeedback(true);
   };
 
   const startOrderingExercise = () => {
+    updateActivity();
     setOrderingItems([...orderingExercises[currentExerciseIndex].items]);
     setOrderedItems([]);
   };
 
   const handleItemClick = (item: string) => {
+    updateActivity();
     if (orderingItems.includes(item)) {
       // Move from available to ordered
       setOrderingItems(orderingItems.filter(i => i !== item));
@@ -184,6 +249,7 @@ const MonthsAndSeasonsPage: React.FC = () => {
   };
 
   const checkOrderingAnswer = () => {
+    updateActivity();
     const isCorrect = orderedItems.every((item, index) => 
       item === orderingExercises[currentExerciseIndex].correctOrder[index]
     );
@@ -192,6 +258,7 @@ const MonthsAndSeasonsPage: React.FC = () => {
   };
 
   const nextExercise = () => {
+    updateActivity();
     if (exerciseMode === 'matching' && currentExerciseIndex < matchingExercises.length - 1) {
       setCurrentExerciseIndex(currentExerciseIndex + 1);
     } else if (exerciseMode === 'translation' && currentExerciseIndex < translationExercises.length - 1) {
@@ -205,6 +272,7 @@ const MonthsAndSeasonsPage: React.FC = () => {
   };
 
   const resetExercise = () => {
+    updateActivity();
     setCurrentExerciseIndex(0);
     setSelectedAnswer(null);
     setShowFeedback(false);
@@ -234,13 +302,13 @@ const MonthsAndSeasonsPage: React.FC = () => {
   }, [exerciseMode, currentExerciseIndex]);
 
   return (
-    <div className="pt-16 pb-16">
+    <div className="pt-16 pb-16" onClick={updateActivity}>
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gradient-to-br from-red-50 to-orange-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="md:w-1/2">
               <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <span className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>Months & Seasons</span> - თვეები და სეზონები
+                <span className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>Months & Seasons</span> - თვეები და სეზონები (tveebi da sezonebi)
               </h1>
               <p className={`text-lg mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Learn Georgian months, seasons, days of the week, and time expressions.

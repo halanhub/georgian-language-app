@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Book, Brain, Check, Play, Volume2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Book, Brain, Check, ChevronDown, ChevronUp, Play, Volume2, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useAuth } from '../../contexts/AuthContext';
@@ -90,6 +90,11 @@ const AlphabetPage: React.FC = () => {
     { prompt: "Write the Georgian letter for 'n'", correct: 'ნ' },
     { prompt: "Write the Georgian letter for 'sh'", correct: 'შ' }
   ];
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Track time spent on the page
   useEffect(() => {

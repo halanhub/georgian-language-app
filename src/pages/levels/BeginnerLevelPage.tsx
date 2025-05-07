@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { AlignJustify, ArrowRight, Book, Calendar, Palette, Brain, Utensils, Dices, Heart, Cat, Clock } from 'lucide-react';
+import { AlignJustify, ArrowRight, Book, Calendar, Palette, Brain, Utensils, Dices, Heart, Cat, Clock, Lock } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useUserProgress } from '../../hooks/useUserProgress';
+import { useSubscription } from '../../hooks/useSubscription';
 
 const BeginnerLevelPage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { theme } = useTheme();
   const { progress, loading: progressLoading, updateProgress } = useUserProgress();
+  const { hasActiveSubscription, loading: subscriptionLoading } = useSubscription();
   const [overallProgress, setOverallProgress] = useState(0);
 
   // Calculate progress based on completed lessons
@@ -52,6 +54,11 @@ const BeginnerLevelPage: React.FC = () => {
     }
   }, [user, progressLoading, updateProgress]);
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const topics = [
     { 
       id: 'alphabet', 
@@ -60,6 +67,7 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <AlignJustify size={24} />,
       color: theme === 'dark' ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800',
       path: '/beginner/alphabet',
+      premium: false,
       progress: progress?.find(p => p.lessonId === 'alphabet')?.completed ? 100 : 
                progress?.find(p => p.lessonId === 'alphabet')?.timeSpent ? 
                Math.min(Math.round((progress?.find(p => p.lessonId === 'alphabet')?.timeSpent || 0) * 5), 95) : 0
@@ -71,6 +79,7 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Brain size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
       path: '/beginner/basic-vocabulary',
+      premium: false,
       progress: progress?.find(p => p.lessonId === 'basic-vocabulary')?.completed ? 100 : 
                progress?.find(p => p.lessonId === 'basic-vocabulary')?.timeSpent ? 
                Math.min(Math.round((progress?.find(p => p.lessonId === 'basic-vocabulary')?.timeSpent || 0) * 5), 95) : 0
@@ -82,6 +91,7 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Palette size={24} />,
       color: theme === 'dark' ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
       path: '/beginner/colors-and-shapes',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'colors-shapes')?.completed ? 100 : 
                progress?.find(p => p.lessonId === 'colors-shapes')?.timeSpent ? 
                Math.min(Math.round((progress?.find(p => p.lessonId === 'colors-shapes')?.timeSpent || 0) * 5), 95) : 0
@@ -93,6 +103,7 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Book size={24} />,
       color: theme === 'dark' ? 'bg-yellow-900 text-yellow-200' : 'bg-yellow-100 text-yellow-800',
       path: '/beginner/numbers',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'numbers')?.completed ? 100 : 
                progress?.find(p => p.lessonId === 'numbers')?.timeSpent ? 
                Math.min(Math.round((progress?.find(p => p.lessonId === 'numbers')?.timeSpent || 0) * 5), 95) : 0
@@ -104,6 +115,7 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Calendar size={24} />,
       color: theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800',
       path: '/beginner/months-and-seasons',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'months')?.completed ? 100 : 
                progress?.find(p => p.lessonId === 'months')?.timeSpent ? 
                Math.min(Math.round((progress?.find(p => p.lessonId === 'months')?.timeSpent || 0) * 5), 95) : 0
@@ -115,6 +127,7 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Utensils size={24} />,
       color: theme === 'dark' ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-100 text-indigo-800',
       path: '/beginner/food-and-drinks',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'food')?.completed ? 100 : 
                progress?.find(p => p.lessonId === 'food')?.timeSpent ? 
                Math.min(Math.round((progress?.find(p => p.lessonId === 'food')?.timeSpent || 0) * 5), 95) : 0
@@ -126,6 +139,7 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Heart size={24} />,
       color: theme === 'dark' ? 'bg-pink-900 text-pink-200' : 'bg-pink-100 text-pink-800',
       path: '/beginner/human-body',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'body')?.completed ? 100 : 
                progress?.find(p => p.lessonId === 'body')?.timeSpent ? 
                Math.min(Math.round((progress?.find(p => p.lessonId === 'body')?.timeSpent || 0) * 5), 95) : 0
@@ -137,6 +151,7 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Cat size={24} />,
       color: theme === 'dark' ? 'bg-amber-900 text-amber-200' : 'bg-amber-100 text-amber-800',
       path: '/beginner/animals',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'animals')?.completed ? 100 : 
                progress?.find(p => p.lessonId === 'animals')?.timeSpent ? 
                Math.min(Math.round((progress?.find(p => p.lessonId === 'animals')?.timeSpent || 0) * 5), 95) : 0
@@ -148,18 +163,46 @@ const BeginnerLevelPage: React.FC = () => {
       icon: <Clock size={24} />,
       color: theme === 'dark' ? 'bg-cyan-900 text-cyan-200' : 'bg-cyan-100 text-cyan-800',
       path: '/beginner/daily-activities',
+      premium: true,
       progress: progress?.find(p => p.lessonId === 'activities')?.completed ? 100 : 
                progress?.find(p => p.lessonId === 'activities')?.timeSpent ? 
                Math.min(Math.round((progress?.find(p => p.lessonId === 'activities')?.timeSpent || 0) * 5), 95) : 0
     }
   ];
 
+  // Update paths for premium topics if user has subscription or is admin
+  const topicsWithCorrectPaths = topics.map(topic => {
+    if (topic.premium && (hasActiveSubscription || isAdmin)) {
+      return {
+        ...topic,
+        path: topic.path, // Keep the original path
+      };
+    } else if (topic.premium) {
+      return {
+        ...topic,
+        path: '/pricing', // Redirect to pricing for premium content
+      };
+    }
+    return topic;
+  });
+
   const quizzes = [
-    { id: 'alphabet', name: 'Alphabet Quiz', path: '/beginner/quiz/alphabet' },
-    { id: 'vocabulary', name: 'Basic Vocabulary Quiz', path: '/beginner/quiz/vocabulary' },
-    { id: 'colors', name: 'Colors & Shapes Quiz', path: '/beginner/quiz/colors' },
-    { id: 'numbers', name: 'Numbers Quiz', path: '/beginner/quiz/numbers' },
+    { id: 'alphabet', name: 'Alphabet Quiz', path: '/beginner/quiz/alphabet', premium: false },
+    { id: 'vocabulary', name: 'Basic Vocabulary Quiz', path: '/beginner/quiz/vocabulary', premium: false },
+    { id: 'colors', name: 'Colors & Shapes Quiz', path: '/beginner/quiz/colors', premium: true },
+    { id: 'numbers', name: 'Numbers Quiz', path: '/beginner/quiz/numbers', premium: true },
   ];
+
+  // Update paths for premium quizzes if user has subscription or is admin
+  const quizzesWithCorrectPaths = quizzes.map(quiz => {
+    if (quiz.premium && !(hasActiveSubscription || isAdmin)) {
+      return {
+        ...quiz,
+        path: '/pricing',
+      };
+    }
+    return quiz;
+  });
 
   return (
     <div className="pt-16 pb-16">
@@ -234,14 +277,23 @@ const BeginnerLevelPage: React.FC = () => {
             Learning Topics
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {topics.map((topic) => (
+            {topicsWithCorrectPaths.map((topic) => (
               <Link
                 key={topic.id}
                 to={topic.path}
                 className={`p-6 rounded-lg shadow-md transition-transform hover:scale-105 ${
                   theme === 'dark' ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:bg-gray-50'
-                }`}
+                } ${topic.premium && !(hasActiveSubscription || isAdmin) ? 'relative' : ''}`}
               >
+                {topic.premium && !(hasActiveSubscription || isAdmin) && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center z-10">
+                    <div className="text-center p-4">
+                      <Lock className="mx-auto h-8 w-8 text-white mb-2" />
+                      <p className="text-white font-medium">Premium Content</p>
+                      <p className="text-white text-sm mt-1">Upgrade to access</p>
+                    </div>
+                  </div>
+                )}
                 <div className={`p-3 rounded-full inline-block mb-4 ${topic.color}`}>
                   {topic.icon}
                 </div>
@@ -267,7 +319,7 @@ const BeginnerLevelPage: React.FC = () => {
                 <div className={`flex items-center text-sm font-medium ${
                   theme === 'dark' ? 'text-red-400' : 'text-red-600'
                 }`}>
-                  {topic.progress > 0 ? 'Continue Learning' : 'Start Learning'}
+                  {topic.premium && !(hasActiveSubscription || isAdmin) ? 'Upgrade to Access' : (topic.progress > 0 ? 'Continue Learning' : 'Start Learning')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </div>
               </Link>
@@ -289,7 +341,7 @@ const BeginnerLevelPage: React.FC = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {quizzes.map((quiz) => (
+            {quizzesWithCorrectPaths.map((quiz) => (
               <Link
                 key={quiz.id}
                 to={quiz.path}
@@ -297,8 +349,16 @@ const BeginnerLevelPage: React.FC = () => {
                   theme === 'dark' 
                     ? 'bg-gray-700 hover:bg-gray-650 border border-gray-600' 
                     : 'bg-white hover:bg-red-50 border border-gray-100'
-                }`}
+                } ${quiz.premium && !(hasActiveSubscription || isAdmin) ? 'relative' : ''}`}
               >
+                {quiz.premium && !(hasActiveSubscription || isAdmin) && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center z-10">
+                    <div className="text-center p-2">
+                      <Lock className="mx-auto h-6 w-6 text-white mb-1" />
+                      <p className="text-white text-xs">Premium</p>
+                    </div>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {quiz.name}
