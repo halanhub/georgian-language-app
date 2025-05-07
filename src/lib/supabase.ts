@@ -41,80 +41,48 @@ if (supabaseAnonKey.length < 20) {
   );
 }
 
-// Create the Supabase client with proper error handling
-let supabaseClient;
-
-try {
-  supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-      storage: {
-        getItem: (key) => {
-          try {
-            const value = localStorage.getItem(key);
-            return value ? JSON.parse(value) : null;
-          } catch (error) {
-            console.error('Error reading from localStorage:', error);
-            return null;
-          }
-        },
-        setItem: (key, value) => {
-          try {
-            localStorage.setItem(key, JSON.stringify(value));
-          } catch (error) {
-            console.error('Error writing to localStorage:', error);
-          }
-        },
-        removeItem: (key) => {
-          try {
-            localStorage.removeItem(key);
-          } catch (error) {
-            console.error('Error removing from localStorage:', error);
-          }
-        }
-      }
-    },
-    global: {
+// Create the Supabase client
+const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storage: localStorage, // ✅ Use native localStorage
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'supabase-js-web'
+    }
+  },
+  fetch: (url, options = {}) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
+    const fetchPromise = fetch(url, {
+      ...options,
+      signal: controller.signal,
       headers: {
-        'X-Client-Info': 'supabase-js-web'
+        ...options.headers,
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
       }
-    },
-    fetch: (url, options = {}) => {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-      
-      const fetchPromise = fetch(url, {
-        ...options,
-        signal: controller.signal,
-        headers: {
-          ...options.headers,
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
-      });
-      
-      return fetchPromise.finally(() => {
-        clearTimeout(timeoutId);
-      });
-    }
-  });
-  
-  // Test the connection and session management
-  supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN') {
-      console.log('User signed in, session established');
-    } else if (event === 'SIGNED_OUT') {
-      console.log('User signed out, session cleared');
-    } else if (event === 'TOKEN_REFRESHED') {
-      console.log('Session token refreshed');
-    }
-  });
-  
-} catch (error) {
-  console.error('Failed to initialize Supabase client:', error);
-  throw new Error('Failed to initialize Supabase client. Please check your credentials and try again.');
-}
+    });
+    
+    return fetchPromise.finally(() => {
+      clearTimeout(timeoutId);
+    });
+  }
+});
+
+// Auth state logging
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN') {
+    console.log('User signed in, session established');
+  } else if (event === 'SIGNED_OUT') {
+    console.log('User signed out, session cleared');
+  } else if (event === 'TOKEN_REFRESHED') {
+    console.log('Session token refreshed');
+  }
+});
 
 export const supabase = supabaseClient;
