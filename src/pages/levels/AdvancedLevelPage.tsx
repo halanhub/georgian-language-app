@@ -13,7 +13,7 @@ const AdvancedLevelPage: React.FC = () => {
   const { theme } = useTheme();
   const { user, isAdmin } = useAuth();
   const { hasActiveSubscription } = useSubscription();
-  const { progress, loading: progressLoading, updateProgress } = useUserProgress();
+  const { progress, loading: progressLoading, updateProgress, initializeProgress } = useUserProgress();
   const [overallProgress, setOverallProgress] = useState(0);
   const { t } = useTranslation();
 
@@ -57,6 +57,14 @@ const AdvancedLevelPage: React.FC = () => {
       trackVisit();
     }
   }, [user, progressLoading, updateProgress]);
+
+  // Initialize progress records if they don't exist
+  useEffect(() => {
+    if (user && !progressLoading && (!progress || progress.length === 0)) {
+      console.log('No progress records found, initializing...');
+      initializeProgress(user.id);
+    }
+  }, [user, progress, progressLoading, initializeProgress]);
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -138,44 +146,14 @@ const AdvancedLevelPage: React.FC = () => {
     },
   ];
 
-  // Initialize progress records for advanced lessons if they don't exist
-  useEffect(() => {
-    if (user && progress && !progressLoading) {
-      const initializeAdvancedProgress = async () => {
-        try {
-          // Check if advanced progress records exist
-          const advancedLessons = progress.filter(p => p.lessonId.startsWith('advanced-'));
-          
-          if (advancedLessons.length === 0) {
-            console.log('Initializing advanced progress records');
-            
-            // Create initial progress records
-            const initialProgress = topics.map(topic => ({
-              user_id: user.id,
-              lesson_id: topic.id,
-              completed: false,
-              time_spent: 0
-            }));
-            
-            // Insert records
-            const { error } = await supabase
-              .from('user_progress')
-              .insert(initialProgress);
-            
-            if (error) {
-              console.error('Error initializing advanced progress:', error);
-            } else {
-              console.log('Successfully initialized advanced progress records');
-            }
-          }
-        } catch (error) {
-          console.error('Error checking/initializing advanced progress:', error);
-        }
-      };
-      
-      initializeAdvancedProgress();
-    }
-  }, [user, progress, progressLoading, topics]);
+  // If still loading, show a loading indicator
+  if (progressLoading) {
+    return (
+      <div className="min-h-screen pt-16 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-16 pb-16">

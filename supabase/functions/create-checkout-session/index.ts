@@ -72,10 +72,6 @@ serve(async (req) => {
       );
     }
     
-    console.log("Creating checkout session with price ID:", price_id);
-    console.log("User:", user.id, user.email);
-    console.log("Mode:", 'subscription');
-    
     // Create a checkout session
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
@@ -94,9 +90,6 @@ serve(async (req) => {
         user_id: user.id,
       },
     });
-    
-    console.log("Checkout session created:", session.id);
-    console.log("Checkout URL:", session.url);
     
     return new Response(
       JSON.stringify({ id: session.id, url: session.url }),

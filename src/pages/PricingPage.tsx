@@ -151,24 +151,22 @@ const PricingPage: React.FC = () => {
                 <ul className="space-y-4">
                   {t('pricing.features.free', { returnObjects: true }).map((feature: string, index: number) => (
                     <li key={index} className="flex">
-                      <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                      <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                        {feature}
-                      </span>
+                      <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                      <span className="ml-2">{feature}</span>
                     </li>
                   ))}
                 </ul>
                 
-                <button
-                  disabled={true}
-                  className={`w-full px-4 py-2 rounded-md text-sm font-medium ${
-                    theme === 'dark'
-                      ? 'bg-gray-700 text-gray-300 cursor-not-allowed'
-                      : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  }`}
+                <Link 
+                  to={user ? "/beginner" : "/signup"} 
+                  className={`block w-full text-center py-2 rounded-md font-medium ${
+                    theme === 'dark' ? 
+                    'bg-gray-700 text-white hover:bg-gray-600' : 
+                    'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                  } transition-colors`}
                 >
-                  {t('pricing.free.current_plan')}
-                </button>
+                  {t('pricing.get_started')}
+                </Link>
               </div>
             </div>
             
@@ -198,10 +196,8 @@ const PricingPage: React.FC = () => {
                 <ul className="space-y-4">
                   {t('pricing.features.premium', { returnObjects: true }).map((feature: string, index: number) => (
                     <li key={index} className="flex">
-                      <Check size={20} className={`flex-shrink-0 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
-                      <span className={`ml-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                        {feature}
-                      </span>
+                      <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                      <span className="ml-2">{feature}</span>
                     </li>
                   ))}
                 </ul>

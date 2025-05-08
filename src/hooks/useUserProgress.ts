@@ -290,6 +290,7 @@ export function useUserProgress(lessonId?: string) {
   // Initialize progress records for a user
   const initializeProgress = async (userId: string) => {
     try {
+      console.log('Initializing progress records for user:', userId);
       const initialProgress = [
         { user_id: userId, lesson_id: 'alphabet', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'basic-vocabulary', completed: false, time_spent: 0 },
@@ -302,11 +303,11 @@ export function useUserProgress(lessonId?: string) {
         { user_id: userId, lesson_id: 'activities', completed: false, time_spent: 0 },
         // Intermediate lessons
         { user_id: userId, lesson_id: 'grammar', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'conversations', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'sentences', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'common-words', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'conversations', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'reading', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'writing', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'sentences', completed: false, time_spent: 0 },
         // Advanced lessons
         { user_id: userId, lesson_id: 'advanced-grammar', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'advanced-culture', completed: false, time_spent: 0 },

@@ -12,7 +12,7 @@ const IntermediateLevelPage: React.FC = () => {
   const { theme } = useTheme();
   const { user, isAdmin } = useAuth();
   const { hasActiveSubscription } = useSubscription();
-  const { progress, loading: progressLoading, updateProgress } = useUserProgress();
+  const { progress, loading: progressLoading, updateProgress, initializeProgress } = useUserProgress();
   const [overallProgress, setOverallProgress] = useState(0);
   const { t } = useTranslation();
 
@@ -56,6 +56,14 @@ const IntermediateLevelPage: React.FC = () => {
       trackVisit();
     }
   }, [user, progressLoading, updateProgress]);
+
+  // Initialize progress records if they don't exist
+  useEffect(() => {
+    if (user && !progressLoading && (!progress || progress.length === 0)) {
+      console.log('No progress records found, initializing...');
+      initializeProgress(user.id);
+    }
+  }, [user, progress, progressLoading, initializeProgress]);
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -136,6 +144,15 @@ const IntermediateLevelPage: React.FC = () => {
                Math.min(Math.round((progress?.find(p => p.lessonId === 'writing')?.timeSpent || 0) * 2), 95) : 0
     },
   ];
+
+  // If still loading, show a loading indicator
+  if (progressLoading) {
+    return (
+      <div className="min-h-screen pt-16 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-16 pb-16">

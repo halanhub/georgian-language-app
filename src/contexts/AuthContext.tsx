@@ -52,7 +52,7 @@ const INITIAL_TIMEOUT = 10000; // 10 seconds
 const MAX_TIMEOUT = 30000; // 30 seconds
 
 // Helper function for exponential backoff
-const wait = (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Provider component
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -72,6 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (error) {
           console.error('Error fetching session:', error);
+          setLoading(false);
           return;
         }
         
@@ -80,10 +81,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (session?.user) {
           await fetchUserProfile(session.user);
+        } else {
+          setLoading(false);
         }
       } catch (error) {
         console.error('Error in session check:', error);
-      } finally {
         setLoading(false);
       }
     };
@@ -101,10 +103,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
           setIsAdmin(false);
+          setLoading(false);
         } else if (event === 'USER_UPDATED') {
           if (newSession?.user) {
             await fetchUserProfile(newSession.user);
           }
+        } else {
+          setLoading(false);
         }
       }
     );
@@ -152,6 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           studyStreak: profile.study_streak,
           isAdmin: userIsAdmin
         });
+        setLoading(false);
       } else {
         // Profile doesn't exist, create it
         console.log('Creating new user profile for:', authUser.id);
@@ -188,6 +194,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           studyStreak: newProfile.study_streak,
           isAdmin: userIsAdmin
         });
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
@@ -198,6 +205,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         displayName: authUser.email?.split('@')[0] || 'User',
         isAdmin: ADMIN_EMAILS.includes(authUser.email || '')
       });
+      setLoading(false);
     }
   };
 
@@ -235,11 +243,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         { user_id: userId, lesson_id: 'activities', completed: false, time_spent: 0 },
         // Intermediate lessons
         { user_id: userId, lesson_id: 'grammar', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'conversations', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'sentences', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'common-words', completed: false, time_spent: 0 },
+        { user_id: userId, lesson_id: 'conversations', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'reading', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'writing', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'sentences', completed: false, time_spent: 0 },
         // Advanced lessons
         { user_id: userId, lesson_id: 'advanced-grammar', completed: false, time_spent: 0 },
         { user_id: userId, lesson_id: 'advanced-culture', completed: false, time_spent: 0 },
@@ -277,21 +285,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(true);
         console.log(`Login attempt ${attempt} of ${RETRY_ATTEMPTS}`);
 
-        const loginPromise = supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password
         });
-
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => {
-            reject(new Error(`Login request timed out. Please check your internet connection and try again.`));
-          }, currentTimeout);
-        });
-
-        const { data, error } = await Promise.race([
-          loginPromise,
-          timeoutPromise
-        ]) as any;
 
         if (error) {
           throw error;
