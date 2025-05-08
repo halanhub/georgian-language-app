@@ -65,6 +65,15 @@ const PricingPage: React.FC = () => {
     navigate('/settings?tab=subscription');
   };
 
+  // Get the features arrays safely
+  const getFeaturesArray = (key: string) => {
+    const features = t(key, { returnObjects: true });
+    return Array.isArray(features) ? features : [];
+  };
+
+  const freeFeatures = getFeaturesArray('pricing.free.features');
+  const premiumFeatures = getFeaturesArray('pricing.premium.features');
+
   return (
     <div className="pt-16 pb-16">
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gradient-to-br from-blue-50 to-purple-50'}`}>
@@ -150,7 +159,7 @@ const PricingPage: React.FC = () => {
               </div>
               <div className="p-6">
                 <ul className="space-y-4">
-                  {t('pricing.features.free', { returnObjects: true }).map((feature: string, index: number) => (
+                  {freeFeatures.map((feature: string, index: number) => (
                     <li key={index} className="flex">
                       <Check size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
                       <span className="ml-2">{feature}</span>
@@ -195,7 +204,7 @@ const PricingPage: React.FC = () => {
               </div>
               <div className="p-6 space-y-6">
                 <ul className="space-y-4">
-                  {t('pricing.features.premium', { returnObjects: true }).map((feature: string, index: number) => (
+                  {premiumFeatures.map((feature: string, index: number) => (
                     <li key={index} className="flex">
                       <Check size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
                       <span className="ml-2">{feature}</span>
