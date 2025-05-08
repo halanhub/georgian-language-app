@@ -49,6 +49,7 @@ const PricingPage: React.FC = () => {
       );
       
       if (url) {
+        // Use window.location.href for a full page redirect
         window.location.href = url;
       } else {
         throw new Error('Failed to create checkout session - no URL returned');
@@ -151,7 +152,7 @@ const PricingPage: React.FC = () => {
                 <ul className="space-y-4">
                   {t('pricing.features.free', { returnObjects: true }).map((feature: string, index: number) => (
                     <li key={index} className="flex">
-                      <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                      <Check size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
                       <span className="ml-2">{feature}</span>
                     </li>
                   ))}
@@ -196,7 +197,7 @@ const PricingPage: React.FC = () => {
                 <ul className="space-y-4">
                   {t('pricing.features.premium', { returnObjects: true }).map((feature: string, index: number) => (
                     <li key={index} className="flex">
-                      <ChevronRight size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                      <Check size={16} className={`mt-1 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
                       <span className="ml-2">{feature}</span>
                     </li>
                   ))}

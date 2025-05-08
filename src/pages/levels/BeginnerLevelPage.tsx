@@ -328,7 +328,7 @@ const BeginnerLevelPage: React.FC = () => {
                 <div className={`flex items-center text-sm font-medium ${
                   theme === 'dark' ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700'
                 }`}>
-                  {topic.premium && !(hasActiveSubscription || isAdmin) ? 'Upgrade to Access' : (topic.progress > 0 ? 'Continue Learning' : 'Start Learning')}
+                  {topic.premium && !(hasActiveSubscription || isAdmin) ? t('home.levels.upgrade_to_access') : (topic.progress > 0 ? 'Continue Learning' : 'Start Learning')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </div>
               </Link>
