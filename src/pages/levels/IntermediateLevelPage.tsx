@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 const IntermediateLevelPage: React.FC = () => {
   const { theme } = useTheme();
   const { user, isAdmin } = useAuth();
-  const { hasActiveSubscription } = useSubscription();
+  const { hasActiveSubscription, loading: subscriptionLoading } = useSubscription();
   const { progress, loading: progressLoading, updateProgress, initializeProgress } = useUserProgress();
   const [overallProgress, setOverallProgress] = useState(0);
   const { t } = useTranslation();
@@ -146,7 +146,7 @@ const IntermediateLevelPage: React.FC = () => {
   ];
 
   // If still loading, show a loading indicator
-  if (progressLoading) {
+  if (progressLoading || subscriptionLoading) {
     return (
       <div className="min-h-screen pt-16 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
