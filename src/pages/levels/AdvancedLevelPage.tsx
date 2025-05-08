@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, Brain, Edit, GraduationCap, MessageCircle, Pencil, Lock } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -6,7 +6,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useSubscription } from '../../hooks/useSubscription';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import SubscriptionBanner from '../../components/SubscriptionBanner';
-import { supabase } from '../../lib/supabase';
 import { useTranslation } from 'react-i18next';
 
 const AdvancedLevelPage: React.FC = () => {
@@ -16,7 +15,6 @@ const AdvancedLevelPage: React.FC = () => {
   const { progress, loading: progressLoading, updateProgress, initializeProgress } = useUserProgress();
   const [overallProgress, setOverallProgress] = useState(0);
   const { t } = useTranslation();
-  const [hasTrackedVisit, setHasTrackedVisit] = useState(false);
 
   // Calculate progress based on completed lessons
   useEffect(() => {
@@ -41,23 +39,15 @@ const AdvancedLevelPage: React.FC = () => {
     }
   }, [user, progress, progressLoading]);
 
-  // Track page visit and update study time - only once per session
-  const trackPageVisit = useCallback(async () => {
-    if (user && !progressLoading && !hasTrackedVisit) {
-      try {
-        // Add 5 minutes of study time to the user's profile
-        await updateProgress('advanced', { timeSpent: 5 });
-        console.log('Recorded visit to advanced level page');
-        setHasTrackedVisit(true);
-      } catch (error) {
-        console.error('Error tracking page visit:', error);
-      }
-    }
-  }, [user, progressLoading, updateProgress, hasTrackedVisit]);
-
+  // Track page visit and update study time
   useEffect(() => {
-    trackPageVisit();
-  }, [trackPageVisit]);
+    if (user && !progressLoading) {
+      // Record that the user visited this page
+      updateProgress('advanced', { timeSpent: 5 })
+        .then(() => console.log('Recorded visit to advanced level page'))
+        .catch(error => console.error('Error tracking page visit:', error));
+    }
+  }, [user, progressLoading, updateProgress]);
 
   // Initialize progress records if they don't exist
   useEffect(() => {
@@ -150,7 +140,7 @@ const AdvancedLevelPage: React.FC = () => {
   // If still loading, show a loading indicator
   if (progressLoading || subscriptionLoading) {
     return (
-      <div className="min-h-screen pt-16 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
       </div>
     );

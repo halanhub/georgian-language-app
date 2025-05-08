@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AlignJustify, ArrowRight, Book, Calendar, Palette, Brain, Utensils, Dices, Heart, Cat, Clock, Lock } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -11,11 +11,10 @@ import { useTranslation } from 'react-i18next';
 const BeginnerLevelPage: React.FC = () => {
   const { user, isAdmin } = useAuth();
   const { theme } = useTheme();
-  const { progress, loading: progressLoading, updateProgress, initializeProgress } = useUserProgress();
   const { hasActiveSubscription, loading: subscriptionLoading } = useSubscription();
+  const { progress, loading: progressLoading, updateProgress, initializeProgress } = useUserProgress();
   const [overallProgress, setOverallProgress] = useState(0);
   const { t } = useTranslation();
-  const [hasTrackedVisit, setHasTrackedVisit] = useState(false);
 
   // Calculate progress based on completed lessons
   useEffect(() => {
@@ -40,23 +39,15 @@ const BeginnerLevelPage: React.FC = () => {
     }
   }, [user, progress, progressLoading]);
 
-  // Track page visit and update study time - only once per session
-  const trackPageVisit = useCallback(async () => {
-    if (user && !progressLoading && !hasTrackedVisit) {
-      try {
-        // Add 1 minute of study time to the user's profile
-        await updateProgress('beginner', { timeSpent: 1 });
-        console.log('Recorded visit to beginner level page');
-        setHasTrackedVisit(true);
-      } catch (error) {
-        console.error('Error tracking page visit:', error);
-      }
-    }
-  }, [user, progressLoading, updateProgress, hasTrackedVisit]);
-
+  // Track page visit and update study time
   useEffect(() => {
-    trackPageVisit();
-  }, [trackPageVisit]);
+    if (user && !progressLoading) {
+      // Record that the user visited this page
+      updateProgress('beginner', { timeSpent: 1 })
+        .then(() => console.log('Recorded visit to beginner level page'))
+        .catch(error => console.error('Error tracking page visit:', error));
+    }
+  }, [user, progressLoading, updateProgress]);
 
   // Initialize progress records if they don't exist
   useEffect(() => {
@@ -219,7 +210,7 @@ const BeginnerLevelPage: React.FC = () => {
   // If still loading, show a loading indicator
   if (progressLoading || subscriptionLoading) {
     return (
-      <div className="min-h-screen pt-16 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
       </div>
     );
