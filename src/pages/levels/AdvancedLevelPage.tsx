@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, Brain, Edit, GraduationCap, MessageCircle, Pencil, Lock } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -16,6 +16,7 @@ const AdvancedLevelPage: React.FC = () => {
   const { progress, loading: progressLoading, updateProgress, initializeProgress } = useUserProgress();
   const [overallProgress, setOverallProgress] = useState(0);
   const { t } = useTranslation();
+  const [hasTrackedVisit, setHasTrackedVisit] = useState(false);
 
   // Calculate progress based on completed lessons
   useEffect(() => {
@@ -40,23 +41,23 @@ const AdvancedLevelPage: React.FC = () => {
     }
   }, [user, progress, progressLoading]);
 
-  // Track page visit and update study time
-  useEffect(() => {
-    if (user && !progressLoading) {
-      // Record that the user visited this page
-      const trackVisit = async () => {
-        try {
-          // Add 5 minutes of study time to the user's profile
-          await updateProgress('advanced', { timeSpent: 5 });
-          console.log('Recorded visit to advanced level page');
-        } catch (error) {
-          console.error('Error tracking page visit:', error);
-        }
-      };
-      
-      trackVisit();
+  // Track page visit and update study time - only once per session
+  const trackPageVisit = useCallback(async () => {
+    if (user && !progressLoading && !hasTrackedVisit) {
+      try {
+        // Add 5 minutes of study time to the user's profile
+        await updateProgress('advanced', { timeSpent: 5 });
+        console.log('Recorded visit to advanced level page');
+        setHasTrackedVisit(true);
+      } catch (error) {
+        console.error('Error tracking page visit:', error);
+      }
     }
-  }, [user, progressLoading, updateProgress]);
+  }, [user, progressLoading, updateProgress, hasTrackedVisit]);
+
+  useEffect(() => {
+    trackPageVisit();
+  }, [trackPageVisit]);
 
   // Initialize progress records if they don't exist
   useEffect(() => {

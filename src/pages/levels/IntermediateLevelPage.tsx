@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, Brain, Edit, GraduationCap, MessageCircle, Pencil, Lock } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -15,6 +15,7 @@ const IntermediateLevelPage: React.FC = () => {
   const { progress, loading: progressLoading, updateProgress, initializeProgress } = useUserProgress();
   const [overallProgress, setOverallProgress] = useState(0);
   const { t } = useTranslation();
+  const [hasTrackedVisit, setHasTrackedVisit] = useState(false);
 
   // Calculate progress based on completed lessons
   useEffect(() => {
@@ -39,23 +40,23 @@ const IntermediateLevelPage: React.FC = () => {
     }
   }, [user, progress, progressLoading]);
 
-  // Track page visit and update study time
-  useEffect(() => {
-    if (user && !progressLoading) {
-      // Record that the user visited this page
-      const trackVisit = async () => {
-        try {
-          // Add 5 minutes of study time to the user's profile
-          await updateProgress('intermediate', { timeSpent: 5 });
-          console.log('Recorded visit to intermediate level page');
-        } catch (error) {
-          console.error('Error tracking page visit:', error);
-        }
-      };
-      
-      trackVisit();
+  // Track page visit and update study time - only once per session
+  const trackPageVisit = useCallback(async () => {
+    if (user && !progressLoading && !hasTrackedVisit) {
+      try {
+        // Add 5 minutes of study time to the user's profile
+        await updateProgress('intermediate', { timeSpent: 5 });
+        console.log('Recorded visit to intermediate level page');
+        setHasTrackedVisit(true);
+      } catch (error) {
+        console.error('Error tracking page visit:', error);
+      }
     }
-  }, [user, progressLoading, updateProgress]);
+  }, [user, progressLoading, updateProgress, hasTrackedVisit]);
+
+  useEffect(() => {
+    trackPageVisit();
+  }, [trackPageVisit]);
 
   // Initialize progress records if they don't exist
   useEffect(() => {
@@ -175,7 +176,6 @@ const IntermediateLevelPage: React.FC = () => {
                     className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
                       theme === 'dark' ? 'bg-blue-700 text-white hover:bg-blue-800' : 'bg-blue-600 text-white hover:bg-blue-700'
                     }`}
-                    onClick={() => updateProgress('grammar', { timeSpent: 1 })}
                   >
                     {t('intermediate.start_grammar')}
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -284,7 +284,6 @@ const IntermediateLevelPage: React.FC = () => {
                   className={`flex items-center text-sm font-medium ${
                     theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
                   }`}
-                  onClick={() => hasActiveSubscription && updateProgress(topic.id, { timeSpent: 1 })}
                 >
                   {topic.premium && !hasActiveSubscription && !isAdmin ? t('beginner.levels.upgrade_to_access') : (topic.progress > 0 ? 'Continue to Learning' : t('beginner.levels.start_learning'))}
                   <ArrowRight className="ml-2 h-4 w-4" />

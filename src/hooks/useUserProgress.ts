@@ -18,6 +18,7 @@ export function useUserProgress(lessonId?: string) {
   const [progress, setProgress] = useState<LessonProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -59,7 +60,7 @@ export function useUserProgress(lessonId?: string) {
           }));
           
           setProgress(formattedProgress);
-          console.log('Fetched user progress:', formattedProgress);
+          console.log('Fetched user progress:', formattedProgress.length, 'records');
         }
       } catch (err) {
         console.error('Error fetching user progress:', err);
@@ -70,7 +71,7 @@ export function useUserProgress(lessonId?: string) {
     };
 
     fetchProgress();
-  }, [user, lessonId]);
+  }, [user, lessonId, lastUpdated]);
 
   const updateProgress = async (
     lessonId: string, 
@@ -85,8 +86,17 @@ export function useUserProgress(lessonId?: string) {
     }
 
     try {
-      setLoading(true);
-      setError(null);
+      // Check if we've already updated this lesson recently (within 5 seconds)
+      const now = Date.now();
+      const lastUpdateTime = localStorage.getItem(`lastUpdate_${user.id}_${lessonId}`);
+      
+      if (lastUpdateTime && now - parseInt(lastUpdateTime) < 5000) {
+        console.log('Skipping update - too soon since last update for:', lessonId);
+        return null;
+      }
+      
+      // Store the current time as the last update time
+      localStorage.setItem(`lastUpdate_${user.id}_${lessonId}`, now.toString());
       
       // Check if progress record exists
       const existingProgress = progress.find(p => p.lessonId === lessonId);
@@ -133,6 +143,9 @@ export function useUserProgress(lessonId?: string) {
           if (updates.completed && !existingProgress.completed) {
             await updateUserProfile(user.id);
           }
+          
+          // Trigger a refresh
+          setLastUpdated(new Date().toISOString());
         }
         
         return data;
@@ -176,6 +189,9 @@ export function useUserProgress(lessonId?: string) {
           if (updates.completed) {
             await updateUserProfile(user.id);
           }
+          
+          // Trigger a refresh
+          setLastUpdated(new Date().toISOString());
         }
         
         return data;
@@ -184,8 +200,6 @@ export function useUserProgress(lessonId?: string) {
       console.error('Error updating user progress:', err);
       setError(err instanceof Error ? err : new Error('Unknown error occurred'));
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -355,6 +369,9 @@ export function useUserProgress(lessonId?: string) {
         }));
         
         setProgress(formattedProgress);
+        
+        // Trigger a refresh
+        setLastUpdated(new Date().toISOString());
       }
     } catch (error) {
       console.error('Error initializing progress records:', error);

@@ -9,6 +9,7 @@ export function useSubscription() {
   const [subscriptionDetails, setSubscriptionDetails] = useState<SubscriptionDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [lastChecked, setLastChecked] = useState<number>(0);
 
   useEffect(() => {
     const fetchSubscription = async () => {
@@ -19,14 +20,22 @@ export function useSubscription() {
         return;
       }
 
+      // Don't check more than once every 30 seconds
+      const now = Date.now();
+      if (lastChecked > 0 && now - lastChecked < 30000) {
+        return;
+      }
+
       try {
         setLoading(true);
+        setError(null);
         
         // If user is admin, they have access to everything
         if (isAdmin) {
           setHasActiveSubscription(true);
           setSubscriptionDetails(null);
           setLoading(false);
+          setLastChecked(now);
           return;
         }
         
@@ -59,6 +68,8 @@ export function useSubscription() {
           setSubscriptionDetails(null);
           console.log('No subscription found for user');
         }
+
+        setLastChecked(now);
       } catch (err) {
         console.error('Error fetching subscription:', err);
         setError(err instanceof Error ? err : new Error('Failed to fetch subscription'));
@@ -69,7 +80,7 @@ export function useSubscription() {
     };
 
     fetchSubscription();
-  }, [user, isAdmin]);
+  }, [user, isAdmin, lastChecked]);
 
   return { hasActiveSubscription, subscriptionDetails, loading, error };
 }
