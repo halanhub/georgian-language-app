@@ -178,7 +178,7 @@ const IntermediateLevelPage: React.FC = () => {
                       theme === 'dark' ? 'bg-blue-700 text-white hover:bg-blue-800' : 'bg-blue-600 text-white hover:bg-blue-700'
                     }`}
                   >
-                    {t('beginner.levels.upgrade_to_access')}
+                    {t('intermediate.upgrade_to_access')}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 )}
@@ -276,7 +276,7 @@ const IntermediateLevelPage: React.FC = () => {
                     theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
                   }`}
                 >
-                  {topic.premium && !hasActiveSubscription && !isAdmin ? t('beginner.levels.upgrade_to_access') : (topic.progress > 0 ? 'Continue to Learning' : t('beginner.levels.start_learning'))}
+                  {topic.premium && !hasActiveSubscription && !isAdmin ? t('intermediate.upgrade_to_access') : (topic.progress > 0 ? 'Continue Learning' : t('home.levels.start_learning'))}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </div>

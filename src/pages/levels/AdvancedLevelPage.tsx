@@ -212,7 +212,6 @@ const AdvancedLevelPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Topics Grid */}
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className={`text-2xl font-bold mb-8 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -283,7 +282,6 @@ const AdvancedLevelPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Coming Soon Section */}
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className={`p-8 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-xl`}>

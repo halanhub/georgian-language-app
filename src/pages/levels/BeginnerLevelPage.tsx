@@ -217,7 +217,6 @@ const BeginnerLevelPage: React.FC = () => {
 
   return (
     <div className="pt-16 pb-16">
-      {/* Hero section */}
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-red-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
@@ -281,7 +280,6 @@ const BeginnerLevelPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Topics Grid */}
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className={`text-2xl font-bold mb-8 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -339,7 +337,6 @@ const BeginnerLevelPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Quizzes Section */}
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between mb-8">
