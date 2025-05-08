@@ -16,7 +16,7 @@ export interface LessonProgress {
 export function useUserProgress(lessonId?: string) {
   const { user } = useAuth();
   const [progress, setProgress] = useState<LessonProgress[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {

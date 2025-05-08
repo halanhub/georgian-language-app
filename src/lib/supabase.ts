@@ -41,13 +41,31 @@ if (supabaseAnonKey.length < 20) {
   );
 }
 
-// Create the Supabase client
+// Extract project ID from Supabase URL for session key
+const projectId = supabaseUrl.split('//')[1].split('.')[0];
+const storageKey = `sb-${projectId}-auth-token`;
+
+// Create the Supabase client with enhanced session handling
 const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
-    storage: localStorage, // ✅ Use native localStorage
+    storage: {
+      getItem: (key) => {
+        const value = localStorage.getItem(key);
+        console.log(`Retrieved auth storage key: ${key}`, value ? 'Found' : 'Not found');
+        return value;
+      },
+      setItem: (key, value) => {
+        console.log(`Setting auth storage key: ${key}`);
+        localStorage.setItem(key, value);
+      },
+      removeItem: (key) => {
+        console.log(`Removing auth storage key: ${key}`);
+        localStorage.removeItem(key);
+      }
+    }
   },
   global: {
     headers: {
@@ -74,14 +92,24 @@ const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   }
 });
 
-// Auth state logging
+// Enhanced auth state logging
 supabaseClient.auth.onAuthStateChange((event, session) => {
+  console.log(`Auth state changed: ${event}`, session ? 'Session exists' : 'No session');
+  
   if (event === 'SIGNED_IN') {
     console.log('User signed in, session established');
   } else if (event === 'SIGNED_OUT') {
-    console.log('User signed out, session cleared');
+    console.log('User signed out, clearing session data');
+    // Clear all auth-related storage
+    localStorage.removeItem(storageKey);
+    localStorage.removeItem(`${storageKey}-legacy`);
+    // Clear any other auth-related data
+    localStorage.removeItem('supabase.auth.token');
+    localStorage.removeItem('supabase.auth.refreshToken');
   } else if (event === 'TOKEN_REFRESHED') {
-    console.log('Session token refreshed');
+    console.log('Session token refreshed successfully');
+  } else if (event === 'USER_UPDATED') {
+    console.log('User data updated');
   }
 });
 

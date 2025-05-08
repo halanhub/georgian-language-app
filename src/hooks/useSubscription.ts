@@ -7,7 +7,7 @@ export function useSubscription() {
   const { user, isAdmin } = useAuth();
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   const [subscriptionDetails, setSubscriptionDetails] = useState<SubscriptionDetails | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {

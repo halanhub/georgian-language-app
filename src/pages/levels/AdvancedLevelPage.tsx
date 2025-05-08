@@ -150,7 +150,6 @@ const AdvancedLevelPage: React.FC = () => {
     <div className="pt-16 pb-16">
       {!hasActiveSubscription && !isAdmin && <SubscriptionBanner type="full" />}
       
-      {/* Hero section */}
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-purple-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">

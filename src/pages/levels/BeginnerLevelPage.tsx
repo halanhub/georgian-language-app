@@ -5,7 +5,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useSubscription } from '../../hooks/useSubscription';
-import { supabase } from '../../lib/supabase';
 import { useTranslation } from 'react-i18next';
 
 const BeginnerLevelPage: React.FC = () => {
