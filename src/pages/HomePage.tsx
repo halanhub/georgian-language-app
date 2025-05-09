@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useSubscription } from '../hooks/useSubscription';
 import { useTranslation } from 'react-i18next';
-import learnGeorgianImage from '../assets/images/learn-georgian.png';
+import learnGeorgianImage from '../assets/images/learn-georgian.webp';
 import { STRIPE_PRODUCTS } from '../stripe-config';
 
 const HomePage: React.FC = () => {
