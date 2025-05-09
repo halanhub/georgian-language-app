@@ -47,6 +47,8 @@ import TermsOfServicePage from './pages/legal/TermsOfServicePage';
 import PrivacyPolicyPage from './pages/legal/PrivacyPolicyPage';
 import DatabaseTestPage from './pages/DatabaseTestPage';
 import FAQPage from './pages/FAQPage';
+import AdvancedGrammarPage from './pages/lessons/AdvancedGrammarPage';
+import AdvancedCulturePage from './pages/lessons/AdvancedCulturePage';
 
 // Admin user ID - replace with the actual ID of admin@georgianlanguage.online
 const ADMIN_USER_ID = "d4c7b2a1-f3e9-4b8d-a6c5-e9d8f7g6h5j4";
@@ -203,12 +205,12 @@ function App() {
                 } />
                 <Route path="advanced/grammar" element={
                   <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <NotFoundPage />
+                    <AdvancedGrammarPage />
                   </ProtectedRoute>
                 } />
                 <Route path="advanced/culture" element={
                   <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <NotFoundPage />
+                    <AdvancedCulturePage />
                   </ProtectedRoute>
                 } />
                 <Route path="advanced/literature" element={

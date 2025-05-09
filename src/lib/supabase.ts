@@ -12,18 +12,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-// Validate URL format and protocol
+// Validate URL format
 try {
   if (supabaseUrl) {
-    const url = new URL(supabaseUrl);
-    if (!['http:', 'https:'].includes(url.protocol)) {
-      throw new Error('Invalid protocol');
-    }
+    new URL(supabaseUrl);
   }
 } catch (error) {
   throw new Error(
-    'Invalid Supabase URL format. Please check your VITE_SUPABASE_URL in your .env file. ' +
-    'The URL should start with http:// or https://'
+    'Invalid Supabase URL format. Please check your VITE_SUPABASE_URL in your .env file.'
   );
 }
 
@@ -103,7 +99,12 @@ const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
     
     try {
-      const response = await fetchWithRetry(url, {
+      // Always use HTTPS for production, HTTP for localhost
+      const finalUrl = typeof window !== 'undefined' && window.location.protocol === 'https:'
+        ? url.toString().replace(/^http:/, 'https:')
+        : url.toString();
+      
+      const response = await fetchWithRetry(finalUrl, {
         ...options,
         signal: controller.signal,
         headers: {

@@ -162,13 +162,15 @@ const AdvancedLevelPage: React.FC = () => {
               </p>
               <div className="flex flex-wrap gap-2">
                 {hasActiveSubscription || isAdmin ? (
-                  <span
+                  <Link
+                    to="/advanced/grammar"
                     className={`inline-flex items-center px-4 py-2 rounded font-medium text-sm ${
-                      theme === 'dark' ? 'bg-gray-700 text-white cursor-not-allowed' : 'bg-white text-gray-400 cursor-not-allowed'
+                      theme === 'dark' ? 'bg-purple-700 text-white hover:bg-purple-800' : 'bg-purple-600 text-white hover:bg-purple-700'
                     }`}
                   >
-                    {t('advanced.complete_intermediate')}
-                  </span>
+                    Start with Complex Grammar
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
                 ) : (
                   <Link
                     to="/pricing"
@@ -194,7 +196,7 @@ const AdvancedLevelPage: React.FC = () => {
                   {t('advanced.progress')}: {overallProgress}%
                 </h2>
                 <p className={`mb-4 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {t('advanced.complete_intermediate')}
+                  Explore advanced Georgian language concepts and master complex grammar patterns.
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
@@ -263,7 +265,7 @@ const AdvancedLevelPage: React.FC = () => {
                       theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'
                     }`}
                   >
-                    {topic.premium && !hasActiveSubscription && !isAdmin ? t('advanced.upgrade_to_access') : t('advanced.complete_intermediate')}
+                    {topic.premium && !hasActiveSubscription && !isAdmin ? t('advanced.upgrade_to_access') : (topic.progress > 0 ? 'Continue Learning' : 'Start Learning')}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </div>
@@ -285,14 +287,87 @@ const AdvancedLevelPage: React.FC = () => {
       </section>
 
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className={`p-8 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-xl`}>
-            <h2 className={`text-2xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              {t('advanced.coming_soon.title')}
-            </h2>
-            <p className={`max-w-2xl mx-auto ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-              {t('advanced.coming_soon.description')}
-            </p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Complex Grammar Overview
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}>
+              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Advanced Verb System
+              </h3>
+              <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                Georgian verbs are known for their complexity, with multiple preverbs, version markers, and person markers. 
+                At the advanced level, you'll master:
+              </p>
+              <ul className={`list-disc pl-5 space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                <li>Screeve system and tense-aspect-mood combinations</li>
+                <li>Polypersonal agreement with both subject and object</li>
+                <li>Preverb usage for directional and aspectual meanings</li>
+                <li>Version vowels and their semantic implications</li>
+                <li>Irregular verb patterns and exceptions</li>
+              </ul>
+            </div>
+            
+            <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}>
+              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Case System Mastery
+              </h3>
+              <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                Georgian has a complex case system with seven cases, each serving multiple functions:
+              </p>
+              <ul className={`list-disc pl-5 space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                <li>Ergative-absolutive alignment in certain tenses</li>
+                <li>Dative case for indirect objects and certain subjects</li>
+                <li>Genitive case for possession and attribution</li>
+                <li>Instrumental case for means and accompaniment</li>
+                <li>Adverbial case for transformation and function</li>
+                <li>Vocative case for direct address</li>
+              </ul>
+            </div>
+            
+            <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}>
+              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Complex Sentence Structures
+              </h3>
+              <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                Advanced Georgian requires mastery of complex sentence structures:
+              </p>
+              <ul className={`list-disc pl-5 space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                <li>Subordinate clauses with various conjunctions</li>
+                <li>Conditional constructions (real, unreal, counterfactual)</li>
+                <li>Reported speech and indirect discourse</li>
+                <li>Relative clauses with რომელიც and other relativizers</li>
+                <li>Participial and gerundive constructions</li>
+              </ul>
+            </div>
+            
+            <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} shadow-lg`}>
+              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Practice Exercises
+              </h3>
+              <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                Master advanced grammar through these exercise types:
+              </p>
+              <ul className={`list-disc pl-5 space-y-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                <li>Verb conjugation in all screeves and persons</li>
+                <li>Case transformation exercises</li>
+                <li>Sentence transformation (active to passive, direct to indirect)</li>
+                <li>Complex text analysis and reconstruction</li>
+                <li>Translation of literary and technical passages</li>
+              </ul>
+              <div className="mt-4">
+                <Link
+                  to={hasActiveSubscription || isAdmin ? "/advanced/grammar" : "/pricing"}
+                  className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-medium ${
+                    theme === 'dark' ? 'bg-indigo-700 text-white hover:bg-indigo-800' : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  }`}
+                >
+                  Start Grammar Exercises
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
