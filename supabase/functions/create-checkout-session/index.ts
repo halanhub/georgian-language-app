@@ -86,6 +86,7 @@ serve(async (req) => {
       mode: 'subscription',
       success_url: success_url,
       cancel_url: cancel_url,
+      locale: 'auto',
       metadata: {
         user_id: user.id,
       },
