@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Book, ChevronDown, ChevronUp, Play, Volume2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Book, Brain, Check, ChevronDown, ChevronUp, Play, Volume2, X } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useAuth } from '../../contexts/AuthContext';
@@ -486,6 +486,7 @@ const ReadingPracticePage: React.FC = () => {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
+  const [showTranslation, setShowTranslation] = useState(false);
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -580,6 +581,11 @@ const ReadingPracticePage: React.FC = () => {
 
   const isCorrectAnswer = (text: ReadingText, questionIndex: number, selectedIndex: number) => {
     return selectedIndex === text.questions[questionIndex].correctAnswer;
+  };
+
+  const toggleTranslation = () => {
+    updateActivity();
+    setShowTranslation(!showTranslation);
   };
 
   return (
@@ -699,13 +705,23 @@ const ReadingPracticePage: React.FC = () => {
                                 )}
                                 {isPlaying === text.georgianText ? 'Stop' : 'Listen'}
                               </button>
+                              <button
+                                onClick={toggleTranslation}
+                                className={`text-sm ${
+                                  theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+                                }`}
+                              >
+                                {showTranslation ? 'Hide Translation' : 'Show Translation'}
+                              </button>
                             </div>
                             <p className={`text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                               {text.georgianText}
                             </p>
-                            <p className={`mt-4 italic ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                              {text.englishText}
-                            </p>
+                            {showTranslation && (
+                              <p className={`mt-4 italic ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                                {text.englishText}
+                              </p>
+                            )}
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -800,7 +816,7 @@ const ReadingPracticePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Practice Exercises Section */}
+      {/* Reading Strategies */}
       <section className={`py-12 ${theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>

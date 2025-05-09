@@ -5,7 +5,6 @@ import logo from '../../assets/images/logo.png';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from '../LanguageSwitcher';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -187,8 +186,6 @@ const Navbar: React.FC = () => {
                 </>
               )}
 
-              <LanguageSwitcher />
-
               <button
                 onClick={toggleTheme}
                 className="ml-2 p-2 rounded-full text-gray-400 hover:text-gray-300 focus:outline-none"
@@ -200,8 +197,6 @@ const Navbar: React.FC = () => {
           </div>
 
           <div className="md:hidden flex items-center">
-            <LanguageSwitcher />
-            
             <button
               onClick={toggleTheme}
               className="p-2 rounded-full text-gray-400 hover:text-gray-300 focus:outline-none mr-2"

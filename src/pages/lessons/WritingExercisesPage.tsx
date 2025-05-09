@@ -438,7 +438,7 @@ const WritingExercisesPage: React.FC = () => {
                                   <p>
                                     {feedback[exercise.id]
                                       ? 'Correct! '
-                                      : 'Not quite. Try again. '}
+                                      : 'Not quite right. Try again. '}
                                     {exercise.explanation}
                                   </p>
                                 </div>

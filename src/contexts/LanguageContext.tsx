@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type Language = 'en' | 'ru';
+type Language = 'en';
 
 type LanguageContextType = {
   language: Language;
@@ -24,8 +24,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [language, setLanguage] = useState<Language>('en');
 
   const availableLanguages = [
-    { code: 'en' as Language, name: 'English' },
-    { code: 'ru' as Language, name: 'Русский' }
+    { code: 'en' as Language, name: 'English' }
   ];
 
   useEffect(() => {
@@ -33,7 +32,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const savedLang = localStorage.getItem('i18nextLng');
     if (savedLang) {
       const langCode = savedLang.split('-')[0];
-      if (langCode === 'en' || langCode === 'ru') {
+      if (langCode === 'en') {
         setLanguage(langCode as Language);
       }
     }

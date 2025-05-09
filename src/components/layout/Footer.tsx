@@ -1,9 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Mail, Github as GitHub, HelpCircle } from 'lucide-react';
+import { Heart, Mail, Github as GitHub, HelpCircle, Facebook, Instagram } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from '../LanguageSwitcher';
 
 const Footer: React.FC = () => {
   const { theme } = useTheme();
@@ -20,8 +19,6 @@ const Footer: React.FC = () => {
             </p>
           </div>
           <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
-            <LanguageSwitcher variant="buttons" />
-            
             <Link 
               to="/contact" 
               className={`text-sm hover:${theme === 'dark' ? 'text-white' : 'text-red-600'} transition-colors`}
@@ -39,6 +36,28 @@ const Footer: React.FC = () => {
               <HelpCircle size={18} className="inline mr-1" />
               {t('footer.faq')}
             </Link>
+
+            <a 
+              href="https://www.facebook.com/profile.php?id=61576210552897" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className={`text-sm hover:${theme === 'dark' ? 'text-white' : 'text-red-600'} transition-colors`}
+              aria-label="Facebook"
+            >
+              <Facebook size={18} className="inline mr-1" />
+              Facebook
+            </a>
+
+            <a 
+              href="https://www.instagram.com/kartuliena_learngeorgian/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className={`text-sm hover:${theme === 'dark' ? 'text-white' : 'text-red-600'} transition-colors`}
+              aria-label="Instagram"
+            >
+              <Instagram size={18} className="inline mr-1" />
+              Instagram
+            </a>
 
             <div className="flex items-center">
               <span className="text-sm">{t('footer.made_with')}</span>

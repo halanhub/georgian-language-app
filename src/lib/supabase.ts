@@ -45,7 +45,33 @@ if (supabaseAnonKey.length < 20) {
 const projectId = supabaseUrl.split('//')[1].split('.')[0];
 const storageKey = `sb-${projectId}-auth-token`;
 
-// Create the Supabase client with enhanced session handling
+// Retry configuration
+const MAX_RETRIES = 3;
+const INITIAL_RETRY_DELAY = 1000; // 1 second
+
+// Exponential backoff retry function
+async function fetchWithRetry(url: string, options: RequestInit = {}, retryCount = 0): Promise<Response> {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok && retryCount < MAX_RETRIES) {
+      const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
+      console.log(`Retrying fetch (${retryCount + 1}/${MAX_RETRIES}) after ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return fetchWithRetry(url, options, retryCount + 1);
+    }
+    return response;
+  } catch (error) {
+    if (retryCount < MAX_RETRIES) {
+      const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
+      console.log(`Retrying fetch after network error (${retryCount + 1}/${MAX_RETRIES}) after ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return fetchWithRetry(url, options, retryCount + 1);
+    }
+    throw error;
+  }
+}
+
+// Create the Supabase client with enhanced session handling and retry logic
 const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
@@ -72,23 +98,25 @@ const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
       'X-Client-Info': 'supabase-js-web'
     }
   },
-  fetch: (url, options = {}) => {
+  fetch: async (url, options = {}) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
     
-    const fetchPromise = fetch(url, {
-      ...options,
-      signal: controller.signal,
-      headers: {
-        ...options.headers,
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-      }
-    });
-    
-    return fetchPromise.finally(() => {
+    try {
+      const response = await fetchWithRetry(url, {
+        ...options,
+        signal: controller.signal,
+        headers: {
+          ...options.headers,
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      return response;
+    } finally {
       clearTimeout(timeoutId);
-    });
+    }
   }
 });
 

@@ -223,7 +223,7 @@ const AdvancedLevelPage: React.FC = () => {
                 key={topic.id}
                 className={`p-6 rounded-lg shadow-md ${
                   theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-                } ${topic.premium && !hasActiveSubscription && !isAdmin ? 'relative' : ''}`}
+                } ${topic.premium && !hasActiveSubscription && !isAdmin ? 'relative' : ''} flex flex-col h-full`}
               >
                 {topic.premium && !hasActiveSubscription && !isAdmin && (
                   <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center z-10">
@@ -243,28 +243,30 @@ const AdvancedLevelPage: React.FC = () => {
                 <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                   {topic.description}
                 </p>
-                <div className="mb-3">
-                  <div className={`w-full h-1.5 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`}>
-                    <div 
-                      className={`h-1.5 rounded-full ${
-                        theme === 'dark' ? 'bg-purple-500' : 'bg-purple-600'
-                      }`}
-                      style={{ width: `${topic.progress}%` }}
-                    />
+                <div className="mt-auto">
+                  <div className="mb-3">
+                    <div className={`w-full h-1.5 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                      <div 
+                        className={`h-1.5 rounded-full ${
+                          theme === 'dark' ? 'bg-purple-500' : 'bg-purple-600'
+                        }`}
+                        style={{ width: `${topic.progress}%` }}
+                      />
+                    </div>
+                    <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {topic.progress}% Complete
+                    </p>
                   </div>
-                  <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                    {topic.progress}% Complete
-                  </p>
+                  <Link
+                    to={topic.path}
+                    className={`flex items-center text-sm font-medium ${
+                      theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'
+                    }`}
+                  >
+                    {topic.premium && !hasActiveSubscription && !isAdmin ? t('advanced.upgrade_to_access') : t('advanced.complete_intermediate')}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
                 </div>
-                <Link
-                  to={topic.path}
-                  className={`flex items-center text-sm font-medium ${
-                    theme === 'dark' ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'
-                  }`}
-                >
-                  {topic.premium && !hasActiveSubscription && !isAdmin ? t('advanced.upgrade_to_access') : t('advanced.complete_intermediate')}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
               </div>
             ))}
           </div>

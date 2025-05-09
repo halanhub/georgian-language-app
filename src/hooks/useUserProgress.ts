@@ -13,6 +13,28 @@ export interface LessonProgress {
   updatedAt: string;
 }
 
+// Retry configuration for database operations
+const MAX_RETRIES = 3;
+const INITIAL_RETRY_DELAY = 1000; // 1 second
+
+// Helper function for exponential backoff retry
+async function retryOperation<T>(
+  operation: () => Promise<T>,
+  retryCount = 0
+): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    if (retryCount < MAX_RETRIES) {
+      const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
+      console.log(`Retrying operation (${retryCount + 1}/${MAX_RETRIES}) after ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return retryOperation(operation, retryCount + 1);
+    }
+    throw error;
+  }
+}
+
 export function useUserProgress(lessonId?: string) {
   const { user } = useAuth();
   const [progress, setProgress] = useState<LessonProgress[]>([]);
@@ -31,20 +53,26 @@ export function useUserProgress(lessonId?: string) {
         setLoading(true);
         setError(null);
         
-        let query = supabase
-          .from('user_progress')
-          .select('*')
-          .eq('user_id', user.id);
+        const fetchData = async () => {
+          let query = supabase
+            .from('user_progress')
+            .select('*')
+            .eq('user_id', user.id);
+          
+          if (lessonId) {
+            query = query.eq('lesson_id', lessonId);
+          }
+          
+          const { data, error } = await query;
+          
+          if (error) {
+            throw error;
+          }
+          
+          return data;
+        };
         
-        if (lessonId) {
-          query = query.eq('lesson_id', lessonId);
-        }
-        
-        const { data, error } = await query;
-        
-        if (error) {
-          throw error;
-        }
+        const data = await retryOperation(fetchData);
         
         if (data) {
           const formattedProgress: LessonProgress[] = data.map(item => ({
@@ -63,7 +91,7 @@ export function useUserProgress(lessonId?: string) {
         }
       } catch (err) {
         console.error('Error fetching user progress:', err);
-        setError(err instanceof Error ? err : new Error('Unknown error occurred'));
+        setError(err instanceof Error ? err : new Error('Failed to fetch user progress'));
       } finally {
         setLoading(false);
       }
@@ -89,25 +117,28 @@ export function useUserProgress(lessonId?: string) {
       const existingProgress = progress.find(p => p.lessonId === lessonId);
       
       if (existingProgress) {
-        // Update existing progress
-        console.log('Updating existing progress for lesson:', lessonId, updates);
-        const { data, error } = await supabase
-          .from('user_progress')
-          .update({
-            completed: updates.completed !== undefined ? updates.completed : existingProgress.completed,
-            score: updates.score !== undefined ? updates.score : existingProgress.score,
-            time_spent: updates.timeSpent 
-              ? existingProgress.timeSpent + updates.timeSpent 
-              : existingProgress.timeSpent,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', existingProgress.id)
-          .select()
-          .single();
+        // Update existing progress with retry
+        const updateOperation = async () => {
+          console.log('Updating existing progress for lesson:', lessonId, updates);
+          const { data, error } = await supabase
+            .from('user_progress')
+            .update({
+              completed: updates.completed !== undefined ? updates.completed : existingProgress.completed,
+              score: updates.score !== undefined ? updates.score : existingProgress.score,
+              time_spent: updates.timeSpent 
+                ? existingProgress.timeSpent + updates.timeSpent 
+                : existingProgress.timeSpent,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingProgress.id)
+            .select()
+            .single();
+          
+          if (error) throw error;
+          return data;
+        };
         
-        if (error) {
-          throw error;
-        }
+        const data = await retryOperation(updateOperation);
         
         if (data) {
           // Update local state
@@ -134,27 +165,30 @@ export function useUserProgress(lessonId?: string) {
         
         return data;
       } else {
-        // Create new progress record
-        console.log('Creating new progress for lesson:', lessonId, updates);
-        const now = new Date().toISOString();
+        // Create new progress record with retry
+        const createOperation = async () => {
+          console.log('Creating new progress for lesson:', lessonId, updates);
+          const now = new Date().toISOString();
+          
+          const { data, error } = await supabase
+            .from('user_progress')
+            .insert({
+              user_id: user.id,
+              lesson_id: lessonId,
+              completed: updates.completed || false,
+              score: updates.score || null,
+              time_spent: updates.timeSpent || 0,
+              created_at: now,
+              updated_at: now
+            })
+            .select()
+            .single();
+          
+          if (error) throw error;
+          return data;
+        };
         
-        const { data, error } = await supabase
-          .from('user_progress')
-          .insert({
-            user_id: user.id,
-            lesson_id: lessonId,
-            completed: updates.completed || false,
-            score: updates.score || null,
-            time_spent: updates.timeSpent || 0,
-            created_at: now,
-            updated_at: now
-          })
-          .select()
-          .single();
-        
-        if (error) {
-          throw error;
-        }
+        const data = await retryOperation(createOperation);
         
         if (data) {
           // Update local state
@@ -179,54 +213,53 @@ export function useUserProgress(lessonId?: string) {
       }
     } catch (err) {
       console.error('Error updating user progress:', err);
-      setError(err instanceof Error ? err : new Error('Unknown error occurred'));
-      throw err;
+      const error = err instanceof Error ? err : new Error('Failed to update user progress');
+      setError(error);
+      throw error;
     }
   };
 
   // Update user profile with progress statistics
   const updateUserProfile = async (userId: string) => {
     try {
-      // Get all completed lessons
-      const { data: completedLessons, error: countError } = await supabase
-        .from('user_progress')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('completed', true);
+      const updateProfileOperation = async () => {
+        // Get all completed lessons
+        const { data: completedLessons, error: countError } = await supabase
+          .from('user_progress')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('completed', true);
+        
+        if (countError) throw countError;
+        
+        // Calculate total study time
+        const { data: timeData, error: timeError } = await supabase
+          .from('user_progress')
+          .select('time_spent')
+          .eq('user_id', userId);
+        
+        if (timeError) throw timeError;
+        
+        const totalStudyTime = timeData.reduce((sum, item) => sum + (item.time_spent || 0), 0);
+        
+        // Update user profile
+        const { error: updateError } = await supabase
+          .from('user_profiles')
+          .update({
+            lessons_completed: completedLessons?.length || 0,
+            total_study_time: Math.floor(totalStudyTime / 60), // Convert minutes to hours
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', userId);
+        
+        if (updateError) throw updateError;
+      };
       
-      if (countError) {
-        throw countError;
-      }
-      
-      // Calculate total study time
-      const { data: timeData, error: timeError } = await supabase
-        .from('user_progress')
-        .select('time_spent')
-        .eq('user_id', userId);
-      
-      if (timeError) {
-        throw timeError;
-      }
-      
-      const totalStudyTime = timeData.reduce((sum, item) => sum + (item.time_spent || 0), 0);
-      
-      // Update user profile
-      const { error: updateError } = await supabase
-        .from('user_profiles')
-        .update({
-          lessons_completed: completedLessons?.length || 0,
-          total_study_time: Math.floor(totalStudyTime / 60), // Convert minutes to hours
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', userId);
-      
-      if (updateError) {
-        throw updateError;
-      }
-      
+      await retryOperation(updateProfileOperation);
       console.log('Updated user profile with progress statistics');
     } catch (error) {
       console.error('Error updating user profile with progress:', error);
+      throw error;
     }
   };
 
@@ -240,34 +273,34 @@ export function useUserProgress(lessonId?: string) {
       setLoading(true);
       setError(null);
       
-      // Delete all progress records for the user
-      const { error: deleteError } = await supabase
-        .from('user_progress')
-        .delete()
-        .eq('user_id', user.id);
+      const resetOperation = async () => {
+        // Delete all progress records for the user
+        const { error: deleteError } = await supabase
+          .from('user_progress')
+          .delete()
+          .eq('user_id', user.id);
+        
+        if (deleteError) throw deleteError;
+        
+        // Reset user profile stats
+        const { error: updateError } = await supabase
+          .from('user_profiles')
+          .update({
+            lessons_completed: 0,
+            total_study_time: 0,
+            words_learned: 0,
+            study_streak: 0,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user.id);
+        
+        if (updateError) throw updateError;
+      };
       
-      if (deleteError) {
-        throw deleteError;
-      }
+      await retryOperation(resetOperation);
       
       // Reset local state
       setProgress([]);
-      
-      // Reset user profile stats
-      const { error: updateError } = await supabase
-        .from('user_profiles')
-        .update({
-          lessons_completed: 0,
-          total_study_time: 0,
-          words_learned: 0,
-          study_streak: 0,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
-      
-      if (updateError) {
-        throw updateError;
-      }
       
       // Reinitialize progress records
       await initializeProgress(user.id);
@@ -275,8 +308,9 @@ export function useUserProgress(lessonId?: string) {
       return true;
     } catch (err) {
       console.error('Error resetting user progress:', err);
-      setError(err instanceof Error ? err : new Error('Unknown error occurred'));
-      throw err;
+      const error = err instanceof Error ? err : new Error('Failed to reset user progress');
+      setError(error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -286,55 +320,56 @@ export function useUserProgress(lessonId?: string) {
   const initializeProgress = async (userId: string) => {
     try {
       console.log('Initializing progress records for user:', userId);
-      const initialProgress = [
-        { user_id: userId, lesson_id: 'alphabet', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'basic-vocabulary', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'colors-shapes', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'numbers', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'months', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'food', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'body', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'animals', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'activities', completed: false, time_spent: 0 },
-        // Intermediate lessons
-        { user_id: userId, lesson_id: 'grammar', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'sentences', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'common-words', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'conversations', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'reading', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'writing', completed: false, time_spent: 0 },
-        // Advanced lessons
-        { user_id: userId, lesson_id: 'advanced-grammar', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'advanced-culture', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'advanced-literature', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'advanced-idioms', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'advanced-writing', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'advanced-listening', completed: false, time_spent: 0 },
-        // Level tracking
-        { user_id: userId, lesson_id: 'beginner', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'intermediate', completed: false, time_spent: 0 },
-        { user_id: userId, lesson_id: 'advanced', completed: false, time_spent: 0 }
-      ];
       
-      const { error } = await supabase
-        .from('user_progress')
-        .insert(initialProgress);
-      
-      if (error) {
-        throw error;
-      }
-      
-      console.log('Successfully initialized progress records');
-      
-      // Fetch the newly created records
-      const { data: newProgress, error: fetchError } = await supabase
-        .from('user_progress')
-        .select('*')
-        .eq('user_id', userId);
+      const initializeOperation = async () => {
+        const initialProgress = [
+          { user_id: userId, lesson_id: 'alphabet', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'basic-vocabulary', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'colors-shapes', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'numbers', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'months', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'food', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'body', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'animals', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'activities', completed: false, time_spent: 0 },
+          // Intermediate lessons
+          { user_id: userId, lesson_id: 'grammar', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'sentences', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'common-words', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'conversations', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'reading', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'writing', completed: false, time_spent: 0 },
+          // Advanced lessons
+          { user_id: userId, lesson_id: 'advanced-grammar', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'advanced-culture', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'advanced-literature', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'advanced-idioms', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'advanced-writing', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'advanced-listening', completed: false, time_spent: 0 },
+          // Level tracking
+          { user_id: userId, lesson_id: 'beginner', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'intermediate', completed: false, time_spent: 0 },
+          { user_id: userId, lesson_id: 'advanced', completed: false, time_spent: 0 }
+        ];
         
-      if (fetchError) {
-        throw fetchError;
-      }
+        const { error } = await supabase
+          .from('user_progress')
+          .insert(initialProgress);
+        
+        if (error) throw error;
+        
+        // Fetch the newly created records
+        const { data: newProgress, error: fetchError } = await supabase
+          .from('user_progress')
+          .select('*')
+          .eq('user_id', userId);
+          
+        if (fetchError) throw fetchError;
+        
+        return newProgress;
+      };
+      
+      const newProgress = await retryOperation(initializeOperation);
       
       // Update local state with the new records
       if (newProgress) {

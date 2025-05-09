@@ -25,7 +25,6 @@ const ProfileSettingsPage: React.FC = () => {
   
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
-  const [language, setLanguage] = useState('en');
   const [notifications, setNotifications] = useState({
     email: true,
     progress: true,
@@ -463,27 +462,7 @@ const ProfileSettingsPage: React.FC = () => {
                       Preferences
                     </h3>
                     <div className="space-y-4">
-                      <div>
-                        <label 
-                          htmlFor="language" 
-                          className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}
-                        >
-                          Interface Language
-                        </label>
-                        <select
-                          id="language"
-                          value={language}
-                          onChange={(e) => setLanguage(e.target.value)}
-                          className={`mt-1 block w-full rounded-md shadow-sm ${
-                            theme === 'dark'
-                              ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500'
-                              : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500'
-                          } sm:text-sm`}
-                        >
-                          <option value="en">English</option>
-                          <option value="ru">Русский</option>
-                        </select>
-                      </div>
+                      {/* Language selection removed */}
                     </div>
                   </div>
 
