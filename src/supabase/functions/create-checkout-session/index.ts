@@ -60,9 +60,9 @@ serve(async (req) => {
     const user = await verifyResponse.json();
     
     // Get the request body
-    const { priceId, successUrl, cancelUrl } = await req.json();
+    const { price_id, success_url, cancel_url } = await req.json();
     
-    if (!priceId || !successUrl || !cancelUrl) {
+    if (!price_id || !success_url || !cancel_url) {
       return new Response(
         JSON.stringify({ error: 'Missing required parameters' }),
         { 
@@ -72,15 +72,6 @@ serve(async (req) => {
       );
     }
     
-    // Map placeholder price IDs to actual Stripe price IDs
-    // In a real implementation, you would fetch these from your database
-    const priceIdMap = {
-      'price_monthly_4_99': 'price_1OvXYZLkdIwHu7xJQZjKl2Js', // Replace with your actual Stripe price ID
-      'price_annual_49_99': 'price_1OvXZaLkdIwHu7xJRTjKl3Kt', // Replace with your actual Stripe price ID
-    };
-    
-    const actualPriceId = priceIdMap[priceId] || priceId;
-    
     // Create a checkout session
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
@@ -88,13 +79,13 @@ serve(async (req) => {
       payment_method_types: ['card'],
       line_items: [
         {
-          price: actualPriceId,
+          price: price_id,
           quantity: 1,
         },
       ],
       mode: 'subscription',
-      success_url: successUrl,
-      cancel_url: cancelUrl,
+      success_url: success_url,
+      cancel_url: cancel_url,
       metadata: {
         user_id: user.id,
       },

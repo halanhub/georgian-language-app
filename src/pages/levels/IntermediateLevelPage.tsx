@@ -310,6 +310,7 @@ const IntermediateLevelPage: React.FC = () => {
                 {t('intermediate.tips.regular_practice.description')}
               </p>
             </div>
+            
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
               <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 {t('intermediate.tips.immerse_yourself.title')}
@@ -318,6 +319,7 @@ const IntermediateLevelPage: React.FC = () => {
                 {t('intermediate.tips.immerse_yourself.description')}
               </p>
             </div>
+            
             <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
               <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 {t('intermediate.tips.practice_speaking.title')}
