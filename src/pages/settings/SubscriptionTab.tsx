@@ -4,7 +4,6 @@ import { CreditCard, Check, X, Loader } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useSubscription } from '../../hooks/useSubscription';
 import { createCheckoutSession, createCustomerPortalSession } from '../../lib/stripe';
-import { STRIPE_PRODUCTS } from '../../stripe-config';
 
 interface SubscriptionTabProps {
   showSuccessMessage?: boolean;
