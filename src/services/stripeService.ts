@@ -12,8 +12,8 @@ export const createCheckoutSession = async (
   try {
     // Map product names to price IDs
     const priceIds = {
-      premium: 'price_1OvXYZLkdIwHu7xJQZjKl2Js',
-      annual: 'price_1OvXZaLkdIwHu7xJRTjKl3Kt'
+      premium: 'price_1RKLGCAZyAKEiVfuqpDnIxcU',
+      annual: 'price_1RKLGCAZyAKEiVfuqpDnIxcU'
     };
     
     const priceId = priceIds[productName];

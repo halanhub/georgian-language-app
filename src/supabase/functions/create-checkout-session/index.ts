@@ -75,8 +75,8 @@ serve(async (req) => {
     // Map placeholder price IDs to actual Stripe price IDs
     // In a real implementation, you would fetch these from your database
     const priceIdMap = {
-      'price_monthly_4_99': 'price_1OvXYZLkdIwHu7xJQZjKl2Js', // Replace with your actual Stripe price ID
-      'price_annual_49_99': 'price_1OvXZaLkdIwHu7xJRTjKl3Kt', // Replace with your actual Stripe price ID
+      'price_monthly_4_99': 'price_1RKLGCAZyAKEiVfuqpDnIxcU', // Replace with your actual Stripe price ID
+      'price_annual_49_99': 'price_1RKLGCAZyAKEiVfuqpDnIxcU', // Replace with your actual Stripe price ID
     };
     
     const actualPriceId = priceIdMap[priceId] || priceId;
