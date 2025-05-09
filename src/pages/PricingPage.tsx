@@ -5,7 +5,6 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../hooks/useSubscription';
 import { createCheckoutSession } from '../lib/stripe';
-import { STRIPE_PRODUCTS } from '../stripe-config';
 import { useTranslation } from 'react-i18next';
 
 const PricingPage: React.FC = () => {
@@ -40,7 +39,7 @@ const PricingPage: React.FC = () => {
       const successUrl = `${window.location.origin}/settings?checkout=success&tab=subscription`;
       const cancelUrl = `${window.location.origin}/pricing?checkout=canceled`;
       
-      console.log(`Initiating checkout for premium plan with price ID: ${STRIPE_PRODUCTS.premium.priceId}`);
+      console.log('Initiating checkout for premium plan');
       
       const { url } = await createCheckoutSession(
         'premium',
