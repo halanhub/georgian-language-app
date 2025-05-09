@@ -1,7 +1,7 @@
 import { loadStripe } from '@stripe/stripe-js';
 import { supabase } from './supabase';
 import type { CheckoutSession, CustomerPortalSession, SubscriptionDetails } from '../types/stripe';
-import { STRIPE_PRODUCTS } from '../stripe-config';
+import { MONTHLY_PRICE_ID } from '../stripe-config';
 
 // Initialize Stripe
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -18,17 +18,11 @@ export const createCheckoutSession = async (
 ): Promise<CheckoutSession> => {
   try {
     // Get price ID from product configuration
-    const product = STRIPE_PRODUCTS[productName];
-    
-    if (!product) {
-      throw new Error(`Invalid product name: ${productName}`);
-    }
-    
-    console.log(`Creating checkout session for ${productName} (${product.priceId})`);
+    console.log(`Creating checkout session for ${productName} (${MONTHLY_PRICE_ID})`);
     
     const { data, error } = await supabase.functions.invoke('create-checkout-session', {
       body: { 
-        price_id: product.priceId, 
+        price_id: MONTHLY_PRICE_ID, 
         success_url: successUrl, 
         cancel_url: cancelUrl,
         mode: 'subscription'
