@@ -61,7 +61,6 @@ import AdvancedIdiomsPage from './pages/lessons/AdvancedIdiomsPage';
 import AdvancedWritingPage from './pages/lessons/AdvancedWritingPage';
 import AdvancedListeningPage from './pages/lessons/AdvancedListeningPage';
 import AdvanceLiteraturePoetryPage from './pages/lessons/AdvanceLiteraturePoetryPage';
-import ChatPage from './pages/ChatPage';
 
 const ADMIN_USER_ID = "d4c7b2a1-f3e9-4b8d-a6c5-e9d8f7g6h5j4";
 
@@ -138,7 +137,7 @@ function App() {
               <Route path="/vocabulary" element={<VocabularyPage />} />
               <Route path="/achievements" element={<AchievementsPage />} />
               <Route path="/tips" element={<LearningTipsPage />} />
-              <Route path="/chat" element={<ChatPage />} />
+              {/* Removed ChatPage route as the component was deleted */}
               <Route path="/database-test" element={<DatabaseTestPage />} />
               <Route path="/404" element={<NotFoundPage />} />
               
