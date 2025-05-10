@@ -54,7 +54,7 @@ import AdvancedCulturePage from './pages/lessons/AdvancedCulturePage';
 const ADMIN_USER_ID = "d4c7b2a1-f3e9-4b8d-a6c5-e9d8f7g6h5j4";
 
 
-import LiteraturePoetryPage from './pages/lessons/LiteraturePoetryPage';
+import LiteraturePoetryPage from './pages/lessons/AdvanceLiteraturePoetryPage';
 import AdvanceIdiomsPage from './pages/lessons/AdvanceIdiomsPage';
 import AdvancedCulturePage from './pages/lessons/AdvancedCulturePage';
 import AdvanceWritingPage from './pages/lessons/AdvanceWritingPage';
