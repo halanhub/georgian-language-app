@@ -239,7 +239,7 @@ const LiteraturePoetryPage: React.FC = () => {
         'Bedi Kartlisa (Fate of Georgia)',
         'Twilight on Mtatsminda'
       ],
-      significance: 'Baratashvili's poetry represents the height of Georgian Romanticism. His works tackle themes of destiny, freedom, and national identity, while displaying remarkable technical innovation. His poem "Merani" became a symbol of the Georgian spirit's yearning for freedom.'
+      significance: 'Baratashvili\'s poetry represents the height of Georgian Romanticism. His works tackle themes of destiny, freedom, and national identity, while displaying remarkable technical innovation. His poem "Merani" became a symbol of the Georgian spirit's yearning for freedom.'
     },
     {
       name: 'Vazha-Pshavela',
