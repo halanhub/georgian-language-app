@@ -60,7 +60,7 @@ import AdvancedCulturePage from './pages/lessons/AdvancedCulturePage';
 import AdvancedIdiomsPage from './pages/lessons/AdvancedIdiomsPage';
 import AdvancedWritingPage from './pages/lessons/AdvancedWritingPage';
 import AdvancedListeningPage from './pages/lessons/AdvancedListeningPage';
-import AdvanceLiteraturePoetryPage from './pages/lessons/AdvanceLiteraturePoetryPage';
+import AdvancedLiteraturePoetryPage from './pages/lessons/AdvancedLiteraturePoetryPage';
 
 const ADMIN_USER_ID = "d4c7b2a1-f3e9-4b8d-a6c5-e9d8f7g6h5j4";
 
@@ -117,12 +117,12 @@ function App() {
                 <Route path="/intermediate/writing" element={<WritingExercisesPage />} />
                 
                 {/* Advanced Level Pages */}
-                <Route path="/advanced/grammar" element={<AdvancedGrammarPage />} />
-                <Route path="/advanced/culture" element={<AdvancedCulturePage />} />
-                <Route path="/advanced/idioms" element={<AdvancedIdiomsPage />} />
-                <Route path="/advanced/writing" element={<AdvancedWritingPage />} />
-                <Route path="/advanced/listening" element={<AdvancedListeningPage />} />
-                <Route path="/advanced/literature" element={<AdvanceLiteraturePoetryPage />} />
+                <Route path="advanced/grammar" element={<AdvancedGrammarPage />} />
+                <Route path="advanced/culture" element={<AdvancedCulturePage />} />
+                <Route path="advanced/idioms" element={<AdvancedIdiomsPage />} />
+                <Route path="advanced/writing" element={<AdvancedWritingPage />} />
+                <Route path="advanced/listening" element={<AdvancedListeningPage />} />
+                <Route path="advanced/literature" element={<AdvancedLiteraturePoetryPage />} />
                 
                 {/* Quiz Pages */}
                 <Route path="/quizzes" element={<QuizHubPage />} />
