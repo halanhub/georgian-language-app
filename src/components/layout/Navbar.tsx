@@ -1,20 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LogIn, Menu, Moon, Sun, X, User, Settings, LogOut, Mail, CreditCard } from 'lucide-react';
 import logo from '../../assets/images/logo.webp'; 
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { useTranslation } from 'react-i18next';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
-  const { t } = useTranslation();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleProfileMenu = () => setIsProfileMenuOpen(!isProfileMenuOpen);
@@ -26,26 +23,11 @@ const Navbar: React.FC = () => {
     setIsProfileMenuOpen(false);
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
     <nav className={`fixed w-full z-20 transition-all duration-300 ${
-      isScrolled || isMenuOpen
-        ? theme === 'dark'
-          ? 'bg-gray-800 shadow-lg'
-          : 'bg-white shadow-lg'
-        : 'bg-transparent'
+      theme === 'dark'
+        ? 'bg-gray-800 shadow-lg'
+        : 'bg-white shadow-lg'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -71,7 +53,7 @@ const Navbar: React.FC = () => {
                     ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
                     : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
               }`}>
-                {t('common.home')}
+                Home
               </Link>
 
               {user ? (
@@ -85,7 +67,7 @@ const Navbar: React.FC = () => {
                         ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
                         : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
                   }`}>
-                    {t('nav.beginner')}
+                    Beginner
                   </Link>
 
                   <Link to="/intermediate" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -97,7 +79,7 @@ const Navbar: React.FC = () => {
                         ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
                         : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
                   }`}>
-                    {t('nav.intermediate')}
+                    Intermediate
                   </Link>
 
                   <Link to="/advanced" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -109,7 +91,7 @@ const Navbar: React.FC = () => {
                         ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
                         : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
                   }`}>
-                    {t('nav.advanced')}
+                    Advanced
                   </Link>
 
                   <div className="relative">
@@ -137,7 +119,7 @@ const Navbar: React.FC = () => {
                           onClick={() => setIsProfileMenuOpen(false)}
                         >
                           <Settings size={16} className="inline mr-2" />
-                          {t('common.settings')}
+                          Settings
                         </Link>
                         <Link
                           to="/pricing"
@@ -147,7 +129,7 @@ const Navbar: React.FC = () => {
                           onClick={() => setIsProfileMenuOpen(false)}
                         >
                           <CreditCard size={16} className="inline mr-2" />
-                          {t('common.subscription')}
+                          Subscription
                         </Link>
                         <button
                           onClick={handleLogout}
@@ -156,7 +138,7 @@ const Navbar: React.FC = () => {
                           }`}
                         >
                           <LogOut size={16} className="inline mr-2" />
-                          {t('common.logout')}
+                          Logout
                         </button>
                       </div>
                     )}
@@ -173,7 +155,7 @@ const Navbar: React.FC = () => {
                         ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
                         : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
                   }`}>
-                    {t('common.login')}
+                    Login
                   </Link>
 
                   <Link to="/signup" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -181,7 +163,7 @@ const Navbar: React.FC = () => {
                       ? 'bg-red-700 text-white hover:bg-red-800'
                       : 'bg-red-600 text-white hover:bg-red-700'
                   }`}>
-                    {t('common.signup')}
+                    Sign Up
                   </Link>
                 </>
               )}
@@ -231,7 +213,7 @@ const Navbar: React.FC = () => {
                 ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
                 : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
           }`} onClick={() => setIsMenuOpen(false)}>
-            {t('common.home')}
+            Home
           </Link>
 
           {user ? (
@@ -245,7 +227,7 @@ const Navbar: React.FC = () => {
                     ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
                     : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
               }`} onClick={() => setIsMenuOpen(false)}>
-                {t('nav.beginner')}
+                Beginner
               </Link>
 
               <Link to="/intermediate" className={`block px-3 py-2 rounded-md text-base font-medium ${
@@ -257,7 +239,7 @@ const Navbar: React.FC = () => {
                     ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
                     : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
               }`} onClick={() => setIsMenuOpen(false)}>
-                {t('nav.intermediate')}
+                Intermediate
               </Link>
 
               <Link to="/advanced" className={`block px-3 py-2 rounded-md text-base font-medium ${
@@ -269,10 +251,10 @@ const Navbar: React.FC = () => {
                     ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
                     : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
               }`} onClick={() => setIsMenuOpen(false)}>
-                {t('nav.advanced')}
+                Advanced
               </Link>
 
-              <div className="border-t border-gray-700 my-2 pt-2">
+              <div className={`border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} my-2 pt-2`}>
                 <Link to="/settings" className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${
                   location.pathname === '/settings'
                     ? theme === 'dark'
@@ -283,7 +265,7 @@ const Navbar: React.FC = () => {
                       : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
                 }`} onClick={() => setIsMenuOpen(false)}>
                   <Settings size={18} className="mr-2" />
-                  {t('common.settings')}
+                  Settings
                 </Link>
 
                 <Link to="/pricing" className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${
@@ -296,7 +278,7 @@ const Navbar: React.FC = () => {
                       : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
                 }`} onClick={() => setIsMenuOpen(false)}>
                   <CreditCard size={18} className="mr-2" />
-                  {t('common.subscription')}
+                  Subscription
                 </Link>
 
                 <Link to="/contact" className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${
@@ -309,7 +291,7 @@ const Navbar: React.FC = () => {
                       : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
                 }`} onClick={() => setIsMenuOpen(false)}>
                   <Mail size={18} className="mr-2" />
-                  {t('common.contact')}
+                  Contact
                 </Link>
 
                 <button
@@ -321,7 +303,7 @@ const Navbar: React.FC = () => {
                   }`}
                 >
                   <LogOut size={18} className="mr-2" />
-                  {t('common.logout')}
+                  Logout
                 </button>
               </div>
             </>
@@ -337,7 +319,7 @@ const Navbar: React.FC = () => {
                     : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
               }`} onClick={() => setIsMenuOpen(false)}>
                 <LogIn className="inline mr-2" size={18} />
-                {t('common.login')}
+                Login
               </Link>
 
               <Link to="/signup" className={`block px-3 py-2 rounded-md text-base font-medium ${
@@ -345,7 +327,7 @@ const Navbar: React.FC = () => {
                   ? 'bg-red-700 text-white hover:bg-red-800'
                   : 'bg-red-600 text-white hover:bg-red-700'
               }`} onClick={() => setIsMenuOpen(false)}>
-                {t('common.signup')}
+                Sign Up
               </Link>
             </>
           )}
