@@ -9,11 +9,27 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
-import { useUserProgress } from '../hooks/useUserProgress';
-import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { useAuth } from '../../contexts/AuthContext';
 
-const AdvanceIdiomsPage: React.FC = () => {
+interface IdiomEntry {
+  georgian: string;
+  latin: string;
+  meaning: string;
+  literal: string;
+  example: string;
+  translation: string;
+}
+
+interface IdiomCategory {
+  id: string;
+  title: string;
+  description: string;
+  entries: IdiomEntry[];
+}
+
+const AdvancedIdiomsPage: React.FC = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
   const { updateProgress } = useUserProgress();
@@ -77,11 +93,11 @@ const AdvanceIdiomsPage: React.FC = () => {
     }
   };
 
-  const idioms = [
+  const idioms: IdiomCategory[] = [
     {
-      id: 'example',
-      title: 'Common Idioms',
-      description: 'Useful idiomatic expressions in Georgian.',
+      id: 'everyday',
+      title: 'Common Everyday Idioms',
+      description: 'Frequently used idiomatic expressions in daily Georgian conversations',
       entries: [
         {
           georgian: 'ენას კბილი დააჭირე',
@@ -99,8 +115,173 @@ const AdvanceIdiomsPage: React.FC = () => {
           example: 'ხმაურზე გული გამისკდა.',
           translation: 'The noise terrified me.',
         },
-      ],
+        {
+          georgian: 'თვალი დაადგა',
+          latin: 'tvali daadga',
+          meaning: 'To keep an eye on',
+          literal: 'To place an eye on',
+          example: 'ბავშვებს თვალი დაადგი.',
+          translation: 'Keep an eye on the children.',
+        },
+        {
+          georgian: 'ყურები ჩამოყარა',
+          latin: 'qurebi chamoqara',
+          meaning: 'To become sad or disappointed',
+          literal: 'To drop one's ears',
+          example: 'ცუდი ამბის გაგებაზე ყურები ჩამოყარა.',
+          translation: 'He became sad upon hearing the bad news.',
+        },
+        {
+          georgian: 'გულზე მოეშვა',
+          latin: 'gulze moeshva',
+          meaning: 'To feel relieved',
+          literal: 'To loosen on the heart',
+          example: 'კარგი ამბის გაგებაზე გულზე მოეშვა.',
+          translation: 'He felt relieved upon hearing the good news.',
+        }
+      ]
     },
+    {
+      id: 'cultural',
+      title: 'Cultural Idioms',
+      description: 'Expressions that reflect Georgian cultural values and traditions',
+      entries: [
+        {
+          georgian: 'პურ-მარილი',
+          latin: 'pur-marili',
+          meaning: 'Hospitality',
+          literal: 'Bread and salt',
+          example: 'ქართული პურ-მარილი განთქმულია.',
+          translation: 'Georgian hospitality is renowned.',
+        },
+        {
+          georgian: 'სტუმარი ღვთისაა',
+          latin: 'stumari ghvtisaa',
+          meaning: 'A guest is a gift from God',
+          literal: 'A guest is from God',
+          example: 'სტუმარი ღვთისაა, კარგად მიიღე.',
+          translation: 'A guest is a gift from God, welcome them well.',
+        },
+        {
+          georgian: 'შენი ჭირიმე',
+          latin: 'sheni chirime',
+          meaning: 'Term of endearment',
+          literal: 'Let me take your troubles',
+          example: 'შენი ჭირიმე, დამეხმარე.',
+          translation: 'My dear, help me.',
+        },
+        {
+          georgian: 'გენაცვალე',
+          latin: 'genatsvale',
+          meaning: 'Term of endearment',
+          literal: 'Let me be sacrificed for you',
+          example: 'გენაცვალე, როგორ ხარ?',
+          translation: 'My dear, how are you?',
+        },
+        {
+          georgian: 'შენი კვნესამე',
+          latin: 'sheni kvnesame',
+          meaning: 'Expression of affection',
+          literal: 'Let me take your moaning',
+          example: 'შენი კვნესამე, რა ლამაზი ხარ!',
+          translation: 'My dear, how beautiful you are!',
+        }
+      ]
+    },
+    {
+      id: 'wisdom',
+      title: 'Proverbs and Wisdom',
+      description: 'Traditional Georgian sayings that convey wisdom and life lessons',
+      entries: [
+        {
+          georgian: 'ერთი ყვავი გაზაფხულს ვერ მოიყვანს',
+          latin: 'erti qvavi gazapkhuls ver moiqvans',
+          meaning: 'One swallow doesn't make a summer',
+          literal: 'One crow cannot bring spring',
+          example: 'ერთი კარგი დღე ჯერ კიდევ არაფერს ნიშნავს, ერთი ყვავი გაზაფხულს ვერ მოიყვანს.',
+          translation: 'One good day doesn't mean anything yet, one swallow doesn't make a summer.',
+        },
+        {
+          georgian: 'რაც მოგივა დავითაო, ყველა შენი თავითაო',
+          latin: 'rats mogiva davitao, qvela sheni tavitao',
+          meaning: 'You are responsible for your own fate',
+          literal: 'Whatever happens to you, Davit, it's all from your own head',
+          example: 'თვითონ აირჩია ეს გზა, ახლა რაც მოუვა დავითაო, ყველა თავისი თავითაო.',
+          translation: 'He chose this path himself, now whatever happens to him is his own responsibility.',
+        },
+        {
+          georgian: 'ცოდნა განძია, რომელიც პატრონს თან სდევს',
+          latin: 'tsodna gandzia, romelic patrons tan sdevs',
+          meaning: 'Knowledge is a treasure that follows its owner',
+          literal: 'Knowledge is a treasure that follows its owner',
+          example: 'ისწავლე, რადგან ცოდნა განძია, რომელიც პატრონს თან სდევს.',
+          translation: 'Study, because knowledge is a treasure that follows its owner.',
+        },
+        {
+          georgian: 'ენა ტკბილია, მაგრამ გესლიანიც',
+          latin: 'ena tkbilia, magram geslianic',
+          meaning: 'Words can be both sweet and poisonous',
+          literal: 'The tongue is sweet but can be venomous too',
+          example: 'ფრთხილად იყავი რას ამბობ, ენა ტკბილია, მაგრამ გესლიანიც.',
+          translation: 'Be careful what you say, words can be both sweet and poisonous.',
+        },
+        {
+          georgian: 'კარგი შვილი დედის გულის ვარდიაო',
+          latin: 'kargi shvili dedis gulis vardiao',
+          meaning: 'A good child is the rose of a mother's heart',
+          literal: 'A good child is the rose of a mother's heart',
+          example: 'დედა შვილზე ამაყობს, კარგი შვილი დედის გულის ვარდიაო.',
+          translation: 'The mother is proud of her child, a good child is the rose of a mother's heart.',
+        }
+      ]
+    },
+    {
+      id: 'emotions',
+      title: 'Emotional Expressions',
+      description: 'Idioms that express feelings and emotional states',
+      entries: [
+        {
+          georgian: 'გული გადაუტრიალდა',
+          latin: 'guli gadautrialda',
+          meaning: 'To feel disgusted',
+          literal: 'Heart turned over',
+          example: 'ამ სურათის დანახვაზე გული გადამიტრიალდა.',
+          translation: 'I felt disgusted when I saw this picture.',
+        },
+        {
+          georgian: 'გული მოუვიდა',
+          latin: 'guli mouvida',
+          meaning: 'To get angry',
+          literal: 'Heart came to him/her',
+          example: 'ამ სიტყვებზე გული მომივიდა.',
+          translation: 'I got angry at these words.',
+        },
+        {
+          georgian: 'გული აუჩუყდა',
+          latin: 'guli auchuqda',
+          meaning: 'To be moved emotionally',
+          literal: 'Heart softened',
+          example: 'ამ ამბის გაგებაზე გული ამიჩუყდა.',
+          translation: 'I was moved when I heard this story.',
+        },
+        {
+          georgian: 'თავში აუვარდა',
+          latin: 'tavshi auvarda',
+          meaning: 'To go to one's head',
+          literal: 'It went up to his/her head',
+          example: 'წარმატება თავში აუვარდა.',
+          translation: 'Success went to his head.',
+        },
+        {
+          georgian: 'ნერვები მოეშალა',
+          latin: 'nervebi moeshala',
+          meaning: 'To become very nervous',
+          literal: 'Nerves got disrupted',
+          example: 'გამოცდის წინ ნერვები მოეშალა.',
+          translation: 'He became very nervous before the exam.',
+        }
+      ]
+    }
   ];
 
   return (
@@ -171,4 +352,4 @@ const AdvanceIdiomsPage: React.FC = () => {
   );
 };
 
-export default AdvanceIdiomsPage;
+export default AdvancedIdiomsPage;
