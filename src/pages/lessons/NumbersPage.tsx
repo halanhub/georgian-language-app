@@ -4,7 +4,6 @@ import { ArrowLeft, ArrowRight, Book, Brain, Check, ChevronDown, ChevronUp, Play
 import { useTheme } from '../../contexts/ThemeContext';
 import { useUserProgress } from '../../hooks/useUserProgress';
 import { useAuth } from '../../contexts/AuthContext';
-import { useTranslation } from 'react-i18next';
 
 interface NumberGroup {
   id: string;
@@ -22,7 +21,6 @@ const NumbersPage: React.FC = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
   const { updateProgress } = useUserProgress();
-  const { t } = useTranslation();
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const groupRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});

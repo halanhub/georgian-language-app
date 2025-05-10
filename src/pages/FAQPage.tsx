@@ -2,11 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, HelpCircle, Search } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
-import { useTranslation } from 'react-i18next';
 
 const FAQPage: React.FC = () => {
   const { theme } = useTheme();
-  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = React.useState('');
 
   // FAQ categories and questions
