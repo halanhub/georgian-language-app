@@ -12,7 +12,7 @@ export default defineConfig({
       // Whether to polyfill `node:` protocol imports.
       protocolImports: true,
       // Polyfills to include
-      include: ['buffer', 'process', 'util', 'global']
+      include: ['buffer', 'process', 'util']
     })
   ],
   resolve: {
@@ -38,7 +38,7 @@ export default defineConfig({
     assetsDir: 'assets',
     emptyOutDir: true,
     sourcemap: false,
-    minify: true,
+    minify: 'terser',
     rollupOptions: {
       plugins: [
         nodeResolve({
@@ -53,12 +53,17 @@ export default defineConfig({
           ignore: ['bufferutil', 'utf-8-validate']
         })
       ],
-      external: []
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          supabase: ['@supabase/supabase-js']
+        }
+      }
     }
   },
   server: {
     host: true,
     port: 5173,
   },
-  base: './',
+  base: '/',
 });
