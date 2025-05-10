@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, Brain, Edit, GraduationCap, MessageCircle, Pencil, Lock, Headphones } from 'lucide-react';
+import { ArrowRight, BookOpen, Brain, Edit, GraduationCap, MessageCircle, Pencil, Lock } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSubscription } from '../../hooks/useSubscription';
@@ -127,7 +127,7 @@ const AdvancedLevelPage: React.FC = () => {
       id: 'advanced-listening', 
       name: t('advanced.topics.listening.name'), 
       description: t('advanced.topics.listening.description'),
-      icon: <Headphones size={24} />,
+      icon: <Edit size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
       path: hasActiveSubscription || isAdmin ? '/advanced/listening' : '/pricing',
       premium: true,

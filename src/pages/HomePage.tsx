@@ -7,7 +7,8 @@ import { useSubscription } from '../hooks/useSubscription';
 import { useTranslation } from 'react-i18next';
 import learnGeorgianImage from '../assets/images/learn-georgian.webp';
 import { STRIPE_PRODUCTS } from '../stripe-config';
-  const HomePage: React.FC = () => {
+
+const HomePage: React.FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const { hasActiveSubscription } = useSubscription();

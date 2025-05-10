@@ -13,9 +13,9 @@ const Layout: React.FC = () => {
   return (
     <div className={`min-h-screen flex flex-col ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
       <Navbar />
-      <div className="flex flex-grow w-full pt-16">
+      <div className="flex flex-grow w-full">
         {user && <Sidebar />}
-        <main className={`flex-grow ${user ? 'md:ml-64' : ''} transition-all duration-300 p-4`}>
+        <main className={`flex-grow ${user ? 'md:ml-64' : ''} transition-all duration-300`}>
           <Outlet />
         </main>
       </div>

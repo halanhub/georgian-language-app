@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Mail, HelpCircle, Facebook, Instagram } from 'lucide-react';
+import { Heart, Mail, Github as GitHub, HelpCircle, Facebook, Instagram } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
@@ -21,7 +21,7 @@ const Footer: React.FC = () => {
           <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
             <Link 
               to="/contact" 
-              className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'} transition-colors`}
+              className={`text-sm hover:${theme === 'dark' ? 'text-white' : 'text-red-600'} transition-colors`}
               aria-label="Contact us"
             >
               <Mail size={18} className="inline mr-1" />
@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
 
             <Link 
               to="/faq" 
-              className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'} transition-colors`}
+              className={`text-sm hover:${theme === 'dark' ? 'text-white' : 'text-red-600'} transition-colors`}
               aria-label="FAQ"
             >
               <HelpCircle size={18} className="inline mr-1" />
@@ -41,7 +41,7 @@ const Footer: React.FC = () => {
               href="https://www.facebook.com/profile.php?id=61576210552897" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'} transition-colors`}
+              className={`text-sm hover:${theme === 'dark' ? 'text-white' : 'text-red-600'} transition-colors`}
               aria-label="Facebook"
             >
               <Facebook size={18} className="inline mr-1" />
@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
               href="https://www.instagram.com/kartuliena_learngeorgian/" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className={`text-sm ${theme === 'dark' ? 'hover:text-white' : 'hover:text-red-600'} transition-colors`}
+              className={`text-sm hover:${theme === 'dark' ? 'text-white' : 'text-red-600'} transition-colors`}
               aria-label="Instagram"
             >
               <Instagram size={18} className="inline mr-1" />
@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
         </div>
         
         {/* SEO Footer Links */}
-        <div className={`mt-6 pt-6 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} grid grid-cols-1 md:grid-cols-4 gap-6`}>
+        <div className="mt-6 pt-6 border-t border-gray-700 grid grid-cols-1 md:grid-cols-4 gap-6">
           <div>
             <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               {t('nav.beginner')}
