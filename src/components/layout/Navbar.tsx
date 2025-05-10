@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LogIn, Menu, Moon, Sun, X, User, Settings, LogOut, Mail, CreditCard } from 'lucide-react';
-import logo from '../../assets/images/logo.png'; 
+import logo from '../../assets/images/logo.webp'; 
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
