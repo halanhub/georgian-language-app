@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, Brain, Edit, GraduationCap, MessageCircle, Pencil, Lock } from 'lucide-react';
+import { ArrowRight, BookOpen, Brain, Edit, GraduationCap, MessageCircle, Pencil, Lock, Headphones } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSubscription } from '../../hooks/useSubscription';
@@ -127,7 +127,7 @@ const AdvancedLevelPage: React.FC = () => {
       id: 'advanced-listening', 
       name: t('advanced.topics.listening.name'), 
       description: t('advanced.topics.listening.description'),
-      icon: <Edit size={24} />,
+      icon: <Headphones size={24} />,
       color: theme === 'dark' ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800',
       path: hasActiveSubscription || isAdmin ? '/advanced/listening' : '/pricing',
       premium: true,
@@ -206,152 +206,10 @@ const AdvancedLevelPage: React.FC = () => {
                     <span className={`font-medium ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}`}>
                       {progress?.filter(p => p.completed && p.lessonId.startsWith('advanced-')).length || 0}/{topics.length}
                     </span>
-                  
-        {/* New Advanced Level Sections */}
-        <Link
-          to="/advanced/literature"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <BookOpen />
-            <div>
-              <h3 className="text-lg font-semibold">Literature & Poetry</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Explore Georgian literary works and poetry.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-
-        <Link
-          to="/advanced/idioms"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <MessageCircle />
-            <div>
-              <h3 className="text-lg font-semibold">Idiomatic Expressions</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Learn unique Georgian idioms and their meanings.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-
-        <Link
-          to="/advanced/culture"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <GraduationCap />
-            <div>
-              <h3 className="text-lg font-semibold">Cultural Nuances</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Deepen your understanding of Georgian culture.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-
-        <Link
-          to="/advanced/writing"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <Edit />
-            <div>
-              <h3 className="text-lg font-semibold">Writing Practice</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Improve your Georgian writing skills with exercises.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-
-        <Link
-          to="/advanced/listening"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <Headphones />
-            <div>
-              <h3 className="text-lg font-semibold">Listening Practice</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Practice understanding spoken Georgian.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-</div>
+                  </div>
                 </div>
               </div>
-            
-        {/* New Advanced Level Sections */}
-        <Link
-          to="/advanced/literature"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <BookOpen />
-            <div>
-              <h3 className="text-lg font-semibold">Literature & Poetry</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Explore Georgian literary works and poetry.</p>
             </div>
-          </div>
-          <ArrowRight />
-        </Link>
-
-        <Link
-          to="/advanced/idioms"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <MessageCircle />
-            <div>
-              <h3 className="text-lg font-semibold">Idiomatic Expressions</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Learn unique Georgian idioms and their meanings.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-
-        <Link
-          to="/advanced/culture"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <GraduationCap />
-            <div>
-              <h3 className="text-lg font-semibold">Cultural Nuances</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Deepen your understanding of Georgian culture.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-
-        <Link
-          to="/advanced/writing"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <Edit />
-            <div>
-              <h3 className="text-lg font-semibold">Writing Practice</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Improve your Georgian writing skills with exercises.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-
-        <Link
-          to="/advanced/listening"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <Headphones />
-            <div>
-              <h3 className="text-lg font-semibold">Listening Practice</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Practice understanding spoken Georgian.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-</div>
           </div>
         </div>
       </section>
@@ -508,78 +366,7 @@ const AdvancedLevelPage: React.FC = () => {
                   Start Grammar Exercises
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
-              
-        {/* New Advanced Level Sections */}
-        <Link
-          to="/advanced/literature"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <BookOpen />
-            <div>
-              <h3 className="text-lg font-semibold">Literature & Poetry</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Explore Georgian literary works and poetry.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-
-        <Link
-          to="/advanced/idioms"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <MessageCircle />
-            <div>
-              <h3 className="text-lg font-semibold">Idiomatic Expressions</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Learn unique Georgian idioms and their meanings.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-
-        <Link
-          to="/advanced/culture"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <GraduationCap />
-            <div>
-              <h3 className="text-lg font-semibold">Cultural Nuances</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Deepen your understanding of Georgian culture.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-
-        <Link
-          to="/advanced/writing"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <Edit />
-            <div>
-              <h3 className="text-lg font-semibold">Writing Practice</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Improve your Georgian writing skills with exercises.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-
-        <Link
-          to="/advanced/listening"
-          className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 hover:shadow-md transition"
-        >
-          <div className="flex items-center space-x-4">
-            <Headphones />
-            <div>
-              <h3 className="text-lg font-semibold">Listening Practice</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Practice understanding spoken Georgian.</p>
-            </div>
-          </div>
-          <ArrowRight />
-        </Link>
-</div>
+              </div>
             </div>
           </div>
         </div>
