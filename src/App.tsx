@@ -50,6 +50,9 @@ import FAQPage from './pages/FAQPage';
 import AdvancedGrammarPage from './pages/lessons/AdvancedGrammarPage';
 import AdvancedCulturePage from './pages/lessons/AdvancedCulturePage';
 import LiteraturePoetryPage from './pages/lessons/LiteraturePoetryPage';
+import IdiomaticExpressionsPage from './pages/lessons/IdiomaticExpressionsPage';
+import AdvancedWritingPage from './pages/lessons/AdvancedWritingPage';
+import AdvancedListeningPage from './pages/lessons/AdvancedListeningPage';
 
 // Admin user ID - replace with the actual ID of admin@georgianlanguage.online
 const ADMIN_USER_ID = "d4c7b2a1-f3e9-4b8d-a6c5-e9d8f7g6h5j4";
@@ -221,17 +224,17 @@ function App() {
                 } />
                 <Route path="advanced/idioms" element={
                   <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <NotFoundPage />
+                    <IdiomaticExpressionsPage />
                   </ProtectedRoute>
                 } />
                 <Route path="advanced/writing" element={
                   <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <NotFoundPage />
+                    <AdvancedWritingPage />
                   </ProtectedRoute>
                 } />
                 <Route path="advanced/listening" element={
                   <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <NotFoundPage />
+                    <AdvancedListeningPage />
                   </ProtectedRoute>
                 } />
                 <Route path="advanced/quiz/:topic" element={
