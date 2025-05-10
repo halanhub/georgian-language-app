@@ -127,7 +127,7 @@ const AdvancedIdiomsPage: React.FC = () => {
           georgian: 'ყურები ჩამოყარა',
           latin: 'qurebi chamoqara',
           meaning: 'To become sad or disappointed',
-          literal: 'To drop one's ears,
+          literal: 'To drop one\'s ears,
           example: 'ცუდი ამბის გაგებაზე ყურები ჩამოყარა.',
           translation: 'He became sad upon hearing the bad news.',
         },
