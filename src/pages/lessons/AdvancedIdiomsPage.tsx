@@ -127,7 +127,7 @@ const AdvancedIdiomsPage: React.FC = () => {
           georgian: 'ყურები ჩამოყარა',
           latin: 'qurebi chamoqara',
           meaning: 'To become sad or disappointed',
-          literal: 'To drop one\'s ears,
+          literal: 'To drop one\'s ears',
           example: 'ცუდი ამბის გაგებაზე ყურები ჩამოყარა.',
           translation: 'He became sad upon hearing the bad news.',
         },
@@ -267,7 +267,7 @@ const AdvancedIdiomsPage: React.FC = () => {
         {
           georgian: 'თავში აუვარდა',
           latin: 'tavshi auvarda',
-          meaning: 'To go to one's head',
+          meaning: 'To go to one\'s head',
           literal: 'It went up to his/her head',
           example: 'წარმატება თავში აუვარდა.',
           translation: 'Success went to his head.',
