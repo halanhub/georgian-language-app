@@ -53,6 +53,13 @@ import AdvancedCulturePage from './pages/lessons/AdvancedCulturePage';
 // Admin user ID - replace with the actual ID of admin@georgianlanguage.online
 const ADMIN_USER_ID = "d4c7b2a1-f3e9-4b8d-a6c5-e9d8f7g6h5j4";
 
+
+import LiteraturePoetryPage from './pages/lessons/LiteraturePoetryPage';
+import AdvanceIdiomsPage from './pages/lessons/AdvanceIdiomsPage';
+import AdvancedCulturePage from './pages/lessons/AdvancedCulturePage';
+import AdvanceWritingPage from './pages/lessons/AdvanceWritingPage';
+import AdvancedListeningPage from './pages/lessons/AdvancedListeningPage';
+
 function App() {
   return (
     <ThemeProvider>
@@ -60,7 +67,14 @@ function App() {
         <AuthProvider>
           <LanguageProvider>
             <Routes>
-              <Route path="/" element={<Layout />}>
+              
+        <Route path="/advanced/literature" element={<LiteraturePoetryPage />} />
+        <Route path="/advanced/idioms" element={<AdvanceIdiomsPage />} />
+        <Route path="/advanced/culture" element={<AdvancedCulturePage />} />
+        <Route path="/advanced/writing" element={<AdvanceWritingPage />} />
+        <Route path="/advanced/listening" element={<AdvancedListeningPage />} />
+
+<Route path="/" element={<Layout />}>
                 <Route index element={<HomePage />} />
                 <Route path="login" element={<LoginPage />} />
                 <Route path="signup" element={<SignupPage />} />
