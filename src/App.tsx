@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { LanguageProvider } from './contexts/LanguageContext';
 import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
@@ -62,225 +61,223 @@ function App() {
     <ThemeProvider>
       <Router>
         <AuthProvider>
-          <LanguageProvider>
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<HomePage />} />
-                <Route path="login" element={<LoginPage />} />
-                <Route path="signup" element={<SignupPage />} />
-                <Route path="confirmation" element={<ConfirmationPage />} />
-                <Route path="pricing" element={<PricingPage />} />
-                <Route path="terms-of-service" element={<TermsOfServicePage />} />
-                <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
-                <Route path="database-test" element={<DatabaseTestPage />} />
-                <Route path="faq" element={<FAQPage />} />
-                
-                <Route path="beginner" element={
-                  <ProtectedRoute>
-                    <BeginnerLevelPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="beginner/alphabet" element={
-                  <ProtectedRoute>
-                    <AlphabetPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="beginner/basic-vocabulary" element={
-                  <ProtectedRoute>
-                    <BasicVocabularyPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="beginner/colors-and-shapes" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <ColorsAndShapesPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="beginner/numbers" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <NumbersPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="beginner/months-and-seasons" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <MonthsAndSeasonsPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="beginner/food-and-drinks" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <FoodAndDrinksPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="beginner/human-body" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <HumanBodyPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="beginner/animals" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <AnimalsPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="beginner/daily-activities" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <DailyActivitiesPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="beginner/quiz/:topic" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <QuizPage />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="intermediate" element={
-                  <ProtectedRoute>
-                    <IntermediateLevelPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="intermediate/grammar" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <GrammarPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="intermediate/conversations" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <DailyConversationsPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="intermediate/common-words" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <CommonWordsPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="intermediate/reading" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <ReadingPracticePage />
-                  </ProtectedRoute>
-                } />
-                <Route path="intermediate/writing" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <WritingExercisesPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="intermediate/sentences" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <SentenceConstructionPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="intermediate/quiz/grammar" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <GrammarQuiz />
-                  </ProtectedRoute>
-                } />
-                <Route path="intermediate/quiz/sentences" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <SentenceConstructionQuiz />
-                  </ProtectedRoute>
-                } />
-                <Route path="intermediate/quiz/common-words" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <CommonWordsQuiz />
-                  </ProtectedRoute>
-                } />
-                <Route path="intermediate/quiz/conversations" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <ConversationsQuiz />
-                  </ProtectedRoute>
-                } />
-                <Route path="intermediate/quiz/reading" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <ReadingQuiz />
-                  </ProtectedRoute>
-                } />
-                <Route path="intermediate/quiz/writing" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <WritingQuiz />
-                  </ProtectedRoute>
-                } />
-                <Route path="intermediate/quiz/:topic" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <QuizPage />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="advanced" element={
-                  <ProtectedRoute>
-                    <AdvancedLevelPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="advanced/grammar" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <AdvancedGrammarPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="advanced/culture" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <AdvancedCulturePage />
-                  </ProtectedRoute>
-                } />
-                <Route path="advanced/literature" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <LiteraturePoetryPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="advanced/idioms" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <IdiomaticExpressionsPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="advanced/writing" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <AdvancedWritingPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="advanced/listening" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <AdvancedListeningPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="advanced/quiz/:topic" element={
-                  <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
-                    <QuizPage />
-                  </ProtectedRoute>
-                } />
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<HomePage />} />
+              <Route path="login" element={<LoginPage />} />
+              <Route path="signup" element={<SignupPage />} />
+              <Route path="confirmation" element={<ConfirmationPage />} />
+              <Route path="pricing" element={<PricingPage />} />
+              <Route path="terms-of-service" element={<TermsOfServicePage />} />
+              <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="database-test" element={<DatabaseTestPage />} />
+              <Route path="faq" element={<FAQPage />} />
+              
+              <Route path="beginner" element={
+                <ProtectedRoute>
+                  <BeginnerLevelPage />
+                </ProtectedRoute>
+              } />
+              <Route path="beginner/alphabet" element={
+                <ProtectedRoute>
+                  <AlphabetPage />
+                </ProtectedRoute>
+              } />
+              <Route path="beginner/basic-vocabulary" element={
+                <ProtectedRoute>
+                  <BasicVocabularyPage />
+                </ProtectedRoute>
+              } />
+              <Route path="beginner/colors-and-shapes" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <ColorsAndShapesPage />
+                </ProtectedRoute>
+              } />
+              <Route path="beginner/numbers" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <NumbersPage />
+                </ProtectedRoute>
+              } />
+              <Route path="beginner/months-and-seasons" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <MonthsAndSeasonsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="beginner/food-and-drinks" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <FoodAndDrinksPage />
+                </ProtectedRoute>
+              } />
+              <Route path="beginner/human-body" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <HumanBodyPage />
+                </ProtectedRoute>
+              } />
+              <Route path="beginner/animals" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <AnimalsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="beginner/daily-activities" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <DailyActivitiesPage />
+                </ProtectedRoute>
+              } />
+              <Route path="beginner/quiz/:topic" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <QuizPage />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="intermediate" element={
+                <ProtectedRoute>
+                  <IntermediateLevelPage />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/grammar" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <GrammarPage />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/conversations" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <DailyConversationsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/common-words" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <CommonWordsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/reading" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <ReadingPracticePage />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/writing" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <WritingExercisesPage />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/sentences" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <SentenceConstructionPage />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/quiz/grammar" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <GrammarQuiz />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/quiz/sentences" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <SentenceConstructionQuiz />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/quiz/common-words" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <CommonWordsQuiz />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/quiz/conversations" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <ConversationsQuiz />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/quiz/reading" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <ReadingQuiz />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/quiz/writing" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <WritingQuiz />
+                </ProtectedRoute>
+              } />
+              <Route path="intermediate/quiz/:topic" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <QuizPage />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="advanced" element={
+                <ProtectedRoute>
+                  <AdvancedLevelPage />
+                </ProtectedRoute>
+              } />
+              <Route path="advanced/grammar" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <AdvancedGrammarPage />
+                </ProtectedRoute>
+              } />
+              <Route path="advanced/culture" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <AdvancedCulturePage />
+                </ProtectedRoute>
+              } />
+              <Route path="advanced/literature" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <LiteraturePoetryPage />
+                </ProtectedRoute>
+              } />
+              <Route path="advanced/idioms" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <IdiomaticExpressionsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="advanced/writing" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <AdvancedWritingPage />
+                </ProtectedRoute>
+              } />
+              <Route path="advanced/listening" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <AdvancedListeningPage />
+                </ProtectedRoute>
+              } />
+              <Route path="advanced/quiz/:topic" element={
+                <ProtectedRoute requiresSubscription={true} adminId={ADMIN_USER_ID}>
+                  <QuizPage />
+                </ProtectedRoute>
+              } />
 
-                <Route path="settings" element={
-                  <ProtectedRoute>
-                    <ProfileSettingsPage />
-                  </ProtectedRoute>
-                } />
+              <Route path="settings" element={
+                <ProtectedRoute>
+                  <ProfileSettingsPage />
+                </ProtectedRoute>
+              } />
 
-                <Route path="support" element={<SupportPage />} />
-                <Route path="contact" element={<ContactPage />} />
-                
-                <Route path="vocabulary" element={
-                  <ProtectedRoute>
-                    <VocabularyPage />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="quizzes" element={
-                  <ProtectedRoute>
-                    <QuizHubPage />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="achievements" element={
-                  <ProtectedRoute>
-                    <AchievementsPage />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="learning-tips" element={
-                  <ProtectedRoute>
-                    <LearningTipsPage />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="404" element={<NotFoundPage />} />
-                <Route path="*" element={<Navigate to="/404" replace />} />
-              </Route>
-            </Routes>
-          </LanguageProvider>
+              <Route path="support" element={<SupportPage />} />
+              <Route path="contact" element={<ContactPage />} />
+              
+              <Route path="vocabulary" element={
+                <ProtectedRoute>
+                  <VocabularyPage />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="quizzes" element={
+                <ProtectedRoute>
+                  <QuizHubPage />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="achievements" element={
+                <ProtectedRoute>
+                  <AchievementsPage />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="learning-tips" element={
+                <ProtectedRoute>
+                  <LearningTipsPage />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="404" element={<NotFoundPage />} />
+              <Route path="*" element={<Navigate to="/404" replace />} />
+            </Route>
+          </Routes>
         </AuthProvider>
       </Router>
     </ThemeProvider>
