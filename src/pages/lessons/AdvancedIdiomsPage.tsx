@@ -196,16 +196,16 @@ const AdvancedIdiomsPage: React.FC = () => {
         {
           georgian: 'ერთი ყვავი გაზაფხულს ვერ მოიყვანს',
           latin: 'erti qvavi gazapkhuls ver moiqvans',
-          meaning: 'One swallow doesn't make a summer',
+          meaning: 'One swallow doesn\'t make a summer',
           literal: 'One crow cannot bring spring',
           example: 'ერთი კარგი დღე ჯერ კიდევ არაფერს ნიშნავს, ერთი ყვავი გაზაფხულს ვერ მოიყვანს.',
-          translation: 'One good day doesn't mean anything yet, one swallow doesn't make a summer.',
+          translation: 'One good day doesn\'t mean anything yet, one swallow doesn\'t make a summer.',
         },
         {
           georgian: 'რაც მოგივა დავითაო, ყველა შენი თავითაო',
           latin: 'rats mogiva davitao, qvela sheni tavitao',
           meaning: 'You are responsible for your own fate',
-          literal: 'Whatever happens to you, Davit, it's all from your own head',
+          literal: 'Whatever happens to you, Davit, it\'s all from your own head',
           example: 'თვითონ აირჩია ეს გზა, ახლა რაც მოუვა დავითაო, ყველა თავისი თავითაო.',
           translation: 'He chose this path himself, now whatever happens to him is his own responsibility.',
         },
@@ -228,10 +228,10 @@ const AdvancedIdiomsPage: React.FC = () => {
         {
           georgian: 'კარგი შვილი დედის გულის ვარდიაო',
           latin: 'kargi shvili dedis gulis vardiao',
-          meaning: 'A good child is the rose of a mother's heart',
-          literal: 'A good child is the rose of a mother's heart',
+          meaning: 'A good child is the rose of a mother\'s heart',
+          literal: 'A good child is the rose of a mother\'s heart',
           example: 'დედა შვილზე ამაყობს, კარგი შვილი დედის გულის ვარდიაო.',
-          translation: 'The mother is proud of her child, a good child is the rose of a mother's heart.',
+          translation: 'The mother is proud of her child, a good child is the rose of a mother\'s heart.',
         }
       ]
     },

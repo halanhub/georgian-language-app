@@ -60,7 +60,7 @@ import AdvancedCulturePage from './pages/lessons/AdvancedCulturePage';
 import AdvancedIdiomsPage from './pages/lessons/AdvancedIdiomsPage';
 import AdvancedWritingPage from './pages/lessons/AdvancedWritingPage';
 import AdvancedListeningPage from './pages/lessons/AdvancedListeningPage';
-import AdvancedLiteraturePoetryPage from './pages/lessons/AdvancedLiteraturePoetryPage';
+import AdvanceLiteraturePoetryPage from './pages/lessons/AdvanceLiteraturePoetryPage';
 import ChatPage from './pages/ChatPage';
 
 const ADMIN_USER_ID = "d4c7b2a1-f3e9-4b8d-a6c5-e9d8f7g6h5j4";
@@ -122,7 +122,7 @@ function App() {
               <Route path="/advanced/idioms" element={<AdvancedIdiomsPage />} />
               <Route path="/advanced/writing" element={<AdvancedWritingPage />} />
               <Route path="/advanced/listening" element={<AdvancedListeningPage />} />
-              <Route path="/advanced/literature" element={<AdvancedLiteraturePoetryPage />} />
+              <Route path="/advanced/literature" element={<AdvanceLiteraturePoetryPage />} />
               
               {/* Quiz Pages */}
               <Route path="/quizzes" element={<QuizHubPage />} />
