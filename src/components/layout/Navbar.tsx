@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LogIn, Menu, Moon, Sun, X, User, Settings, LogOut, Mail, CreditCard } from 'lucide-react';
 import logo from '../../assets/images/logo.webp'; 
@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -26,26 +25,11 @@ const Navbar: React.FC = () => {
     setIsProfileMenuOpen(false);
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
     <nav className={`fixed w-full z-20 transition-all duration-300 ${
-      isScrolled || isMenuOpen
-        ? theme === 'dark'
-          ? 'bg-gray-800 shadow-lg'
-          : 'bg-white shadow-lg'
-        : 'bg-transparent'
+      theme === 'dark'
+        ? 'bg-gray-800 shadow-lg'
+        : 'bg-white shadow-lg'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -272,7 +256,7 @@ const Navbar: React.FC = () => {
                 {t('nav.advanced')}
               </Link>
 
-              <div className="border-t border-gray-700 my-2 pt-2">
+              <div className={`border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} my-2 pt-2`}>
                 <Link to="/settings" className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${
                   location.pathname === '/settings'
                     ? theme === 'dark'

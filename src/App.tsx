@@ -70,83 +70,84 @@ function App() {
       <Router>
         <AuthProvider>
           <LanguageProvider>
-            <Routes>
-              {/* Auth Pages */}
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-              <Route path="/confirmation" element={<ConfirmationPage />} />
-              
-              {/* Legal Pages */}
-              <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-              
-              {/* Settings Pages */}
-              <Route path="/settings" element={<ProfileSettingsPage />} />
-              
-              {/* Support Pages */}
-              <Route path="/support" element={<SupportPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/faq" element={<FAQPage />} />
-              
-              {/* Pricing Page */}
-              <Route path="/pricing" element={<PricingPage />} />
-              
-              {/* Learning Levels */}
-              <Route path="/beginner" element={<BeginnerLevelPage />} />
-              <Route path="/intermediate" element={<IntermediateLevelPage />} />
-              <Route path="/advanced" element={<AdvancedLevelPage />} />
-              
-              {/* Beginner Level Pages */}
-              <Route path="/beginner/alphabet" element={<AlphabetPage />} />
-              <Route path="/beginner/basic-vocabulary" element={<BasicVocabularyPage />} />
-              <Route path="/beginner/colors-and-shapes" element={<ColorsAndShapesPage />} />
-              <Route path="/beginner/numbers" element={<NumbersPage />} />
-              <Route path="/beginner/months-and-seasons" element={<MonthsAndSeasonsPage />} />
-              <Route path="/beginner/food-and-drinks" element={<FoodAndDrinksPage />} />
-              <Route path="/beginner/human-body" element={<HumanBodyPage />} />
-              <Route path="/beginner/animals" element={<AnimalsPage />} />
-              <Route path="/beginner/daily-activities" element={<DailyActivitiesPage />} />
-              
-              {/* Intermediate Level Pages */}
-              <Route path="/intermediate/grammar" element={<GrammarPage />} />
-              <Route path="/intermediate/sentences" element={<SentenceConstructionPage />} />
-              <Route path="/intermediate/common-words" element={<CommonWordsPage />} />
-              <Route path="/intermediate/conversations" element={<DailyConversationsPage />} />
-              <Route path="/intermediate/reading" element={<ReadingPracticePage />} />
-              <Route path="/intermediate/writing" element={<WritingExercisesPage />} />
-              
-              {/* Advanced Level Pages */}
-              <Route path="/advanced/grammar" element={<AdvancedGrammarPage />} />
-              <Route path="/advanced/culture" element={<AdvancedCulturePage />} />
-              <Route path="/advanced/idioms" element={<AdvancedIdiomsPage />} />
-              <Route path="/advanced/writing" element={<AdvancedWritingPage />} />
-              <Route path="/advanced/listening" element={<AdvancedListeningPage />} />
-              <Route path="/advanced/literature" element={<AdvanceLiteraturePoetryPage />} />
-              
-              {/* Quiz Pages */}
-              <Route path="/quizzes" element={<QuizHubPage />} />
-              <Route path="/beginner/quiz/:topic" element={<QuizPage />} />
-              <Route path="/intermediate/quiz/grammar" element={<GrammarQuiz />} />
-              <Route path="/intermediate/quiz/sentences" element={<SentenceConstructionQuiz />} />
-              <Route path="/intermediate/quiz/common-words" element={<CommonWordsQuiz />} />
-              <Route path="/intermediate/quiz/conversations" element={<ConversationsQuiz />} />
-              <Route path="/intermediate/quiz/reading" element={<ReadingQuiz />} />
-              <Route path="/intermediate/quiz/writing" element={<WritingQuiz />} />
-              
-              {/* Other Pages */}
-              <Route path="/vocabulary" element={<VocabularyPage />} />
-              <Route path="/achievements" element={<AchievementsPage />} />
-              <Route path="/tips" element={<LearningTipsPage />} />
-              {/* Removed ChatPage route as the component was deleted */}
-              <Route path="/database-test" element={<DatabaseTestPage />} />
-              <Route path="/404" element={<NotFoundPage />} />
-              
-              {/* Home Page */}
-              <Route path="/" element={<HomePage />} />
-              
-              {/* Fallback */}
-              <Route path="*" element={<Navigate to="/404" replace />} />
-            </Routes>
+            <Layout>
+              <Routes>
+                {/* Auth Pages */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
+                <Route path="/confirmation" element={<ConfirmationPage />} />
+                
+                {/* Legal Pages */}
+                <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                
+                {/* Settings Pages */}
+                <Route path="/settings" element={<ProfileSettingsPage />} />
+                
+                {/* Support Pages */}
+                <Route path="/support" element={<SupportPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/faq" element={<FAQPage />} />
+                
+                {/* Pricing Page */}
+                <Route path="/pricing" element={<PricingPage />} />
+                
+                {/* Learning Levels */}
+                <Route path="/beginner" element={<BeginnerLevelPage />} />
+                <Route path="/intermediate" element={<IntermediateLevelPage />} />
+                <Route path="/advanced" element={<AdvancedLevelPage />} />
+                
+                {/* Beginner Level Pages */}
+                <Route path="/beginner/alphabet" element={<AlphabetPage />} />
+                <Route path="/beginner/basic-vocabulary" element={<BasicVocabularyPage />} />
+                <Route path="/beginner/colors-and-shapes" element={<ColorsAndShapesPage />} />
+                <Route path="/beginner/numbers" element={<NumbersPage />} />
+                <Route path="/beginner/months-and-seasons" element={<MonthsAndSeasonsPage />} />
+                <Route path="/beginner/food-and-drinks" element={<FoodAndDrinksPage />} />
+                <Route path="/beginner/human-body" element={<HumanBodyPage />} />
+                <Route path="/beginner/animals" element={<AnimalsPage />} />
+                <Route path="/beginner/daily-activities" element={<DailyActivitiesPage />} />
+                
+                {/* Intermediate Level Pages */}
+                <Route path="/intermediate/grammar" element={<GrammarPage />} />
+                <Route path="/intermediate/sentences" element={<SentenceConstructionPage />} />
+                <Route path="/intermediate/common-words" element={<CommonWordsPage />} />
+                <Route path="/intermediate/conversations" element={<DailyConversationsPage />} />
+                <Route path="/intermediate/reading" element={<ReadingPracticePage />} />
+                <Route path="/intermediate/writing" element={<WritingExercisesPage />} />
+                
+                {/* Advanced Level Pages */}
+                <Route path="/advanced/grammar" element={<AdvancedGrammarPage />} />
+                <Route path="/advanced/culture" element={<AdvancedCulturePage />} />
+                <Route path="/advanced/idioms" element={<AdvancedIdiomsPage />} />
+                <Route path="/advanced/writing" element={<AdvancedWritingPage />} />
+                <Route path="/advanced/listening" element={<AdvancedListeningPage />} />
+                <Route path="/advanced/literature" element={<AdvanceLiteraturePoetryPage />} />
+                
+                {/* Quiz Pages */}
+                <Route path="/quizzes" element={<QuizHubPage />} />
+                <Route path="/beginner/quiz/:topic" element={<QuizPage />} />
+                <Route path="/intermediate/quiz/grammar" element={<GrammarQuiz />} />
+                <Route path="/intermediate/quiz/sentences" element={<SentenceConstructionQuiz />} />
+                <Route path="/intermediate/quiz/common-words" element={<CommonWordsQuiz />} />
+                <Route path="/intermediate/quiz/conversations" element={<ConversationsQuiz />} />
+                <Route path="/intermediate/quiz/reading" element={<ReadingQuiz />} />
+                <Route path="/intermediate/quiz/writing" element={<WritingQuiz />} />
+                
+                {/* Other Pages */}
+                <Route path="/vocabulary" element={<VocabularyPage />} />
+                <Route path="/achievements" element={<AchievementsPage />} />
+                <Route path="/tips" element={<LearningTipsPage />} />
+                <Route path="/database-test" element={<DatabaseTestPage />} />
+                <Route path="/404" element={<NotFoundPage />} />
+                
+                {/* Home Page */}
+                <Route path="/" element={<HomePage />} />
+                
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/404" replace />} />
+              </Routes>
+            </Layout>
           </LanguageProvider>
         </AuthProvider>
       </Router>
